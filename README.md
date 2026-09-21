@@ -191,3 +191,138 @@ Great Vibes is reserved for small decorative accents. It is never used for long-
 - Vanilla CSS
 
 No Tailwind, CSS-in-JS, or component library is used as the primary styling system. Components are built by hand and styled with a structured CSS architecture driven by design tokens in `apps/web/src/styles/tokens.css`.
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 18 or newer (the web app targets modern ES2020 class fields)
+- npm 9 or newer
+- A modern browser for the landing page
+- Git for working with the repository
+
+### Clone and install
+
+```bash
+git clone <your-fork-or-origin> obsign
+cd obsign
+
+# The landing page lives in the web app workspace.
+cd apps/web
+npm install
+```
+
+This installs the React, Vite, and TypeScript toolchain for the web app. The other workspaces (`packages/core`, `packages/sdk`, `apps/worker`, `cli`, `contracts`) are scaffolded in the monorepo and are wired up by their own phases, which are listed under [Roadmap](#roadmap).
+
+### Run the landing page
+
+```bash
+cd apps/web
+npm run dev
+```
+
+Vite starts a local dev server (by default at `http://localhost:5173`) with hot module reload. Open that URL in your browser.
+
+### Production build
+
+```bash
+cd apps/web
+npm run build
+npm run preview
+```
+
+`npm run build` first type-checks with `tsc -b` and then produces an optimized bundle in `apps/web/dist`. `npm run preview` serves that build locally so you can confirm it behaves like production.
+
+## Usage guide
+
+### The landing page
+
+The page is organized as four sections plus navigation and footer:
+
+| Section | What it shows |
+| --- | --- |
+| Hero | Your one line of proof, the live verify widget, and the trust row |
+| How it works | The Issue, Anchor, Verify flow and the receipt mini-diagram |
+| Verifier modules | Quorum, Onchain event, and Artifact hash |
+| Pricing | Flat price per verification and the final call to action |
+
+### The live verify widget
+
+On the hero you will find a working widget that mirrors the real verification flow. It has six states: idle, validating, valid, invalid, error, and unpaid.
+
+- Paste a receipt ID or credential JSON to begin.
+- Click **Try a sample** to load a bundled known-good vector and verify it.
+- After a successful check, the recomputation panel shows `credentialHash`, `evidenceHash`, and `receiptId` so you can see exactly how the ID is derived.
+
+The widget prefers the real API (`POST /api/v1/verify`) when it is reachable, and falls back to a local, offline recomputation otherwise. That offline path uses the same construction described in [The receipt](#the-receipt), implemented in `apps/web/src/lib/keccak.ts` with a dependency-free Keccak-256. This keeps the demo accurate and self-contained even before the backend service is deployed.
+
+### Verification flow, step by step
+
+1. Build or load a credential and its evidence.
+2. Submit both to any verifier path (widget, API, SDK, or CLI).
+3. The core canonicalizes the inputs with RFC 8785, hashes them with Keccak-256, and derives `credentialHash`, `evidenceHash`, and `receiptId`.
+4. The relevant evidence module verifies the proof, and the validity window plus revocation state are checked against the injected time and chain reader.
+5. You receive a versioned receipt with a verdict and a specific reason code.
+
+Because the core is deterministic, the same inputs always yield the same `receiptId`, no matter who runs the check or whether a payment was attached.
+
+## Development
+
+### Conventions
+
+- TypeScript is used with strict mode enabled across the workspaces.
+- Shared config (TS config, ESLint, Prettier) is intended to live at the monorepo root so every package agrees on style and compiler settings.
+- The web app keeps all styling in hand-written CSS: design tokens live in `apps/web/src/styles/tokens.css` and global primitives in `apps/web/src/styles/global.css`.
+- Colors must always come from the palette. When a new tone is needed, derive it from one of the five source colors rather than inventing an unrelated hue.
+
+### Project invariants
+
+These rules override any other instruction. If a change would break one, stop and surface the conflict first.
+
+| Invariant | Meaning |
+| --- | --- |
+| INV-1 | The core is pure. No network, database, ambient clock, or randomness inside `packages/core`. |
+| INV-2 | Receipts are recomputable. A third party reproduces the same `receiptId` from the spec and vectors. |
+| INV-3 | Payment never affects validity. API, CLI, and third party all agree. |
+| INV-4 | The database is a cache. MongoDB is never required to recompute a receipt. |
+| INV-5 | The LLM is outside the validity path. Model output can explain, never decide. |
+| INV-6 | Chain reads are pinned. Verify against a specific block, never `latest`. |
+| INV-7 | No plaintext issuer keys in MongoDB. Key material lives behind the `KeyProvider` interface. |
+
+### Repository scripts
+
+The web app package (`apps/web/package.json`) exposes:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Vite dev server with hot reload |
+| `npm run build` | Type-check with `tsc -b`, then produce a production build |
+| `npm run preview` | Serve the production build locally |
+| `npm run typecheck` | Run the TypeScript compiler without emitting output |
+
+## Roadmap
+
+The product is being built in phases, each gated by its own acceptance criteria. The landing page described here is already live in the repository; the remaining phases build out the deterministic core, the onchain layer, the issuance platform, and the paid verification surface.
+
+| Phase | Focus | Current status |
+| --- | --- | --- |
+| 0 | Foundations and spec: monorepo, canonicalization spec, golden vectors, CI | Scaffolded |
+| 1 | Deterministic core and CLI: pure verifier, three evidence modules, `obsign verify` | Scaffolded |
+| 2 | Onchain layer: anchor, revocation, issuer registry contracts on Base Sepolia | Scaffolded |
+| 3 | Issuance and multi-issuer platform: keys, database, queue, anchoring | Not started |
+| 4 | Verification API, x402, and MCP: paid verify endpoint, MCP tools, SDK publish | Not started |
+| 5 | Web app and landing page | Landing page implemented |
+| 6 | Hardening and mainnet launch: KMS migration, audit, mainnet deploy | Not started |
+
+## Contributing
+
+Contributions are welcome. Please keep the non-negotiable invariants in mind and preserve the recomputable-receipt contract.
+
+- Open an issue to discuss a change before opening a large pull request.
+- Follow the TypeScript strict conventions and the styling rules above.
+- If your change touches how a receipt is computed, add or update golden vectors so the contract stays frozen and testable.
+- Never commit secrets, `.env` files, or key material.
+
+## License
+
+This project is open source and intended to stay that way. See the repository license file (once added) for the exact terms. Until then, reach out through the issue tracker if you plan to build on it.
