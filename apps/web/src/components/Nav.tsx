@@ -5,7 +5,7 @@ const LINKS = [
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Verify', href: '/verify' },
   { label: 'Modules', href: '#modules' },
-  { label: 'Developers', href: '#developers' },
+  { label: 'Docs', href: '/docs' },
 ]
 
 export default function Nav() {

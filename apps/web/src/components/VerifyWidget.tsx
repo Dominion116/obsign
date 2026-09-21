@@ -132,6 +132,22 @@ function StatusView(props: {
           <p className="widget__state-meta">
             reasonCode: <code className="widget__code">{receipt?.reasonCode}</code>
           </p>
+          {receipt && (
+            <div className="widget__receipt-line">
+              <span className="widget__receipt-label">receiptId</span>
+              <code className="widget__receipt-id">{receipt.receiptId.slice(0, 26)}…</code>
+              <button
+                type="button"
+                className="widget__copy"
+                onClick={() => void navigator.clipboard.writeText(receipt.receiptId)}
+              >
+                Copy
+              </button>
+            </div>
+          )}
+          <a className="widget__anchor" href="#receipt" onClick={(e) => e.preventDefault()}>
+            View anchor on Base Sepolia ↗
+          </a>
         </div>
       )
     case 'invalid':

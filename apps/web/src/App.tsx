@@ -6,6 +6,9 @@ import Modules from './components/Modules'
 import CTA from './components/CTA'
 import Footer from './components/Footer'
 import VerifyPage from './pages/VerifyPage'
+import IssuePage from './pages/IssuePage'
+import DocsPage from './pages/DocsPage'
+import StatusPage from './pages/StatusPage'
 
 function currentPath() {
   return window.location.pathname.replace(/\/+$/, '') || '/'
@@ -35,13 +38,23 @@ export default function App() {
   }, [])
 
   const isVerify = path === '/verify'
+  const isIssue = path === '/issue'
+  const isDocs = path === '/docs'
+  const isStatus = path === '/status'
+  const page = isVerify
+    ? <VerifyPage />
+    : isIssue
+      ? <IssuePage />
+      : isDocs
+        ? <DocsPage />
+        : isStatus
+          ? <StatusPage />
+          : null
 
   return (
     <>
       <Nav />
-      {isVerify ? (
-        <VerifyPage />
-      ) : (
+      {page ?? (
         <main>
           <Hero />
           <HowItWorks />

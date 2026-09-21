@@ -26,7 +26,7 @@ export default function Hero() {
             <a className="btn btn--primary" href="#verify">
               Verify a credential
             </a>
-            <a className="btn btn--secondary" href="#issue">
+            <a className="btn btn--secondary" href="/issue">
               Issue credentials
             </a>
           </div>
