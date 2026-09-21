@@ -12,10 +12,8 @@ export default function CTA() {
               A flat price for every verification, <span className="script-accent">and no subscriptions.</span>
             </h2>
             <p className="cta__lead">
-              You pay a few cents for each verification over the x402 protocol, with no
-              accounts to create and no invoices to reconcile at the end of the month.
-              Every single call returns its own settlement receipt, so your billing stays
-              transparent and matches your usage exactly.
+              Pay a few cents per verification via x402—no accounts or monthly invoices.
+              Each call includes a transparent settlement receipt.
             </p>
             <ul className="cta__points">
               <li>Verify without creating an account or signing a contract first.</li>
