@@ -1,3 +1,4 @@
+import { Link } from '../lib/router'
 import './Modules.css'
 
 const MODULES = [
@@ -50,6 +51,9 @@ export default function Modules() {
             </article>
           ))}
         </div>
+        <Link className="btn btn--primary modules__docs-link" to="/app/docs#modules">
+          See how each module verifies in the docs
+        </Link>
       </div>
     </section>
   )

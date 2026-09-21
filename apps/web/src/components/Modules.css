@@ -23,6 +23,10 @@
   gap: 1.5rem;
 }
 
+.modules__docs-link {
+  align-self: flex-start;
+}
+
 .module-card {
   position: relative;
   background: var(--color-paper);

@@ -96,6 +96,15 @@
   margin-top: 0.5rem;
 }
 
+.hero__docs-link {
+  align-self: center;
+  color: var(--color-navy);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 @media (max-width: 767px) {
   .hero__eyebrow {
     display: none;

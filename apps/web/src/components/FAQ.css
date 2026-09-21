@@ -1,0 +1,9 @@
+.faq { background: var(--color-paper); }
+.faq__inner { display: grid; gap: 2rem; }
+.faq__head { display: flex; flex-direction: column; gap: .75rem; }
+.faq__eyebrow { color: var(--accent-strong); }
+.faq__list { border-top: var(--border-w-thick) solid var(--border); }
+.faq__item { border-bottom: var(--border-w-thick) solid var(--border); padding: 1.1rem 0; }
+.faq__item summary { color: var(--color-navy); cursor: pointer; font-family: var(--font-display); font-size: 1rem; font-weight: 800; list-style-position: outside; padding-right: 1rem; }
+.faq__item p { color: var(--text-muted); line-height: 1.7; margin: .85rem 0 0; max-width: 62ch; }
+@media (min-width: 900px) { .faq__inner { grid-template-columns: .75fr 1.25fr; gap: 5rem; align-items: start; } }

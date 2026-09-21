@@ -1,268 +1,95 @@
+import { Link } from '../lib/router'
 import './DocsPage.css'
 
-const RECEIPT_SECTIONS = [
-  {
-    title: 'Recomputable identifiers',
-    body: [
-      'This is the heart of the entire design. When two people begin with the same credential and the same evidence, they will independently arrive at the identical receipt identifier every time. The three lines below show precisely how that identifier is derived, so nothing about the process is hidden.',
-    ],
-    lines: [
-      'credentialHash = keccak256(utf8(JCS(credential)))',
-      'evidenceHash   = keccak256(utf8(JCS(evidence)))',
-      'receiptId      = keccak256(concat(credentialHash, evidenceHash))',
-    ],
-  },
-  {
-    title: 'Canonicalization',
-    body: [
-      'Before anything is hashed, the inputs are canonicalized using RFC 8785, the JSON Canonicalization Scheme. This guarantees that the order of keys and other formatting choices carry no weight, which is why two different machines will always hash exactly the same bytes and reach the same result.',
-    ],
-  },
-  {
-    title: 'Verdict metadata',
-    body: [
-      'Details about the verdict are recorded alongside the receipt but deliberately kept outside the hashed inputs. As a result, factors such as whether payment was made, how long the call took, or who requested it can never influence the identifier itself.',
-    ],
-  },
-]
-
 const MODULES = [
-  'The quorum module confirms that a defined threshold of independent co-signers has approved the very same message.',
-  'The on-chain event module confirms that a specific transaction or log exists on Base, always evaluated against a pinned block rather than the latest chain tip.',
-  'The artifact hash module confirms that a fetched artifact matches the SHA-256 checksum recorded in the credential.',
+  { title: 'Quorum of signers', body: 'Use this when a claim needs agreement from more than one independent party. Obsign verifies the threshold, the approved message, and every signer before accepting the credential.' },
+  { title: 'Onchain event', body: 'Use this when a claim is tied to activity on Base. Obsign checks the requested transaction or log against a pinned block, so the result can be reproduced later.' },
+  { title: 'Artifact hash', body: 'Use this when the proof is a file, record, or published artifact. Obsign fetches the artifact and confirms that its checksum matches the one named by the credential.' },
 ]
-
-const REASON_CODES = ['OK', 'QUORUM_THRESHOLD_NOT_MET', 'EVENT_NOT_FOUND', 'REVOKED']
 
 const API_ENDPOINTS = [
-  { method: 'POST', path: '/api/v1/verify', note: 'x402-gated', body: '{ credential, evidence }' },
-  { method: 'GET', path: '/api/v1/receipts/:receiptId', note: '', body: 'None' },
-  { method: 'GET', path: '/api/v1/credentials/:id', note: '', body: 'None' },
-  { method: 'POST', path: '/api/v1/credentials', note: 'issuer-auth', body: 'credential draft + evidence' },
-  { method: 'POST', path: '/api/v1/credentials/:id/revoke', note: 'issuer-auth', body: 'None' },
-  { method: 'GET', path: '/api/v1/issuers/:address', note: '', body: 'None' },
-  { method: 'GET', path: '/api/v1/health', note: '', body: 'None' },
-  { method: 'POST', path: '/api/mcp', note: 'streamable HTTP', body: 'None' },
-]
-
-const MCP_TOOLS = [
-  { name: 'obsign_verify', desc: 'Verify credential + evidence → receipt', gate: 'x402-gated' },
-  { name: 'obsign_issue', desc: 'Issue credential draft + evidence', gate: 'issuer-auth' },
-  { name: 'obsign_get_receipt', desc: 'Fetch a receipt by receiptId', gate: '' },
-  { name: 'obsign_get_issuer', desc: 'Resolve issuer metadata by address', gate: '' },
+  { method: 'POST', path: '/api/v1/verify', access: 'x402-gated', body: '{ credential, evidence }' },
+  { method: 'GET', path: '/api/v1/receipts/:receiptId', access: 'Public', body: 'None' },
+  { method: 'GET', path: '/api/v1/credentials/:id', access: 'Public', body: 'None' },
+  { method: 'POST', path: '/api/v1/credentials', access: 'Issuer auth', body: 'credential draft + evidence' },
+  { method: 'POST', path: '/api/v1/credentials/:id/revoke', access: 'Issuer auth', body: 'None' },
+  { method: 'GET', path: '/api/v1/issuers/:address', access: 'Public', body: 'None' },
 ]
 
 const SDK_SNIPPET = `import { verify } from '@obsign/sdk'
 
-const receipt = await verify({
-  credential,
-  evidence,
-})
+const receipt = await verify({ credential, evidence })
 
-// Offline verification needs no network:
-const offline = verify.offline({ credential, evidence })`
-
-const INVARIANTS = [
-  { code: 'INV-1', text: 'The core is pure. No network, database, ambient clock, or randomness.' },
-  { code: 'INV-2', text: 'Receipts are recomputable, so an independent third party can reproduce the same receiptId.' },
-  { code: 'INV-3', text: 'Payment never affects validity. API, CLI, and third party all agree.' },
-  { code: 'INV-4', text: 'The database is a cache. MongoDB is never required to recompute a receipt.' },
-  { code: 'INV-5', text: 'The LLM is outside the validity path. Model output can explain, never decide.' },
-  { code: 'INV-6', text: 'Chain reads are pinned. Verify against a specific block, never latest.' },
-  { code: 'INV-7', text: 'No plaintext issuer keys in MongoDB. Keys live behind the KeyProvider interface.' },
-]
+// Verify locally with no network request.
+const offlineReceipt = verify.offline({ credential, evidence })`
 
 export default function DocsPage() {
   return (
     <main className="docs">
-      <section className="docs__body section">
+      <section className="docs__main section">
         <div className="container">
-          <div className="docs__head">
-            <p className="eyebrow">Documentation</p>
-            <h1 className="docs__title">
-              The Obsign <span className="script-accent">spec.</span>
-            </h1>
-            <p className="docs__lead">
-              The normative rules behind every receipt: how IDs are derived, how evidence
-              is verified, and the invariants that keep the system trustworthy.
-            </p>
+          <div className="docs__hero">
+          <p className="eyebrow docs__eyebrow">Obsign documentation</p>
+          <h1 className="docs__hero-title">Proof that can be <span className="script-accent">checked.</span></h1>
+          <p className="docs__hero-lead">Obsign turns a real-world claim into a verifiable receipt. It gives people, applications, and autonomous agents a shared way to check what happened without relying on Obsign to be the final authority.</p>
           </div>
         </div>
+
         <div className="container docs__grid">
           <details className="docs__nav" aria-label="On this page" open>
             <summary className="docs__nav-title">On this page</summary>
             <ul>
-              <li><a href="#receipt">The receipt</a></li>
-              <li><a href="#modules">Evidence modules</a></li>
-              <li><a href="#reason-codes">Reason codes</a></li>
-              <li><a href="#api">API</a></li>
-              <li><a href="#mcp">MCP tools</a></li>
-              <li><a href="#sdk">SDK</a></li>
-              <li><a href="#invariants">Invariants</a></li>
+              <li><a href="#what-is-obsign">What is Obsign?</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#receipt">The receipt</a></li><li><a href="#modules">Evidence modules</a></li><li><a href="#issuers">For issuers</a></li><li><a href="#api">API and integrations</a></li><li><a href="#trust">Trust model</a></li>
             </ul>
           </details>
 
           <div className="docs__content">
-            <section id="receipt" className="docs__section">
-              <h2 className="docs__section-title">The receipt</h2>
-              <p className="docs__section-lead">
-                A receipt is the canonical result object that every verification path
-                returns, whether the check ran through the API, the command line, or a
-                fully offline reproduction. The shape shown below is the same in all cases.
-              </p>
+            <section id="what-is-obsign" className="docs__section">
+              <p className="docs__kicker">Start here</p><h2 className="docs__section-title">What Obsign is</h2>
+              <p className="docs__section-lead">Obsign is a multi-issuer credential platform for claims that need to hold up outside the system that created them. An issuer can say that someone attended an event, that an artifact is genuine, or that a chain event occurred. Obsign packages that claim with evidence a machine can check.</p>
+              <p className="docs__body-copy">The output is a receipt. It is not a promise from our database. It is a deterministic result that can be recomputed from the published credential, evidence, and verification rules. That lets a holder share proof, an integrator make a decision, and an auditor inspect the result without asking Obsign for permission.</p>
+              <div className="docs__callout"><h3>What Obsign does not do</h3><p>It does not decide whether a claim is socially true. It verifies whether the evidence attached to that claim satisfies a clear, published rule.</p></div>
+            </section>
 
-              <div className="docs__code-block">
-                <pre>{`{
-  "v": 1,
-  "receiptId": "0x...",
-  "credentialHash": "0x...",
-  "evidenceHash": "0x...",
-  "result": "valid",
-  "reasonCode": "OK",
-  "issuer": "0x...",
-  "subject": "0x...",
-  "verifiedAt": "2026-09-13T00:00:00.000Z",
-  "verifier": "obsign-core/1.0.0",
-  "anchor": { "chainId": 84532, "txHash": "0x...", "blockNumber": 12345678 },
-  "paid": false
-}`}</pre>
+            <section id="how-it-works" className="docs__section">
+              <p className="docs__kicker">The workflow</p><h2 className="docs__section-title">From claim to checkable proof</h2>
+              <div className="docs__steps">
+                <article className="docs__step"><span>01</span><div><h3>Issue</h3><p>An issuer creates a credential and attaches one form of machine-checkable evidence.</p></div></article>
+                <article className="docs__step"><span>02</span><div><h3>Anchor</h3><p>The resulting receipt can be committed to Base, creating a public timestamp for the issued proof.</p></div></article>
+                <article className="docs__step"><span>03</span><div><h3>Verify</h3><p>Anyone can verify through the app, API, SDK, MCP, or an independent offline implementation.</p></div></article>
               </div>
+            </section>
 
-              {RECEIPT_SECTIONS.map((s) => (
-                <div key={s.title} className="docs__sub">
-                  <h3 className="docs__sub-title">{s.title}</h3>
-                  {s.body.map((b) => (
-                    <p key={b} className="docs__sub-body">
-                      {b}
-                    </p>
-                  ))}
-                  {s.lines && (
-                    <pre className="docs__inline-code">{s.lines.join('\n')}</pre>
-                  )}
-                </div>
-              ))}
+            <section id="receipt" className="docs__section">
+              <p className="docs__kicker">The shared result</p><h2 className="docs__section-title">A receipt anyone can recompute</h2>
+              <p className="docs__section-lead">The receipt records the outcome of verification and the hashes needed to identify its inputs. The same credential and evidence always produce the same identifier, regardless of where verification runs.</p>
+              <pre className="docs__code-block">{`credentialHash = keccak256(utf8(JCS(credential)))
+evidenceHash   = keccak256(utf8(JCS(evidence)))
+receiptId      = keccak256(concat(credentialHash, evidenceHash))`}</pre>
+              <p className="docs__body-copy">JCS is the JSON Canonicalization Scheme defined by RFC 8785. It removes irrelevant formatting differences, such as object key order, before hashing. A verdict and reason code explain whether the evidence passed. Payment, request timing, and the requesting party cannot change the receipt identifier.</p>
             </section>
 
             <section id="modules" className="docs__section">
-              <h2 className="docs__section-title">Evidence modules</h2>
-              <p className="docs__section-lead">
-                Every credential has to back its claim with exactly one machine-checkable
-                module. Restricting each credential to a single module keeps verification
-                unambiguous, since there is never more than one rule deciding the outcome.
-              </p>
-              <ul className="docs__list">
-                {MODULES.map((m) => (
-                  <li key={m} className="docs__list-item">
-                    {m}
-                  </li>
-                ))}
-              </ul>
+              <p className="docs__kicker">Evidence</p><h2 className="docs__section-title">Three ways to support a claim</h2><p className="docs__section-lead">Each credential uses one explicit verification module. That keeps the rule for passing or failing unambiguous.</p>
+              <div className="docs__cards">{MODULES.map((module) => <article key={module.title} className="docs__card"><h3>{module.title}</h3><p>{module.body}</p></article>)}</div>
             </section>
 
-            <section id="reason-codes" className="docs__section">
-              <h2 className="docs__section-title">Reason codes</h2>
-              <p className="docs__section-lead">
-                A simple true or false answer is never enough to act on with confidence.
-                For that reason, every verification returns a fixed, machine-readable
-                reason code that explains exactly why a credential passed or failed.
-              </p>
-              <div className="docs__codes">
-                {REASON_CODES.map((c) => (
-                  <code key={c} className="docs__code-tag">
-                    {c}
-                  </code>
-                ))}
-              </div>
+            <section id="issuers" className="docs__section">
+              <p className="docs__kicker">For issuers</p><h2 className="docs__section-title">Issue credentials with a verifiable trail</h2><p className="docs__section-lead">Obsign supports multiple issuers from day one. Issuers are registered onchain, credentials can be revoked when needed, and verification is charged per use instead of through a subscription.</p><Link className="docs__action" to="/app/issue">Open the issuer workspace</Link>
             </section>
 
             <section id="api" className="docs__section">
-              <h2 className="docs__section-title">API</h2>
-              <p className="docs__section-lead">
-                The REST surface is versioned and designed to be read by machines as easily
-                as by people. When a verification request arrives without payment, the API
-                responds with an x402 challenge so the caller can settle and continue.
-              </p>
-              <div className="docs__table-wrap">
-                <table className="docs__table">
-                  <thead>
-                    <tr>
-                      <th>Method</th>
-                      <th>Path</th>
-                      <th>Auth</th>
-                      <th>Body</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {API_ENDPOINTS.map((e) => (
-                      <tr key={e.method + e.path}>
-                        <td><code className="docs__method">{e.method}</code></td>
-                        <td><code className="docs__path">{e.path}</code></td>
-                        <td className="docs__muted">{e.note || 'None'}</td>
-                        <td><code className="docs__path">{e.body}</code></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <p className="docs__kicker">Build with Obsign</p><h2 className="docs__section-title">API, MCP, and SDK</h2><p className="docs__section-lead">Use the API for application workflows, MCP for agent workflows, or the SDK for typed and offline verification. Verification requests use x402 when payment is required, so software can pay per call without account setup.</p>
+              <div className="docs__table-wrap"><table className="docs__table"><thead><tr><th>Method</th><th>Path</th><th>Access</th><th>Body</th></tr></thead><tbody>{API_ENDPOINTS.map((endpoint) => <tr key={endpoint.method + endpoint.path}><td><code>{endpoint.method}</code></td><td><code>{endpoint.path}</code></td><td>{endpoint.access}</td><td><code>{endpoint.body}</code></td></tr>)}</tbody></table></div>
+              <h3 className="docs__sub-title">SDK example</h3><pre className="docs__code-block">{SDK_SNIPPET}</pre>
             </section>
 
-            <section id="mcp" className="docs__section">
-              <h2 className="docs__section-title">MCP tools</h2>
-              <p className="docs__section-lead">
-                These tools are exposed over streamable HTTP at{' '}
-                <code className="docs__inline-code-tag">/api/mcp</code>, which lets AI agents
-                and other automated clients issue and verify credentials directly as part
-                of their own workflows.
-              </p>
-              <div className="docs__table-wrap">
-                <table className="docs__table">
-                  <thead>
-                    <tr>
-                      <th>Tool</th>
-                      <th>Description</th>
-                      <th>Auth</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {MCP_TOOLS.map((t) => (
-                      <tr key={t.name}>
-                        <td><code className="docs__path">{t.name}</code></td>
-                        <td>{t.desc}</td>
-                        <td className="docs__muted">{t.gate || 'None'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <section id="trust" className="docs__section">
+              <p className="docs__kicker">Trust model</p><h2 className="docs__section-title">What you need to trust</h2>
+              <ul className="docs__trust-list"><li><strong>The evidence rule.</strong> Every credential names the rule used to verify it.</li><li><strong>The inputs.</strong> Recompute the receipt from the credential and evidence you were given.</li><li><strong>The public chain state.</strong> Anchors and onchain evidence are evaluated against a pinned Base block.</li></ul>
+              <p className="docs__body-copy">You do not need to trust an Obsign database, a private API response, or an AI model to reproduce the receipt.</p>
             </section>
 
-            <section id="sdk" className="docs__section">
-              <h2 className="docs__section-title">SDK</h2>
-              <p className="docs__section-lead">
-                The <code className="docs__inline-code-tag">@obsign/sdk</code> package gives
-                you fully typed helpers for the API along with a verification path that runs
-                entirely offline, so you can confirm a receipt without making a single
-                network request when you need to.
-              </p>
-              <pre className="docs__code-block">{SDK_SNIPPET}</pre>
-            </section>
-
-            <section id="invariants" className="docs__section">
-              <h2 className="docs__section-title">Invariants</h2>
-              <p className="docs__section-lead">
-                The following invariants take precedence over any other instruction in the
-                system. If a proposed change would break even one of them, the right move
-                is to stop and raise the conflict for review before going any further.
-              </p>
-              <ul className="docs__invariants">
-                {INVARIANTS.map((i) => (
-                  <li key={i.code} className="docs__invariant">
-                    <code className="docs__invariant-code">{i.code}</code>
-                    <span className="docs__invariant-text">{i.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
           </div>
         </div>
       </section>

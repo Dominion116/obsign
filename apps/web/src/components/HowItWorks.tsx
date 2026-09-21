@@ -1,3 +1,4 @@
+import { Link } from '../lib/router'
 import './HowItWorks.css'
 
 const STEPS = [
@@ -54,6 +55,9 @@ export default function HowItWorks() {
           <span className="how__diagram-arrow">→</span>
           <span className="how__diagram-box how__diagram-box--chain">Base anchor</span>
         </div>
+        <Link className="btn btn--primary how__docs-link" to="/app/docs#how-it-works">
+          Read the full verification guide
+        </Link>
       </div>
     </section>
   )

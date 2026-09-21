@@ -33,6 +33,9 @@ export default function Hero() {
             <Link className="btn btn--secondary" to="/app/issue">
               Issue credentials
             </Link>
+            {/* <Link className="hero__docs-link" to="/app/docs">
+              Read the docs
+            </Link> */}
           </div>
           <ul className="hero__trust" aria-label="Highlights">
             {TRUST.map((t) => (

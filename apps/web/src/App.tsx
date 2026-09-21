@@ -5,6 +5,7 @@ import Hero from './components/Hero'
 import HowItWorks from './components/HowItWorks'
 import Modules from './components/Modules'
 import CTA from './components/CTA'
+import FAQ from './components/FAQ'
 import Footer from './components/Footer'
 import VerifyPage from './pages/VerifyPage'
 import IssuePage from './pages/IssuePage'
@@ -76,6 +77,7 @@ export default function App() {
           <HowItWorks />
           <Modules />
           <CTA />
+          <FAQ />
         </main>
         <Footer />
       </>

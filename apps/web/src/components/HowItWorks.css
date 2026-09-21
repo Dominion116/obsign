@@ -126,6 +126,10 @@
   flex-shrink: 0;
 }
 
+.how__docs-link {
+  align-self: flex-start;
+}
+
 /* Desktop overrides */
 @media (min-width: 768px) {
   .how__steps {

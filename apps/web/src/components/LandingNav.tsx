@@ -5,6 +5,7 @@ const LINKS: NavItem[] = [
   { label: 'How it works', href: '/#how-it-works' },
   { label: 'Modules', href: '/#modules' },
   { label: 'Pricing', href: '/#pricing' },
+  { label: 'Docs', href: '/app/docs' },
 ]
 
 export default function LandingNav() {
