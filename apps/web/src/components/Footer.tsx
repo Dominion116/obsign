@@ -4,7 +4,7 @@ const COLUMNS = [
   {
     title: 'Product',
     links: [
-      { label: 'Verify', href: '#verify' },
+      { label: 'Verify', href: '/verify' },
       { label: 'Issue', href: '/issue' },
       { label: 'Docs', href: '/docs' },
       { label: 'Status', href: '/status' },

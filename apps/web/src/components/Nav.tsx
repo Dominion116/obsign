@@ -3,7 +3,7 @@ import './Nav.css'
 
 const LINKS = [
   { label: 'How it works', href: '#how-it-works' },
-  { label: 'Verify', href: '#verify' },
+  { label: 'Verify', href: '/verify' },
   { label: 'Modules', href: '#modules' },
   { label: 'Developers', href: '#developers' },
 ]
@@ -45,7 +45,7 @@ export default function Nav() {
 
         <div className="nav__actions">
           {/* This CTA is now hidden on mobile via CSS to prevent squeezing */}
-          <a className="btn btn--primary nav__cta" href="#verify">
+          <a className="btn btn--primary nav__cta" href="/verify">
             Verify a credential
           </a>
           
@@ -78,7 +78,7 @@ export default function Nav() {
           ))}
           <a
             className="btn btn--primary nav__sheet-cta"
-            href="#verify"
+            href="/verify"
             onClick={() => setOpen(false)}
           >
             Verify a credential
