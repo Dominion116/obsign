@@ -84,16 +84,7 @@
 
 .cta__btn {
   margin-top: 0.5rem;
-  /* Overrides to make the button theme white */
-  background-color: var(--color-paper, #ffffff);
-  color: var(--color-navy, #0f172a);
-  border-color: var(--color-paper, #ffffff);
-}
-
-/* Optional hover state adjustment for the newly white button */
-.cta__btn:hover {
-  background-color: var(--color-mist, #f3f4f6);
-  border-color: var(--color-mist, #f3f4f6);
+  /* Styling comes from .btn--primary (global.css) */
 }
 
 .cta__price {

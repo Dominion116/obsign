@@ -16,6 +16,19 @@
   gap: 0.8rem;
 }
 
+.footer__icon {
+  display: block;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  /* Card/button drop shadow, accent variant so it reads on the navy footer */
+  box-shadow: var(--shadow-card-navy);
+  /* Keep the offset shadow from being clipped by neighboring content */
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
 .footer__word {
   font-family: var(--font-display);
   font-weight: 800;

@@ -22,7 +22,7 @@ export default function CTA() {
               <li>Settle payments automatically through native, machine-friendly x402 requests.</li>
               <li>Try everything at no cost while the testnet pilot is running.</li>
             </ul>
-            <Link className="btn btn--on-navy cta__btn" to="/app/verify">
+            <Link className="btn btn--primary cta__btn" to="/app/verify">
               Verify your first credential
             </Link>
           </div>

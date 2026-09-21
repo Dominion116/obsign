@@ -67,8 +67,13 @@ export default function Nav({ brandTo, links, cta }: NavProps) {
     <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
       <div className="nav__bar container">
         <Link className="nav__brand" to={brandTo} aria-label="Obsign home">
-          <span className="nav__brand-mark" aria-hidden="true">o</span>
-          <span className="nav__brand-name">Obsign</span>
+          <img
+            className="nav__brand-icon"
+            src="/favicon.svg"
+            alt="Obsign"
+            width={36}
+            height={36}
+          />
         </Link>
 
         <nav className="nav__links" aria-label="Primary">

@@ -37,22 +37,16 @@
   flex-shrink: 0; /* Prevents logo from squishing on small screens */
 }
 
-.nav__brand-mark {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
+.nav__brand-icon {
+  display: block;
+  width: 36px;
+  height: 36px;
   border-radius: 9px;
-  background: var(--color-navy);
-  color: var(--accent);
-  font-family: var(--font-script);
-  font-size: 1.4rem;
-  line-height: 1;
-  box-shadow: 2px 2px 0 0 var(--accent);
-}
-
-.nav__brand-name {
-  color: var(--text-strong);
+  /* Match the site's card/button hard-offset drop shadow */
+  box-shadow: var(--shadow-card);
+  /* Keep the offset shadow inside the nav bar so it isn't clipped */
+  margin-right: 6px;
+  margin-bottom: 6px;
 }
 
 .nav__links {

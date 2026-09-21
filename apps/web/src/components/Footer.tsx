@@ -37,6 +37,14 @@ export default function Footer() {
       <div className="container">
         <div className="footer__top">
           <div className="footer__brand">
+            <img
+              className="footer__icon"
+              src="/favicon.svg"
+              alt=""
+              aria-hidden="true"
+              width={40}
+              height={40}
+            />
             <div>
               <p className="footer__word">Obsign</p>
               <p className="footer__tag">
@@ -72,10 +80,10 @@ export default function Footer() {
         </div>
 
         <div className="footer__bottom">
-          <p className="footer__copy">© {new Date().getFullYear()} Obsign. Open spec, open receipts.</p>
-          <p className="footer__proof">
+          <p className="footer__copy">© {new Date().getFullYear()} Obsign.</p>
+          {/* <p className="footer__proof">
             Proof, not promises · <span className="script-accent footer__script">build on Base</span>
-          </p>
+          </p> */}
         </div>
       </div>
     </footer>
