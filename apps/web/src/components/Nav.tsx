@@ -4,7 +4,7 @@ import './Nav.css'
 const LINKS = [
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Verify', href: '/verify' },
-  { label: 'Modules', href: '#modules' },
+  { label: 'Issuers', href: '/credentials' },
   { label: 'Docs', href: '/docs' },
 ]
 

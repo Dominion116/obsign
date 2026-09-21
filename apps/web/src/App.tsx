@@ -9,6 +9,8 @@ import VerifyPage from './pages/VerifyPage'
 import IssuePage from './pages/IssuePage'
 import DocsPage from './pages/DocsPage'
 import StatusPage from './pages/StatusPage'
+import CredentialsPage from './pages/CredentialsPage'
+import ReceiptPage from './pages/ReceiptPage'
 
 function currentPath() {
   return window.location.pathname.replace(/\/+$/, '') || '/'
@@ -27,7 +29,13 @@ export default function App() {
       e.preventDefault()
       history.pushState({}, '', href)
       setPath(currentPath())
-      window.scrollTo(0, 0)
+      const hashIndex = href.indexOf('#')
+      if (hashIndex !== -1) {
+        const el = document.getElementById(href.slice(hashIndex + 1))
+        if (el) el.scrollIntoView()
+      } else {
+        window.scrollTo(0, 0)
+      }
     }
     window.addEventListener('popstate', onPop)
     window.addEventListener('click', onClick)
@@ -41,6 +49,10 @@ export default function App() {
   const isIssue = path === '/issue'
   const isDocs = path === '/docs'
   const isStatus = path === '/status'
+  const isCredentials = path === '/credentials'
+
+  const receiptMatch = path.match(/^\/receipt\/(.+)$/)
+
   const page = isVerify
     ? <VerifyPage />
     : isIssue
@@ -49,7 +61,11 @@ export default function App() {
         ? <DocsPage />
         : isStatus
           ? <StatusPage />
-          : null
+          : isCredentials
+            ? <CredentialsPage />
+            : receiptMatch
+              ? <ReceiptPage receiptId={decodeURIComponent(receiptMatch[1])} />
+              : null
 
   return (
     <>

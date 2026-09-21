@@ -6,6 +6,7 @@ const COLUMNS = [
     links: [
       { label: 'Verify', href: '/verify' },
       { label: 'Issue', href: '/issue' },
+      { label: 'Credentials', href: '/credentials' },
       { label: 'Docs', href: '/docs' },
       { label: 'Status', href: '/status' },
     ],
@@ -15,8 +16,8 @@ const COLUMNS = [
     links: [
       { label: 'GitHub', href: '#' },
       { label: 'npm', href: '#' },
-      { label: 'MCP', href: '#' },
-      { label: 'Contract', href: '#' },
+      { label: 'MCP', href: '/docs#mcp' },
+      { label: 'Contract', href: '/docs' },
     ],
   },
   {

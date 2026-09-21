@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SAMPLE, recomputeDemo, type DemoReceipt } from '../lib/sample'
 import './VerifyWidget.css'
 
@@ -9,6 +9,16 @@ export default function VerifyWidget() {
   const [value, setValue] = useState('')
   const [receipt, setReceipt] = useState<DemoReceipt | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const id = params.get('receiptId')
+    if (id) {
+      setValue(id)
+      void runVerify(id)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const runVerify = async (input: string) => {
     setStatus('validating')

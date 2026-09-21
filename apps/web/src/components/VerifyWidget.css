@@ -113,6 +113,72 @@
   color: var(--text-muted);
 }
 
+.widget__receipt-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  width: 100%;
+}
+
+.widget__receipt-label {
+  flex: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.widget__receipt-id {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.8rem;
+  color: var(--text-strong);
+  background: var(--color-mist);
+  border-radius: 6px;
+  padding: 0.1rem 0.4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.widget__copy {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+  background: var(--accent-wash);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-chip);
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.widget__copy:hover,
+.widget__copy:focus-visible {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.widget__anchor {
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--dur) var(--ease);
+}
+
+.widget__anchor:hover,
+.widget__anchor:focus-visible {
+  color: var(--color-navy);
+}
+
 .widget__code {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   font-size: 0.85rem;

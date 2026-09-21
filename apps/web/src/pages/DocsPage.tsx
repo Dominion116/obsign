@@ -34,6 +34,34 @@ const MODULES = [
 
 const REASON_CODES = ['OK', 'QUORUM_THRESHOLD_NOT_MET', 'EVENT_NOT_FOUND', 'REVOKED']
 
+const API_ENDPOINTS = [
+  { method: 'POST', path: '/api/v1/verify', note: 'x402-gated', body: '{ credential, evidence }' },
+  { method: 'GET', path: '/api/v1/receipts/:receiptId', note: '', body: '—' },
+  { method: 'GET', path: '/api/v1/credentials/:id', note: '', body: '—' },
+  { method: 'POST', path: '/api/v1/credentials', note: 'issuer-auth', body: 'credential draft + evidence' },
+  { method: 'POST', path: '/api/v1/credentials/:id/revoke', note: 'issuer-auth', body: '—' },
+  { method: 'GET', path: '/api/v1/issuers/:address', note: '', body: '—' },
+  { method: 'GET', path: '/api/v1/health', note: '', body: '—' },
+  { method: 'POST', path: '/api/mcp', note: 'streamable HTTP', body: '—' },
+]
+
+const MCP_TOOLS = [
+  { name: 'obsign_verify', desc: 'Verify credential + evidence → receipt', gate: 'x402-gated' },
+  { name: 'obsign_issue', desc: 'Issue credential draft + evidence', gate: 'issuer-auth' },
+  { name: 'obsign_get_receipt', desc: 'Fetch a receipt by receiptId', gate: '' },
+  { name: 'obsign_get_issuer', desc: 'Resolve issuer metadata by address', gate: '' },
+]
+
+const SDK_SNIPPET = `import { verify } from '@obsign/sdk'
+
+const receipt = await verify({
+  credential,
+  evidence,
+})
+
+// Offline verification needs no network:
+const offline = verify.offline({ credential, evidence })`
+
 const INVARIANTS = [
   { code: 'INV-1', text: 'The core is pure. No network, database, ambient clock, or randomness.' },
   { code: 'INV-2', text: 'Receipts are recomputable — a third party reproduces the same receiptId.' },
@@ -71,6 +99,9 @@ export default function DocsPage() {
               <li><a href="#receipt">The receipt</a></li>
               <li><a href="#modules">Evidence modules</a></li>
               <li><a href="#reason-codes">Reason codes</a></li>
+              <li><a href="#api">API</a></li>
+              <li><a href="#mcp">MCP tools</a></li>
+              <li><a href="#sdk">SDK</a></li>
               <li><a href="#invariants">Invariants</a></li>
             </ul>
           </aside>
@@ -141,6 +172,72 @@ export default function DocsPage() {
                   </code>
                 ))}
               </div>
+            </section>
+
+            <section id="api" className="docs__section">
+              <h2 className="docs__section-title">API</h2>
+              <p className="docs__section-lead">
+                REST surface, versioned and machine-readable. Unpaid verification returns
+                an x402 challenge.
+              </p>
+              <div className="docs__table-wrap">
+                <table className="docs__table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>Path</th>
+                      <th>Auth</th>
+                      <th>Body</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {API_ENDPOINTS.map((e) => (
+                      <tr key={e.method + e.path}>
+                        <td><code className="docs__method">{e.method}</code></td>
+                        <td><code className="docs__path">{e.path}</code></td>
+                        <td className="docs__muted">{e.note || '—'}</td>
+                        <td><code className="docs__path">{e.body}</code></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="mcp" className="docs__section">
+              <h2 className="docs__section-title">MCP tools</h2>
+              <p className="docs__section-lead">
+                Exposed over streamable HTTP at <code className="docs__inline-code-tag">/api/mcp</code>.
+              </p>
+              <div className="docs__table-wrap">
+                <table className="docs__table">
+                  <thead>
+                    <tr>
+                      <th>Tool</th>
+                      <th>Description</th>
+                      <th>Auth</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {MCP_TOOLS.map((t) => (
+                      <tr key={t.name}>
+                        <td><code className="docs__path">{t.name}</code></td>
+                        <td>{t.desc}</td>
+                        <td className="docs__muted">{t.gate || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="sdk" className="docs__section">
+              <h2 className="docs__section-title">SDK</h2>
+              <p className="docs__section-lead">
+                <code className="docs__inline-code-tag">@obsign/sdk</code> exposes typed API
+                helpers and fully offline verification.
+              </p>
+              <pre className="docs__code-block">{SDK_SNIPPET}</pre>
             </section>
 
             <section id="invariants" className="docs__section">
