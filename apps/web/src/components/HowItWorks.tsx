@@ -41,6 +41,10 @@ export default function HowItWorks() {
           ))}
         </ol>
 
+        {/* 
+          This diagram will now safely scroll horizontally on small screens 
+          instead of breaking apart, and stay centered on desktop.
+        */}
         <div className="how__diagram" aria-hidden="true">
           <span className="how__diagram-box how__diagram-box--input">credential</span>
           <span className="how__diagram-plus">+</span>

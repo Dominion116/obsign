@@ -1,5 +1,6 @@
 .how {
   background: var(--color-navy);
+  padding-block: 4rem; /* Added standard padding for breathing room */
 }
 
 .how .container {
@@ -15,7 +16,7 @@
 }
 
 .how .section-title {
-  color: var(--text-on-navy);
+  color: var(--text-on-navy, #ffffff);
 }
 
 .how .script-accent {
@@ -32,13 +33,13 @@
 
 .how__step {
   background: rgba(255, 255, 255, 0.05);
-  border: var(--border-w) solid var(--border-on-navy);
-  border-radius: var(--radius-card-alt);
+  border: var(--border-w, 1px) solid rgba(255, 255, 255, 0.1); /* Uniform translucent border */
+  border-radius: var(--radius-card-alt, 16px);
   padding: 1.75rem;
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
+  transition: transform var(--dur, 0.3s) var(--ease, ease), background var(--dur, 0.3s) var(--ease, ease);
 }
 
 .how__step:hover {
@@ -56,59 +57,83 @@
 
 .how__title {
   font-size: 1.35rem;
-  color: var(--text-on-navy);
+  color: var(--text-on-navy, #ffffff);
 }
 
 .how__body {
   font-size: 0.98rem;
-  color: var(--text-muted-on-navy);
+  color: var(--text-muted-on-navy, rgba(255, 255, 255, 0.7));
 }
+
+/* --- Diagram Redesign --- */
 
 .how__diagram {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Aligns left on mobile for scrolling */
   gap: 0.6rem;
   padding: 1.5rem;
-  border: var(--border-w) dashed var(--border-on-navy);
-  border-radius: var(--radius-card);
+  
+  /* Matches the border style of the step cards above for uniformity */
+  border: var(--border-w, 1px) solid rgba(255, 255, 255, 0.1); 
+  border-radius: var(--radius-card, 12px);
+  background: rgba(0, 0, 0, 0.15); /* Slight inset feel */
+  
+  /* Fixes view distortion: Prevents awkward wrapping by making it horizontally scrollable on mobile */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.how__diagram::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .how__diagram-box {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   font-size: 0.85rem;
-  padding: 0.55rem 0.95rem;
-  border-radius: 10px;
-  border: 2px solid var(--border);
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  white-space: nowrap; /* Prevents text from wrapping inside the boxes */
+  border: 1px solid transparent;
 }
 
 .how__diagram-box--input {
-  background: var(--color-mist);
-  color: var(--text-strong);
+  /* Redesigned to match the dark surface safely */
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-on-navy, #ffffff);
 }
 
 .how__diagram-box--hash {
   background: var(--accent);
-  color: var(--ink);
+  color: #000; /* Hardcoded dark to contrast with the bright accent color */
   font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .how__diagram-box--chain {
-  background: var(--color-paper);
-  color: var(--color-navy);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--color-navy, #0f172a); /* Hardcoded to dark for high contrast */
   font-weight: 700;
 }
 
 .how__diagram-plus,
 .how__diagram-arrow {
   font-weight: 800;
-  color: var(--accent);
+  color: var(--text-muted-on-navy, rgba(255, 255, 255, 0.5)); /* Softened arrows so they don't overpower the boxes */
   font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
+/* Desktop overrides */
 @media (min-width: 768px) {
   .how__steps {
     grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .how__diagram {
+    justify-content: center; /* Center the diagram when there's enough space */
+    overflow-x: visible; /* Disable scroll on desktop */
   }
 }
