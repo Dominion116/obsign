@@ -24,10 +24,10 @@ export default function Hero() {
             required.
           </p>
           <div className="hero__ctas">
-            <Link className="btn btn--primary" to="/#verify">
+            <Link className="btn btn--primary" to="/app/verify">
               Verify a credential
             </Link>
-            <Link className="btn btn--secondary" to="/issue">
+            <Link className="btn btn--secondary" to="/app/issue">
               Issue credentials
             </Link>
           </div>

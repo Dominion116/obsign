@@ -97,15 +97,19 @@
   margin: 0;
 }
 
-.issue__evidence {
-  background: var(--color-mist);
+.issue__main {
+  background: var(--color-paper);
 }
 
-.issue__evidence-head {
+.issue__head {
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
+.issue__actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 2.5rem;
 }
 
 .issue__checklist {

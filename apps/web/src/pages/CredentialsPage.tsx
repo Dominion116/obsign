@@ -46,11 +46,8 @@ export default function CredentialsPage() {
 
   return (
     <main className="creds">
-      <section className="creds__hero">
+      <section className="creds__body section">
         <div className="container">
-          <Link className="creds__back" to="/">
-            ← Back to home
-          </Link>
           <div className="creds__hero-row">
             <div>
               <p className="eyebrow">Issuer dashboard</p>
@@ -62,15 +59,11 @@ export default function CredentialsPage() {
                 publish new ones.
               </p>
             </div>
-            <Link className="btn btn--primary creds__new" to="/issue">
+            <Link className="btn btn--primary creds__new" to="/app/issue">
               + New credential
             </Link>
           </div>
-        </div>
-      </section>
 
-      <section className="creds__body section">
-        <div className="container">
           <div className="creds__stats">
             <div className="creds__stat">
               <span className="creds__stat-num">
@@ -142,7 +135,7 @@ export default function CredentialsPage() {
                         </td>
                         <td>
                           <div className="creds__actions">
-                            <Link className="creds__link" to={`/receipt/${c.id}`}>
+                            <Link className="creds__link" to={`/app/receipt/${c.id}`}>
                               View
                             </Link>
                             {c.status !== 'revoked' && (

@@ -1,4 +1,3 @@
-import { Link } from '../lib/router'
 import './DocsPage.css'
 
 const RECEIPT_SECTIONS = [
@@ -76,23 +75,19 @@ const INVARIANTS = [
 export default function DocsPage() {
   return (
     <main className="docs">
-      <section className="docs__hero">
-        <div className="container">
-          <Link className="docs__back" to="/">
-            ← Back to home
-          </Link>
-          <p className="eyebrow">Documentation</p>
-          <h1 className="docs__title">
-            The Obsign <span className="script-accent">spec.</span>
-          </h1>
-          <p className="docs__lead">
-            The normative rules behind every receipt: how IDs are derived, how evidence
-            is verified, and the invariants that keep the system trustworthy.
-          </p>
-        </div>
-      </section>
-
       <section className="docs__body section">
+        <div className="container">
+          <div className="docs__head">
+            <p className="eyebrow">Documentation</p>
+            <h1 className="docs__title">
+              The Obsign <span className="script-accent">spec.</span>
+            </h1>
+            <p className="docs__lead">
+              The normative rules behind every receipt: how IDs are derived, how evidence
+              is verified, and the invariants that keep the system trustworthy.
+            </p>
+          </div>
+        </div>
         <div className="container docs__grid">
           <aside className="docs__nav" aria-label="On this page">
             <h2 className="docs__nav-title">On this page</h2>

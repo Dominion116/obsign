@@ -36,6 +36,10 @@
   background: var(--color-paper);
 }
 
+.verify__head {
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
 .verify__grid {
   display: grid;
   gap: 2.5rem;

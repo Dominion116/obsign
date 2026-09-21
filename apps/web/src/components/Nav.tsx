@@ -2,22 +2,30 @@ import { useEffect, useState } from 'react'
 import { Link, useIsActive } from '../lib/router'
 import './Nav.css'
 
-interface NavItem {
+export interface NavItem {
   label: string
   href: string
 }
 
-// Section links resolve to the landing page first (`/#…`) so they work from
-// any route, not just the homepage.
-const LINKS: NavItem[] = [
-  { label: 'How it works', href: '/#how-it-works' },
-  { label: 'Verify', href: '/verify' },
-  { label: 'Issuers', href: '/credentials' },
-  { label: 'Docs', href: '/docs' },
-]
+export interface NavProps {
+  /** Destination for the brand/logo (landing page for app, top for landing). */
+  brandTo: string
+  /** Primary navigation items. */
+  links: NavItem[]
+  /** Optional primary call-to-action shown on the right. */
+  cta?: { label: string; to: string }
+}
 
-function NavLink({ item, className, onNavigate }: { item: NavItem; className?: string; onNavigate?: () => void }) {
-  // Only page links (no hash target) get an active state.
+function NavLink({
+  item,
+  className,
+  onNavigate,
+}: {
+  item: NavItem
+  className?: string
+  onNavigate?: () => void
+}) {
+  // Only page links (no hash target) receive an active state.
   const isPage = !item.href.includes('#')
   const active = useIsActive(item.href) && isPage
   return (
@@ -32,7 +40,11 @@ function NavLink({ item, className, onNavigate }: { item: NavItem; className?: s
   )
 }
 
-export default function Nav() {
+/**
+ * Shared, prop-driven navigation shell. Landing and app surfaces compose it
+ * with their own link sets (see LandingNav / AppNav).
+ */
+export default function Nav({ brandTo, links, cta }: NavProps) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -54,23 +66,24 @@ export default function Nav() {
   return (
     <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
       <div className="nav__bar container">
-        <Link className="nav__brand" to="/#top" aria-label="Obsign home">
+        <Link className="nav__brand" to={brandTo} aria-label="Obsign home">
           <span className="nav__brand-mark" aria-hidden="true">o</span>
           <span className="nav__brand-name">Obsign</span>
         </Link>
 
         <nav className="nav__links" aria-label="Primary">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <NavLink key={l.href} item={l} className="nav__link" />
           ))}
         </nav>
 
         <div className="nav__actions">
-          {/* This CTA is now hidden on mobile via CSS to prevent squeezing */}
-          <Link className="btn btn--primary nav__cta" to="/verify">
-            Verify a credential
-          </Link>
-          
+          {cta && (
+            <Link className="btn btn--primary nav__cta" to={cta.to}>
+              {cta.label}
+            </Link>
+          )}
+
           <button
             className="nav__toggle"
             aria-expanded={open}
@@ -93,16 +106,18 @@ export default function Nav() {
         aria-hidden={!open}
       >
         <nav className="nav__sheet-links" aria-label="Mobile">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <NavLink key={l.href} item={l} onNavigate={() => setOpen(false)} />
           ))}
-          <Link
-            className="btn btn--primary nav__sheet-cta"
-            to="/verify"
-            onClick={() => setOpen(false)}
-          >
-            Verify a credential
-          </Link>
+          {cta && (
+            <Link
+              className="btn btn--primary nav__sheet-cta"
+              to={cta.to}
+              onClick={() => setOpen(false)}
+            >
+              {cta.label}
+            </Link>
+          )}
         </nav>
       </div>
     </header>

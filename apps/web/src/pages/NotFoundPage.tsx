@@ -17,7 +17,7 @@ export default function NotFoundPage() {
           <Link className="btn btn--primary" to="/">
             Back to home
           </Link>
-          <Link className="btn btn--secondary" to="/verify">
+          <Link className="btn btn--secondary" to="/app/verify">
             Go to Verify
           </Link>
         </div>

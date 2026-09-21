@@ -5,11 +5,11 @@ const COLUMNS = [
   {
     title: 'Product',
     links: [
-      { label: 'Verify', href: '/verify' },
-      { label: 'Issue', href: '/issue' },
-      { label: 'Credentials', href: '/credentials' },
-      { label: 'Docs', href: '/docs' },
-      { label: 'Status', href: '/status' },
+      { label: 'Verify', href: '/app/verify' },
+      { label: 'Issue', href: '/app/issue' },
+      { label: 'Credentials', href: '/app/credentials' },
+      { label: 'Docs', href: '/app/docs' },
+      { label: 'Status', href: '/app/status' },
     ],
   },
   {
@@ -17,8 +17,8 @@ const COLUMNS = [
     links: [
       { label: 'GitHub', href: '#' },
       { label: 'npm', href: '#' },
-      { label: 'MCP', href: '/docs#mcp' },
-      { label: 'Contract', href: '/docs' },
+      { label: 'MCP', href: '/app/docs#mcp' },
+      { label: 'Contract', href: '/app/docs' },
     ],
   },
   {

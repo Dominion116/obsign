@@ -1,4 +1,3 @@
-import { Link } from '../lib/router'
 import { useAsyncData } from '../lib/useAsyncData'
 import { fetchReceipt, explorerTxUrl, type Receipt } from '../lib/api'
 import Skeleton from '../components/Skeleton'
@@ -17,10 +16,6 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
     <main className="receipt">
       <section className="receipt__page">
         <div className="container">
-          <Link className="receipt__back" to="/">
-            ← Back to home
-          </Link>
-
           {loading || !data ? (
             <div className="receipt__card receipt__card--valid" aria-busy="true" role="status" aria-label="Loading receipt">
               <div className="receipt__head">

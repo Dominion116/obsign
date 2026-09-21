@@ -1,4 +1,3 @@
-import { Link } from '../lib/router'
 import { useAsyncData } from '../lib/useAsyncData'
 import { fetchStatus, type Service } from '../lib/api'
 import Skeleton from '../components/Skeleton'
@@ -19,24 +18,19 @@ export default function StatusPage() {
 
   return (
     <main className="status">
-      <section className="status__hero">
-        <div className="container">
-          <Link className="status__back" to="/">
-            ← Back to home
-          </Link>
-          <p className="eyebrow">System status</p>
-          <h1 className="status__title">
-            All systems <span className="script-accent">operational.</span>
-          </h1>
-          <p className="status__lead">
-            Live health of the verification surface, the MCP endpoint, the deterministic
-            core, and the Base Sepolia anchor.
-          </p>
-        </div>
-      </section>
-
       <section className="status__main section">
         <div className="container">
+          <div className="status__head">
+            <p className="eyebrow">System status</p>
+            <h1 className="status__title">
+              All systems <span className="script-accent">operational.</span>
+            </h1>
+            <p className="status__lead">
+              Live health of the verification surface, the MCP endpoint, the deterministic
+              core, and the Base Sepolia anchor.
+            </p>
+          </div>
+
           <div className="status__overview">
             <span className="status__overview-dot" aria-hidden="true" />
             <div>

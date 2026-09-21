@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
-import Nav from './components/Nav'
+import LandingNav from './components/LandingNav'
+import AppNav from './components/AppNav'
 import Hero from './components/Hero'
 import HowItWorks from './components/HowItWorks'
 import Modules from './components/Modules'
@@ -16,53 +17,75 @@ import { useLocation } from './lib/router'
 
 const TITLES: Record<string, string> = {
   '/': 'Obsign — Credentials anyone can recompute.',
-  '/verify': 'Verify a credential — Obsign',
-  '/issue': 'Issue credentials — Obsign',
-  '/docs': 'Documentation — Obsign',
-  '/status': 'System status — Obsign',
-  '/credentials': 'Issuer dashboard — Obsign',
+  '/app/verify': 'Verify a credential — Obsign',
+  '/app/issue': 'Issue credentials — Obsign',
+  '/app/docs': 'Documentation — Obsign',
+  '/app/status': 'System status — Obsign',
+  '/app/credentials': 'Issuer dashboard — Obsign',
 }
 
-export function resolvePage(path: string) {
-  if (path === '/') return { page: <Hero />, title: TITLES['/'] }
-  if (path === '/verify') return { page: <VerifyPage />, title: TITLES['/verify'] }
-  if (path === '/issue') return { page: <IssuePage />, title: TITLES['/issue'] }
-  if (path === '/docs') return { page: <DocsPage />, title: TITLES['/docs'] }
-  if (path === '/status') return { page: <StatusPage />, title: TITLES['/status'] }
-  if (path === '/credentials') return { page: <CredentialsPage />, title: TITLES['/credentials'] }
+interface Resolved {
+  page: React.ReactNode
+  title: string
+  /** Which surface this route belongs to. */
+  surface: 'landing' | 'app'
+}
 
-  const receipt = path.match(/^\/receipt\/(.+)$/)
+export function resolvePage(path: string): Resolved {
+  if (path === '/') return { page: <Hero />, title: TITLES['/'], surface: 'landing' }
+
+  // Functional application surfaces live under /app.
+  if (path === '/app' || path === '/app/verify')
+    return { page: <VerifyPage />, title: TITLES['/app/verify'], surface: 'app' }
+  if (path === '/app/issue')
+    return { page: <IssuePage />, title: TITLES['/app/issue'], surface: 'app' }
+  if (path === '/app/docs')
+    return { page: <DocsPage />, title: TITLES['/app/docs'], surface: 'app' }
+  if (path === '/app/status')
+    return { page: <StatusPage />, title: TITLES['/app/status'], surface: 'app' }
+  if (path === '/app/credentials')
+    return { page: <CredentialsPage />, title: TITLES['/app/credentials'], surface: 'app' }
+
+  const receipt = path.match(/^\/app\/receipt\/(.+)$/)
   if (receipt) {
     const id = decodeURIComponent(receipt[1])
-    return { page: <ReceiptPage receiptId={id} />, title: `Receipt ${id.slice(0, 12)}… — Obsign` }
+    return {
+      page: <ReceiptPage receiptId={id} />,
+      title: `Receipt ${id.slice(0, 12)}… — Obsign`,
+      surface: 'app',
+    }
   }
 
-  return { page: <NotFoundPage />, title: 'Page not found — Obsign' }
+  return { page: <NotFoundPage />, title: 'Page not found — Obsign', surface: 'app' }
 }
 
 export default function App() {
   const { path } = useLocation()
-  const { page, title } = resolvePage(path)
+  const { page, title, surface } = resolvePage(path)
 
   useEffect(() => {
     document.title = title
   }, [title])
 
-  const isLanding = path === '/'
-
-  return (
-    <>
-      <Nav />
-      {isLanding ? (
+  if (surface === 'landing') {
+    return (
+      <>
+        <LandingNav />
         <main>
           <Hero />
           <HowItWorks />
           <Modules />
           <CTA />
         </main>
-      ) : (
-        page
-      )}
+        <Footer />
+      </>
+    )
+  }
+
+  return (
+    <>
+      <AppNav />
+      {page}
       <Footer />
     </>
   )

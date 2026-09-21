@@ -148,7 +148,7 @@ function StatusView(props: {
             </div>
           )}
           {receipt && (
-            <Link className="widget__anchor" to={`/receipt/${encodeURIComponent(receipt.receiptId)}`}>
+            <Link className="widget__anchor" to={`/app/receipt/${encodeURIComponent(receipt.receiptId)}`}>
               View full receipt →
             </Link>
           )}

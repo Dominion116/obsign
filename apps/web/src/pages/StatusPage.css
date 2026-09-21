@@ -36,6 +36,10 @@
   background: var(--color-paper);
 }
 
+.status__head {
+  margin-bottom: clamp(2rem, 5vw, 3rem);
+}
+
 .status__overview {
   display: flex;
   align-items: center;

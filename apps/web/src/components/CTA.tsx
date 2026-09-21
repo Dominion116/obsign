@@ -20,7 +20,7 @@ export default function CTA() {
               <li>x402 machine-native payments</li>
               <li>Free during the testnet pilot</li>
             </ul>
-            <Link className="btn btn--on-navy cta__btn" to="/verify">
+            <Link className="btn btn--on-navy cta__btn" to="/app/verify">
               Verify your first credential
             </Link>
           </div>
