@@ -89,8 +89,8 @@ export default function DocsPage() {
           </div>
         </div>
         <div className="container docs__grid">
-          <aside className="docs__nav" aria-label="On this page">
-            <h2 className="docs__nav-title">On this page</h2>
+          <details className="docs__nav" aria-label="On this page" open>
+            <summary className="docs__nav-title">On this page</summary>
             <ul>
               <li><a href="#receipt">The receipt</a></li>
               <li><a href="#modules">Evidence modules</a></li>
@@ -100,7 +100,7 @@ export default function DocsPage() {
               <li><a href="#sdk">SDK</a></li>
               <li><a href="#invariants">Invariants</a></li>
             </ul>
-          </aside>
+          </details>
 
           <div className="docs__content">
             <section id="receipt" className="docs__section">

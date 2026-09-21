@@ -64,6 +64,46 @@
   margin: 0 0 0.9rem;
 }
 
+/* Collapsible "On this page" (native <details>/<summary>) */
+.docs__nav summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.docs__nav summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs__nav summary::after {
+  content: '';
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg);
+  transition: transform var(--dur) var(--ease);
+}
+
+.docs__nav[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+@media (min-width: 1024px) {
+  /* On desktop the sidebar stays open and is not toggleable */
+  .docs__nav summary {
+    cursor: default;
+    pointer-events: none;
+  }
+  .docs__nav summary::after {
+    display: none;
+  }
+}
+
 .docs__nav ul {
   list-style: none;
   margin: 0;

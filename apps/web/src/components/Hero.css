@@ -91,6 +91,21 @@
   margin-top: 0.5rem;
 }
 
+/* On mobile, keep the two hero buttons side by side sharing the row */
+@media (max-width: 560px) {
+  .hero__ctas {
+    flex-wrap: nowrap;
+    align-self: stretch;
+    width: 100%;
+  }
+  .hero__ctas .btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
 .hero__trust {
   list-style: none;
   display: flex;
