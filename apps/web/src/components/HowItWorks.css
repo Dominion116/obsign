@@ -1,0 +1,114 @@
+.how {
+  background: var(--color-navy);
+}
+
+.how .container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.how__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.how .section-title {
+  color: var(--text-on-navy);
+}
+
+.how .script-accent {
+  color: var(--accent);
+}
+
+.how__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.how__step {
+  background: rgba(255, 255, 255, 0.05);
+  border: var(--border-w) solid var(--border-on-navy);
+  border-radius: var(--radius-card-alt);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.how__step:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.how__num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.how__title {
+  font-size: 1.35rem;
+  color: var(--text-on-navy);
+}
+
+.how__body {
+  font-size: 0.98rem;
+  color: var(--text-muted-on-navy);
+}
+
+.how__diagram {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.5rem;
+  border: var(--border-w) dashed var(--border-on-navy);
+  border-radius: var(--radius-card);
+}
+
+.how__diagram-box {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+}
+
+.how__diagram-box--input {
+  background: var(--color-mist);
+  color: var(--text-strong);
+}
+
+.how__diagram-box--hash {
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.how__diagram-box--chain {
+  background: var(--color-paper);
+  color: var(--color-navy);
+  font-weight: 700;
+}
+
+.how__diagram-plus,
+.how__diagram-arrow {
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+@media (min-width: 768px) {
+  .how__steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

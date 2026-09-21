@@ -1,0 +1,66 @@
+/* ============================================================
+   Obsign — Design tokens
+   Source of truth: docs/palette.svg
+   Palette: #000000 · #14213d · #fca311 · #e5e5e5 · #ffffff
+   All tints/shades below are derived from these five colors.
+   ============================================================ */
+
+:root {
+  /* --- Palette primaries --- */
+  --color-ink: #000000;
+  --color-navy: #14213d;
+  --color-accent: #fca311;
+  --color-mist: #e5e5e5;
+  --color-paper: #ffffff;
+
+  /* --- Surfaces & text (derived) --- */
+  --surface-raised: #ffffff;
+  --surface-sunken: #e5e5e5;
+  --surface-navy: #14213d;
+  --text-strong: #141414;
+  --text-on-navy: #ffffff;
+  --text-muted: #5a6274;
+  --text-muted-on-navy: #cdd3e2;
+  --border: #000000;
+  --border-soft: rgba(0, 0, 0, 0.14);
+  --border-on-navy: rgba(255, 255, 255, 0.16);
+
+  /* --- Accent tints (derived) --- */
+  --accent-soft: #ffe4b3;
+  --accent-wash: #fff6e6;
+  --accent-strong: #e08a00;
+
+  /* --- Brand script --- */
+  --font-display: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-body: 'Montserrat', 'Lato', system-ui, sans-serif;
+  --font-script: 'Great Vibes', cursive;
+
+  /* --- Sizing / radii (organic neo-brutalist) --- */
+  --radius-card: 26px 26px 26px 10px;
+  --radius-card-alt: 10px 26px 26px 26px;
+  --radius-chip: 999px;
+  --radius-notch: 12px 12px 12px 26px;
+  --border-w: 2px;
+  --border-w-thick: 3px;
+
+  /* --- Depth --- */
+  --shadow-card: 6px 6px 0 0 #000000;
+  --shadow-card-navy: 6px 6px 0 0 #fca311;
+  --shadow-soft: 0 18px 50px -22px rgba(20, 33, 61, 0.45);
+
+  /* --- Layout --- */
+  --container: 1180px;
+  --gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --section-pad: clamp(4rem, 9vw, 7.5rem);
+  --nav-h: 4.25rem;
+
+  /* --- Motion --- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 240ms;
+
+  /* --- Breakpoints --- */
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
