@@ -37,7 +37,8 @@
 }
 
 .cta__eyebrow {
-  color: var(--accent);
+  /* Changed from var(--accent) to yellow */
+  color: var(--color-yellow, #fca311); 
 }
 
 .cta__title {
@@ -72,7 +73,8 @@
   content: '';
   width: 18px;
   height: 18px;
-  background: var(--accent);
+  /* Changed checkmark color to yellow */
+  background: var(--color-yellow, #fca311);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
   mask-size: contain;
   mask-repeat: no-repeat;
@@ -82,6 +84,16 @@
 
 .cta__btn {
   margin-top: 0.5rem;
+  /* Overrides to make the button theme white */
+  background-color: var(--color-paper, #ffffff);
+  color: var(--color-navy, #0f172a);
+  border-color: var(--color-paper, #ffffff);
+}
+
+/* Optional hover state adjustment for the newly white button */
+.cta__btn:hover {
+  background-color: var(--color-mist, #f3f4f6);
+  border-color: var(--color-mist, #f3f4f6);
 }
 
 .cta__price {
