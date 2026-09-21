@@ -19,7 +19,7 @@ export default function Hero() {
 
       <div className="hero__inner container">
         <div className="hero__copy">
-          <p className="eyebrow">Proof you can reproduce yourself</p>
+          <p className="eyebrow hero__eyebrow">Proof you can reproduce yourself</p>
           <h1 className="hero__title">
             Credentials anyone <span className="script-accent">can recompute.</span>
           </h1>

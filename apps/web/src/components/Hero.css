@@ -96,6 +96,30 @@
   margin-top: 0.5rem;
 }
 
+@media (max-width: 767px) {
+  .hero__eyebrow {
+    display: none;
+  }
+
+  .hero__copy {
+    align-items: center;
+  }
+
+  .hero__title {
+    font-size: clamp(3rem, 12vw, 3.5rem);
+    text-align: center;
+  }
+
+  .hero__sub {
+    font-size: 1.15rem;
+    text-align: center;
+  }
+
+  .hero__trust {
+    justify-content: center;
+  }
+}
+
 /* On mobile, keep the two hero buttons side by side sharing the row */
 @media (max-width: 560px) {
   .hero__ctas {
