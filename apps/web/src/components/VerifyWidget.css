@@ -133,8 +133,8 @@
 .widget__receipt-id {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   font-size: 0.8rem;
-  color: var(--text-strong);
-  background: var(--color-mist);
+  color: var(--color-paper);
+  background: var(--color-navy);
   border-radius: 6px;
   padding: 0.1rem 0.4rem;
   overflow: hidden;

@@ -115,9 +115,8 @@ function StatusView(props: {
         <div className="widget__state widget__state--idle">
           <p className="widget__state-title">Nothing to check just yet</p>
           <p className="widget__state-hint">
-            Paste a credential or receipt into the field above to begin, and the verdict
-            along with its recomputed hashes will appear here. If you would rather see how
-            it works first, load the known-good sample and watch a real receipt come back.
+            Paste a credential or receipt above to begin, or load the sample to watch a
+            real receipt come back.
           </p>
         </div>
       )
@@ -235,9 +234,8 @@ function RecomputePanel(props: { receipt: DemoReceipt | null }) {
         </dl>
       ) : (
         <p className="widget__recompute-empty">
-          Once you run a verification, the credential hash, the evidence hash, and the
-          final receipt identifier will be shown here so you can compare them against the
-          values published in the specification and confirm the result independently.
+          After a verification, the credential hash, evidence hash, and receipt identifier
+          appear here for you to compare against the spec.
         </p>
       )}
     </div>
