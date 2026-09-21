@@ -142,7 +142,7 @@
 }
 
 .docs__section-title {
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
   color: var(--color-navy);
   margin: 0;
 }

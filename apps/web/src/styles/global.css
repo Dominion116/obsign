@@ -23,6 +23,8 @@ body {
   background: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Safety net: long unbreakable strings wrap instead of forcing page scroll */
+  overflow-wrap: break-word;
 }
 
 img,

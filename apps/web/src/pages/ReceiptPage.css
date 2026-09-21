@@ -162,8 +162,9 @@
 }
 
 .receipt__share-input {
-  flex: 1;
-  min-width: 220px;
+  flex: 1 1 220px;
+  min-width: min(220px, 100%);
+  width: 100%;
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   font-size: 0.82rem;
   color: var(--text-strong);

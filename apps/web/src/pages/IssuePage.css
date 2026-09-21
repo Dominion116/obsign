@@ -80,7 +80,7 @@
 .issue__flow-num {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 2.6rem;
+  font-size: clamp(2rem, 5vw, 2.6rem);
   line-height: 1;
   color: var(--accent);
 }
