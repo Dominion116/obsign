@@ -1,12 +1,36 @@
 import { useEffect, useState } from 'react'
+import { Link, useIsActive } from '../lib/router'
 import './Nav.css'
 
-const LINKS = [
-  { label: 'How it works', href: '#how-it-works' },
+interface NavItem {
+  label: string
+  href: string
+}
+
+// Section links resolve to the landing page first (`/#…`) so they work from
+// any route, not just the homepage.
+const LINKS: NavItem[] = [
+  { label: 'How it works', href: '/#how-it-works' },
   { label: 'Verify', href: '/verify' },
   { label: 'Issuers', href: '/credentials' },
   { label: 'Docs', href: '/docs' },
 ]
+
+function NavLink({ item, className, onNavigate }: { item: NavItem; className?: string; onNavigate?: () => void }) {
+  // Only page links (no hash target) get an active state.
+  const isPage = !item.href.includes('#')
+  const active = useIsActive(item.href) && isPage
+  return (
+    <Link
+      to={item.href}
+      className={className}
+      aria-current={active ? 'page' : undefined}
+      onClick={onNavigate}
+    >
+      {item.label}
+    </Link>
+  )
+}
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
@@ -30,24 +54,22 @@ export default function Nav() {
   return (
     <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
       <div className="nav__bar container">
-        <a className="nav__brand" href="#top" aria-label="Obsign home">
+        <Link className="nav__brand" to="/#top" aria-label="Obsign home">
           <span className="nav__brand-mark" aria-hidden="true">o</span>
           <span className="nav__brand-name">Obsign</span>
-        </a>
+        </Link>
 
         <nav className="nav__links" aria-label="Primary">
           {LINKS.map((l) => (
-            <a key={l.href} className="nav__link" href={l.href}>
-              {l.label}
-            </a>
+            <NavLink key={l.href} item={l} className="nav__link" />
           ))}
         </nav>
 
         <div className="nav__actions">
           {/* This CTA is now hidden on mobile via CSS to prevent squeezing */}
-          <a className="btn btn--primary nav__cta" href="/verify">
+          <Link className="btn btn--primary nav__cta" to="/verify">
             Verify a credential
-          </a>
+          </Link>
           
           <button
             className="nav__toggle"
@@ -72,17 +94,15 @@ export default function Nav() {
       >
         <nav className="nav__sheet-links" aria-label="Mobile">
           {LINKS.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)}>
-              {l.label}
-            </a>
+            <NavLink key={l.href} item={l} onNavigate={() => setOpen(false)} />
           ))}
-          <a
+          <Link
             className="btn btn--primary nav__sheet-cta"
-            href="/verify"
+            to="/verify"
             onClick={() => setOpen(false)}
           >
             Verify a credential
-          </a>
+          </Link>
         </nav>
       </div>
     </header>

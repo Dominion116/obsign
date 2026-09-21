@@ -1,3 +1,4 @@
+import { Link } from '../lib/router'
 import VerifyWidget from './VerifyWidget'
 import './Hero.css'
 
@@ -23,12 +24,12 @@ export default function Hero() {
             required.
           </p>
           <div className="hero__ctas">
-            <a className="btn btn--primary" href="#verify">
+            <Link className="btn btn--primary" to="/#verify">
               Verify a credential
-            </a>
-            <a className="btn btn--secondary" href="/issue">
+            </Link>
+            <Link className="btn btn--secondary" to="/issue">
               Issue credentials
-            </a>
+            </Link>
           </div>
           <ul className="hero__trust" aria-label="Highlights">
             {TRUST.map((t) => (

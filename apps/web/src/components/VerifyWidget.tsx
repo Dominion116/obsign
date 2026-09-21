@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { SAMPLE, recomputeDemo, type DemoReceipt } from '../lib/sample'
+import { SAMPLE, type DemoReceipt } from '../lib/sample'
+import { verifyCredential } from '../lib/api'
+import { Link } from '../lib/router'
 import './VerifyWidget.css'
 
 type Status = 'idle' | 'validating' | 'valid' | 'invalid' | 'error' | 'unpaid'
@@ -21,39 +23,29 @@ export default function VerifyWidget() {
   }, [])
 
   const runVerify = async (input: string) => {
+    if (!input.trim()) {
+      setStatus('idle')
+      return
+    }
+
     setStatus('validating')
     setErrorMsg('')
     setReceipt(null)
 
     try {
-      // Prefer the real API when present; fall back to local recomputation.
-      const res = await fetch('/api/v1/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credential: SAMPLE.credential, evidence: SAMPLE.evidence }),
-      })
-      if (res.ok) {
-        const data: DemoReceipt = await res.json()
-        setReceipt(data)
-        setStatus('valid')
-        return
-      }
-      if (res.status === 402) {
+      // Centralized client prefers the live API and falls back to local
+      // recomputation of the bundled sample when offline.
+      const outcome = await verifyCredential(SAMPLE.credential, SAMPLE.evidence)
+      if (outcome.kind === 'unpaid') {
         setStatus('unpaid')
         return
       }
-      // Fall through: simulate offline path.
-    } catch {
-      // Network/offline — use local demo.
+      setReceipt(outcome.receipt)
+      setStatus('valid')
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Unexpected error')
+      setStatus('error')
     }
-
-    // Offline demo: any non-empty input verifies the bundled sample.
-    if (!input.trim()) {
-      setStatus('idle')
-      return
-    }
-    setReceipt(recomputeDemo(SAMPLE.credential, SAMPLE.evidence))
-    setStatus('valid')
   }
 
   const onTrySample = () => {
@@ -155,9 +147,11 @@ function StatusView(props: {
               </button>
             </div>
           )}
-          <a className="widget__anchor" href="#receipt" onClick={(e) => e.preventDefault()}>
-            View anchor on Base Sepolia ↗
-          </a>
+          {receipt && (
+            <Link className="widget__anchor" to={`/receipt/${encodeURIComponent(receipt.receiptId)}`}>
+              View full receipt →
+            </Link>
+          )}
         </div>
       )
     case 'invalid':

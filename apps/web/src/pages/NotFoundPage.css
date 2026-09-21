@@ -1,0 +1,45 @@
+.nf {
+  background: var(--color-mist);
+  background-image: radial-gradient(var(--color-navy) 1px, var(--color-mist) 1px);
+  background-size: 12px 12px;
+  min-height: calc(100vh - var(--nav-h));
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+}
+
+.nf__card {
+  background: var(--color-paper);
+  border: var(--border-w-thick) solid var(--border);
+  border-radius: var(--radius-card-alt);
+  box-shadow: 12px 12px 0 0 var(--accent);
+  padding: clamp(2rem, 5vw, 3.5rem);
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.1rem;
+}
+
+.nf__eyebrow {
+  color: var(--accent-strong);
+}
+
+.nf__title {
+  font-size: clamp(2rem, 6vw, 3rem);
+  color: var(--color-navy);
+  margin: 0;
+}
+
+.nf__lead {
+  font-size: 1.02rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.nf__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 0.4rem;
+}

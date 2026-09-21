@@ -1,3 +1,4 @@
+import { Link } from '../lib/router'
 import './DocsPage.css'
 
 const RECEIPT_SECTIONS = [
@@ -77,9 +78,9 @@ export default function DocsPage() {
     <main className="docs">
       <section className="docs__hero">
         <div className="container">
-          <a className="docs__back" href="/">
+          <Link className="docs__back" to="/">
             ← Back to home
-          </a>
+          </Link>
           <p className="eyebrow">Documentation</p>
           <h1 className="docs__title">
             The Obsign <span className="script-accent">spec.</span>

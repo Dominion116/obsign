@@ -1,3 +1,4 @@
+import { Link } from '../lib/router'
 import './IssuePage.css'
 
 const CHECKLIST = [
@@ -26,9 +27,9 @@ export default function IssuePage() {
     <main className="issue">
       <section className="issue__hero">
         <div className="container">
-          <a className="issue__back" href="/">
+          <Link className="issue__back" to="/">
             ← Back to home
-          </a>
+          </Link>
           <p className="eyebrow">Issue credentials</p>
           <h1 className="issue__title">
             Mint credentials anyone <span className="script-accent">can verify.</span>
@@ -96,9 +97,9 @@ export default function IssuePage() {
               interface, and the valid verdict never depends on where the credential was
               issued.
             </p>
-            <a className="btn btn--primary issue__cta-btn" href="/verify">
+            <Link className="btn btn--primary issue__cta-btn" to="/verify">
               Verify a credential
-            </a>
+            </Link>
           </div>
         </div>
       </section>

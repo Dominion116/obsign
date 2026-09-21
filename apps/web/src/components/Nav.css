@@ -83,8 +83,13 @@
 }
 
 .nav__link:hover::after,
-.nav__link:focus-visible::after {
+.nav__link:focus-visible::after,
+.nav__link[aria-current='page']::after {
   width: 100%;
+}
+
+.nav__link[aria-current='page'] {
+  color: var(--accent-strong, #e08a00);
 }
 
 .nav__actions {

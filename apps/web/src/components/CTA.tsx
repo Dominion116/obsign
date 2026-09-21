@@ -1,3 +1,4 @@
+import { Link } from '../lib/router'
 import './CTA.css'
 
 export default function CTA() {
@@ -19,9 +20,9 @@ export default function CTA() {
               <li>x402 machine-native payments</li>
               <li>Free during the testnet pilot</li>
             </ul>
-            <a className="btn btn--on-navy cta__btn" href="/verify">
+            <Link className="btn btn--on-navy cta__btn" to="/verify">
               Verify your first credential
-            </a>
+            </Link>
           </div>
           <div className="cta__price">
             <span className="cta__price-label">per verification</span>

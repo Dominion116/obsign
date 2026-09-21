@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
 import HowItWorks from './components/HowItWorks'
@@ -11,72 +11,57 @@ import DocsPage from './pages/DocsPage'
 import StatusPage from './pages/StatusPage'
 import CredentialsPage from './pages/CredentialsPage'
 import ReceiptPage from './pages/ReceiptPage'
+import NotFoundPage from './pages/NotFoundPage'
+import { useLocation } from './lib/router'
 
-function currentPath() {
-  return window.location.pathname.replace(/\/+$/, '') || '/'
+const TITLES: Record<string, string> = {
+  '/': 'Obsign — Credentials anyone can recompute.',
+  '/verify': 'Verify a credential — Obsign',
+  '/issue': 'Issue credentials — Obsign',
+  '/docs': 'Documentation — Obsign',
+  '/status': 'System status — Obsign',
+  '/credentials': 'Issuer dashboard — Obsign',
+}
+
+export function resolvePage(path: string) {
+  if (path === '/') return { page: <Hero />, title: TITLES['/'] }
+  if (path === '/verify') return { page: <VerifyPage />, title: TITLES['/verify'] }
+  if (path === '/issue') return { page: <IssuePage />, title: TITLES['/issue'] }
+  if (path === '/docs') return { page: <DocsPage />, title: TITLES['/docs'] }
+  if (path === '/status') return { page: <StatusPage />, title: TITLES['/status'] }
+  if (path === '/credentials') return { page: <CredentialsPage />, title: TITLES['/credentials'] }
+
+  const receipt = path.match(/^\/receipt\/(.+)$/)
+  if (receipt) {
+    const id = decodeURIComponent(receipt[1])
+    return { page: <ReceiptPage receiptId={id} />, title: `Receipt ${id.slice(0, 12)}… — Obsign` }
+  }
+
+  return { page: <NotFoundPage />, title: 'Page not found — Obsign' }
 }
 
 export default function App() {
-  const [path, setPath] = useState<string>(currentPath())
+  const { path } = useLocation()
+  const { page, title } = resolvePage(path)
 
   useEffect(() => {
-    const onPop = () => setPath(currentPath())
-    const onClick = (e: MouseEvent) => {
-      const anchor = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href]')
-      if (!anchor || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return
-      const href = anchor.getAttribute('href') as string | null
-      if (!href || !href.startsWith('/') || href.startsWith('//') || href.startsWith('/#')) return
-      e.preventDefault()
-      history.pushState({}, '', href)
-      setPath(currentPath())
-      const hashIndex = href.indexOf('#')
-      if (hashIndex !== -1) {
-        const el = document.getElementById(href.slice(hashIndex + 1))
-        if (el) el.scrollIntoView()
-      } else {
-        window.scrollTo(0, 0)
-      }
-    }
-    window.addEventListener('popstate', onPop)
-    window.addEventListener('click', onClick)
-    return () => {
-      window.removeEventListener('popstate', onPop)
-      window.removeEventListener('click', onClick)
-    }
-  }, [])
+    document.title = title
+  }, [title])
 
-  const isVerify = path === '/verify'
-  const isIssue = path === '/issue'
-  const isDocs = path === '/docs'
-  const isStatus = path === '/status'
-  const isCredentials = path === '/credentials'
-
-  const receiptMatch = path.match(/^\/receipt\/(.+)$/)
-
-  const page = isVerify
-    ? <VerifyPage />
-    : isIssue
-      ? <IssuePage />
-      : isDocs
-        ? <DocsPage />
-        : isStatus
-          ? <StatusPage />
-          : isCredentials
-            ? <CredentialsPage />
-            : receiptMatch
-              ? <ReceiptPage receiptId={decodeURIComponent(receiptMatch[1])} />
-              : null
+  const isLanding = path === '/'
 
   return (
     <>
       <Nav />
-      {page ?? (
+      {isLanding ? (
         <main>
           <Hero />
           <HowItWorks />
           <Modules />
           <CTA />
         </main>
+      ) : (
+        page
       )}
       <Footer />
     </>

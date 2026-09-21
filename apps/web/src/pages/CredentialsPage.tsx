@@ -1,48 +1,9 @@
+import { useState } from 'react'
+import { Link } from '../lib/router'
+import { useAsyncData } from '../lib/useAsyncData'
+import { fetchCredentials, revokeCredential, type Credential } from '../lib/api'
+import Skeleton from '../components/Skeleton'
 import './CredentialsPage.css'
-
-interface Credential {
-  id: string
-  claim: string
-  issuer: string
-  status: 'anchored' | 'pending' | 'revoked'
-  anchorTx: string
-  issuedAt: string
-}
-
-const CREDENTIALS: Credential[] = [
-  {
-    id: '0xcred00000000000000000000000001',
-    claim: 'Attendance — Obsign Hackathon 2026',
-    issuer: '0x1111…1111',
-    status: 'anchored',
-    anchorTx: '0xabcd…',
-    issuedAt: '2026-09-13T00:00:00.000Z',
-  },
-  {
-    id: '0xcred00000000000000000000000002',
-    claim: 'Role — Workshop Facilitator',
-    issuer: '0x1111…1111',
-    status: 'anchored',
-    anchorTx: '0xef01…',
-    issuedAt: '2026-09-14T00:00:00.000Z',
-  },
-  {
-    id: '0xcred00000000000000000000000003',
-    claim: 'Membership — Base Builders',
-    issuer: '0x1111…1111',
-    status: 'pending',
-    anchorTx: '—',
-    issuedAt: '2026-09-20T00:00:00.000Z',
-  },
-  {
-    id: '0xcred00000000000000000000000004',
-    claim: 'Attendance — Migrated Event',
-    issuer: '0x1111…1111',
-    status: 'revoked',
-    anchorTx: '0x2345…',
-    issuedAt: '2026-09-01T00:00:00.000Z',
-  },
-]
 
 const STATUS_LABEL: Record<Credential['status'], string> = {
   anchored: 'Anchored',
@@ -50,16 +11,46 @@ const STATUS_LABEL: Record<Credential['status'], string> = {
   revoked: 'Revoked',
 }
 
+const SKELETON_ROWS = 4
+
 export default function CredentialsPage() {
-  const anchored = CREDENTIALS.filter((c) => c.status === 'anchored').length
+  const { data, loading, setData } = useAsyncData<Credential[]>(fetchCredentials)
+  const [revoking, setRevoking] = useState<Record<string, boolean>>({})
+
+  const credentials = data ?? []
+  const total = credentials.length
+  const anchored = credentials.filter((c) => c.status === 'anchored').length
+  const pending = credentials.filter((c) => c.status === 'pending').length
+
+  const onRevoke = async (id: string) => {
+    const confirmed = window.confirm(
+      'Revoke this credential? Verifiers will return REVOKED for its receipt.',
+    )
+    if (!confirmed) return
+
+    setRevoking((r) => ({ ...r, [id]: true }))
+    // Optimistically flip the row to revoked; the API call reconciles it.
+    setData((prev) =>
+      (prev ?? []).map((c) => (c.id === id ? { ...c, status: 'revoked', anchorTx: c.anchorTx } : c)),
+    )
+    try {
+      await revokeCredential(id)
+    } finally {
+      setRevoking((r) => {
+        const next = { ...r }
+        delete next[id]
+        return next
+      })
+    }
+  }
 
   return (
     <main className="creds">
       <section className="creds__hero">
         <div className="container">
-          <a className="creds__back" href="/">
+          <Link className="creds__back" to="/">
             ← Back to home
-          </a>
+          </Link>
           <div className="creds__hero-row">
             <div>
               <p className="eyebrow">Issuer dashboard</p>
@@ -71,9 +62,9 @@ export default function CredentialsPage() {
                 publish new ones.
               </p>
             </div>
-            <a className="btn btn--primary creds__new" href="/issue">
+            <Link className="btn btn--primary creds__new" to="/issue">
               + New credential
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -82,15 +73,21 @@ export default function CredentialsPage() {
         <div className="container">
           <div className="creds__stats">
             <div className="creds__stat">
-              <span className="creds__stat-num">{CREDENTIALS.length}</span>
+              <span className="creds__stat-num">
+                {loading ? <Skeleton width="2ch" height="1.4rem" /> : total}
+              </span>
               <span className="creds__stat-label">Total</span>
             </div>
             <div className="creds__stat">
-              <span className="creds__stat-num">{anchored}</span>
+              <span className="creds__stat-num">
+                {loading ? <Skeleton width="2ch" height="1.4rem" /> : anchored}
+              </span>
               <span className="creds__stat-label">Anchored</span>
             </div>
             <div className="creds__stat">
-              <span className="creds__stat-num">2</span>
+              <span className="creds__stat-num">
+                {loading ? <Skeleton width="2ch" height="1.4rem" /> : pending}
+              </span>
               <span className="creds__stat-label">Pending anchor</span>
             </div>
           </div>
@@ -108,45 +105,60 @@ export default function CredentialsPage() {
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {CREDENTIALS.map((c) => (
-                  <tr key={c.id}>
-                    <td>
-                      <code className="creds__id">{c.id.slice(0, 18)}…</code>
-                    </td>
-                    <td>{c.claim}</td>
-                    <td>
-                      <code className="creds__mono">{c.issuer}</code>
-                    </td>
-                    <td>
-                      <span className={`creds__badge creds__badge--${c.status}`}>
-                        {STATUS_LABEL[c.status]}
-                      </span>
-                    </td>
-                    <td>
-                      {c.status === 'anchored' ? (
-                        <code className="creds__mono">{c.anchorTx}</code>
-                      ) : (
-                        <span className="creds__muted">—</span>
-                      )}
-                    </td>
-                    <td className="creds__muted">
-                      {new Date(c.issuedAt).toLocaleDateString()}
-                    </td>
-                    <td>
-                      <div className="creds__actions">
-                        <a className="creds__link" href={`/receipt/${c.id}`}>
-                          View
-                        </a>
-                        {c.status !== 'revoked' && (
-                          <button type="button" className="creds__revoke">
-                            Revoke
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+              <tbody aria-busy={loading}>
+                {loading
+                  ? Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+                      <tr key={`sk-${i}`} className="creds__row--skeleton">
+                        {Array.from({ length: 7 }).map((__, j) => (
+                          <td key={j}>
+                            <Skeleton width={j === 1 ? '80%' : '60%'} height="0.9rem" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  : credentials.map((c) => (
+                      <tr key={c.id}>
+                        <td>
+                          <code className="creds__id">{c.id.slice(0, 18)}…</code>
+                        </td>
+                        <td>{c.claim}</td>
+                        <td>
+                          <code className="creds__mono">{c.issuer}</code>
+                        </td>
+                        <td>
+                          <span className={`creds__badge creds__badge--${c.status}`}>
+                            {STATUS_LABEL[c.status]}
+                          </span>
+                        </td>
+                        <td>
+                          {c.status === 'anchored' ? (
+                            <code className="creds__mono">{c.anchorTx}</code>
+                          ) : (
+                            <span className="creds__muted">—</span>
+                          )}
+                        </td>
+                        <td className="creds__muted">
+                          {new Date(c.issuedAt).toLocaleDateString()}
+                        </td>
+                        <td>
+                          <div className="creds__actions">
+                            <Link className="creds__link" to={`/receipt/${c.id}`}>
+                              View
+                            </Link>
+                            {c.status !== 'revoked' && (
+                              <button
+                                type="button"
+                                className="creds__revoke"
+                                onClick={() => void onRevoke(c.id)}
+                                disabled={revoking[c.id]}
+                              >
+                                {revoking[c.id] ? 'Revoking…' : 'Revoke'}
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

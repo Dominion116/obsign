@@ -100,6 +100,18 @@
   color: var(--accent);
 }
 
+.receipt__external {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.receipt__external:hover,
+.receipt__external:focus-visible {
+  border-bottom-color: var(--accent);
+}
+
 .receipt__copy {
   flex: none;
   font-family: var(--font-display);

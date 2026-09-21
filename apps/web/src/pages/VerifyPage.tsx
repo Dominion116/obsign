@@ -1,4 +1,5 @@
 import VerifyWidget from '../components/VerifyWidget'
+import { Link } from '../lib/router'
 import './VerifyPage.css'
 
 const WHY = [
@@ -27,9 +28,9 @@ export default function VerifyPage() {
     <main className="verify">
       <section className="verify__hero">
         <div className="container">
-          <a className="verify__back" href="/">
+          <Link className="verify__back" to="/">
             ← Back to home
-          </a>
+          </Link>
           <p className="eyebrow">Live verify</p>
           <h1 className="verify__title">
             Verify a credential. <span className="script-accent">Anywhere.</span>

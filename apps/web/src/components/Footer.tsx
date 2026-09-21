@@ -1,3 +1,4 @@
+import { Link } from '../lib/router'
 import './Footer.css'
 
 const COLUMNS = [
@@ -49,7 +50,14 @@ export default function Footer() {
                 <ul>
                   {c.links.map((l) => (
                     <li key={l.label}>
-                      <a href={l.href}>{l.label}</a>
+                      {l.href === '#' ? (
+                        // Placeholder link — not yet wired to a destination.
+                        <a href={l.href} aria-disabled="true">
+                          {l.label}
+                        </a>
+                      ) : (
+                        <Link to={l.href}>{l.label}</Link>
+                      )}
                     </li>
                   ))}
                 </ul>

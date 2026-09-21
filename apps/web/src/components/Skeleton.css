@@ -1,0 +1,81 @@
+/* ============================================================
+   Obsign — Skeleton loading primitives
+   Palette-aware shimmer built from design tokens.
+   ============================================================ */
+
+.skeleton {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-sunken, #e5e5e5);
+  border-radius: 8px;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton--text {
+  height: 0.85em;
+  margin-block: 0.35em;
+  border-radius: 6px;
+}
+
+.skeleton--block {
+  width: 100%;
+  height: 1.25rem;
+}
+
+.skeleton--circle {
+  border-radius: 999px;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.skeleton--chip {
+  height: 1.5rem;
+  width: 5rem;
+  border-radius: var(--radius-chip, 999px);
+}
+
+.skeleton-text {
+  display: block;
+  width: 100%;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Respect users who prefer reduced motion: hold a static placeholder. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .skeleton::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.12),
+      transparent
+    );
+  }
+}
