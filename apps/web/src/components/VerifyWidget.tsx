@@ -71,7 +71,7 @@ export default function VerifyWidget() {
           <textarea
             id="widget-input"
             className="widget__input"
-            placeholder="Paste a receipt ID or a full credential in JSON to get started, then choose Verify to see the result."
+            placeholder="Paste a receipt ID or a full credential in JSON."
             rows={4}
             value={value}
             onChange={(e) => setValue(e.target.value)}
@@ -82,7 +82,7 @@ export default function VerifyWidget() {
           </button>
         </div>
         <button type="button" className="widget__sample" onClick={onTrySample}>
-          Load a known-good sample instead
+          Load sample
         </button>
       </form>
 
@@ -115,8 +115,8 @@ function StatusView(props: {
         <div className="widget__state widget__state--idle">
           <p className="widget__state-title">Nothing to check just yet</p>
           <p className="widget__state-hint">
-            Paste a credential or receipt above to begin, or load the sample to watch a
-            real receipt come back.
+            Paste a credential or receipt above, or load the sample to see a
+            real receipt.
           </p>
         </div>
       )
@@ -234,8 +234,8 @@ function RecomputePanel(props: { receipt: DemoReceipt | null }) {
         </dl>
       ) : (
         <p className="widget__recompute-empty">
-          After a verification, the credential hash, evidence hash, and receipt identifier
-          appear here for you to compare against the spec.
+          After verification, the credential hash, evidence hash, and receipt identifier
+          appear here.
         </p>
       )}
     </div>

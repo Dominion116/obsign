@@ -28,8 +28,8 @@
   background-image: radial-gradient(circle, var(--accent) 1px, transparent 1px);
   background-size: 10px 10px;
   opacity: 0.8;
-  /* Push the dots behind the blobs, or remove z-index to put dots over the blobs */
-  z-index: -1; 
+  /* Render above the section background but below the content */
+  z-index: 1; 
 }
 
 .hero__blob {
