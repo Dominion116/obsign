@@ -141,9 +141,13 @@ button {
 }
 
 .btn--primary:hover {
-  background: var(--color-mist);
+  background: var(--color-accent);
   transform: translate(-2px, -2px);
   box-shadow: 8px 8px 0 0 #000000;
+}
+
+.btn--primary:active {
+  background: var(--color-accent);
 }
 
 .btn--secondary {
@@ -153,8 +157,13 @@ button {
 }
 
 .btn--secondary:hover {
+  background: var(--color-mist);
   transform: translate(-1px, -1px);
   box-shadow: 5px 5px 0 0 var(--color-navy);
+}
+
+.btn--secondary:active {
+  background: var(--color-mist);
 }
 
 .btn--on-navy {
