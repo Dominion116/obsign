@@ -3,16 +3,16 @@ import './IssuePage.css'
 
 const CHECKLIST = [
   {
-    title: 'Quorum',
-    body: 'Collect n-of-m independent signatures over the same message. The credential is only valid once the threshold is met.',
+    title: 'Quorum of signers',
+    body: 'Require a set number of independent signatures over one shared message. The credential becomes valid only once that threshold is met.',
   },
   {
-    title: 'Onchain event',
-    body: 'Anchor to a pinned transaction or log on Base. Evidence verifies against a specific block — never latest.',
+    title: 'On-chain event',
+    body: 'Tie the claim to a transaction or log on Base, pinned to a fixed block so the evidence resolves the same way for everyone.',
   },
   {
     title: 'Artifact hash',
-    body: 'Record the SHA-256 of a fetched artifact. Anyone can recompute and compare the checksum byte-for-byte.',
+    body: 'Record a file\u2019s SHA-256 hash so anyone can refetch it, recompute the checksum, and confirm nothing has changed.',
   },
 ]
 
@@ -24,11 +24,13 @@ export default function IssuePage() {
           <div className="issue__head">
             <p className="eyebrow">Issue credentials</p>
             <h1 className="issue__title">
-              Mint credentials anyone <span className="script-accent">can verify.</span>
+              Create credentials that anyone <span className="script-accent">can verify.</span>
             </h1>
             <p className="issue__lead">
-              Attach exactly one machine-checkable evidence module to every claim so it
-              verifies independently — no trust in your database required.
+              Attach exactly one machine-checkable evidence module to every claim you
+              issue, and it will stand on its own for anyone who checks it later. The proof
+              travels with the credential itself, so verification never depends on access
+              to your database or on anyone trusting the system that produced it.
             </p>
           </div>
 

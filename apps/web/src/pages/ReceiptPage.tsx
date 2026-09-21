@@ -76,7 +76,7 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
           )}
 
           <div className="receipt__share">
-            <p className="receipt__share-title">Share this receipt</p>
+            <p className="receipt__share-title">Share this receipt with others</p>
             <div className="receipt__share-row">
               <input className="receipt__share-input" readOnly value={permalink} />
               <button className="btn btn--primary" type="button" onClick={copy(permalink)}>
@@ -86,8 +86,10 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
           </div>
 
           <p className="receipt__note">
-            Demo receipt — recomputed offline from the published spec. Independent parties
-            reproduce the same receiptId byte-for-byte.
+            This is a demonstration receipt that was recomputed offline directly from the
+            published specification. Any independent party who starts from the same inputs
+            will arrive at this exact receipt identifier, byte for byte, which is what lets
+            the result stand on its own without depending on our systems.
           </p>
         </div>
       </section>

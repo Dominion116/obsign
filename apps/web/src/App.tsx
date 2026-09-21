@@ -16,12 +16,12 @@ import NotFoundPage from './pages/NotFoundPage'
 import { useLocation } from './lib/router'
 
 const TITLES: Record<string, string> = {
-  '/': 'Obsign — Credentials anyone can recompute.',
-  '/app/verify': 'Verify a credential — Obsign',
-  '/app/issue': 'Issue credentials — Obsign',
-  '/app/docs': 'Documentation — Obsign',
-  '/app/status': 'System status — Obsign',
-  '/app/credentials': 'Issuer dashboard — Obsign',
+  '/': 'Obsign · Credentials anyone can recompute',
+  '/app/verify': 'Verify a credential · Obsign',
+  '/app/issue': 'Issue credentials · Obsign',
+  '/app/docs': 'Documentation · Obsign',
+  '/app/status': 'System status · Obsign',
+  '/app/credentials': 'Issuer dashboard · Obsign',
 }
 
 interface Resolved {
@@ -51,12 +51,12 @@ export function resolvePage(path: string): Resolved {
     const id = decodeURIComponent(receipt[1])
     return {
       page: <ReceiptPage receiptId={id} />,
-      title: `Receipt ${id.slice(0, 12)}… — Obsign`,
+      title: `Receipt ${id.slice(0, 12)}… · Obsign`,
       surface: 'app',
     }
   }
 
-  return { page: <NotFoundPage />, title: 'Page not found — Obsign', surface: 'app' }
+  return { page: <NotFoundPage />, title: 'Page not found · Obsign', surface: 'app' }
 }
 
 export default function App() {

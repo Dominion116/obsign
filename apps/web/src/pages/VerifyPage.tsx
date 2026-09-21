@@ -3,16 +3,16 @@ import './VerifyPage.css'
 
 const WHY = [
   {
-    title: 'No trust in our server',
-    body: 'Obsign never decides for you. The verdict is recomputed from the published spec and public chain state.',
+    title: 'You never have to trust our server',
+    body: 'Obsign does not hand down a verdict that you are asked to accept on faith. Every result is recomputed from the published specification and public chain state, so you can reach the same conclusion yourself using nothing more than the inputs in front of you.',
   },
   {
-    title: 'Deterministic receipt',
-    body: 'The same credential and evidence always yield the same receiptId — offline, on any machine, by anyone.',
+    title: 'The same inputs always produce the same receipt',
+    body: 'Verification is fully deterministic, which means a given credential and its evidence will always resolve to an identical receipt identifier. That holds true offline, on any machine, and for any person who runs the check, today or years from now.',
   },
   {
-    title: 'Machine-checkable proofs',
-    body: 'quorum, onchain-event, and artifact-hash evidence each evaluate to a fixed, reasoned verdict.',
+    title: 'Every proof is something a machine can check',
+    body: 'The quorum, on-chain event, and artifact hash modules each resolve to a fixed verdict paired with a clear reason code. There is no subjective judgment involved, so the outcome is easy to audit and impossible to quietly influence.',
   },
 ]
 
@@ -22,13 +22,16 @@ export default function VerifyPage() {
       <section className="verify__main section">
         <div className="container">
           <div className="verify__head">
-            <p className="eyebrow">Live verify</p>
+            <p className="eyebrow">Verify a credential</p>
             <h1 className="verify__title">
-              Verify a credential. <span className="script-accent">Anywhere.</span>
+              Check any credential, <span className="script-accent">from anywhere.</span>
             </h1>
             <p className="verify__lead">
-              Paste a credential or evidence set and get an independent, recomputable receipt.
-              No account, no trust in our server — just the spec, the chain, and your inputs.
+              Paste a credential or its supporting evidence into the tool below and Obsign
+              will return an independent receipt that you can recompute yourself at any
+              time. You do not need an account and you do not need to trust our servers,
+              because the outcome rests entirely on the published specification, the public
+              chain, and the exact inputs you provide.
             </p>
           </div>
 

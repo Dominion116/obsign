@@ -39,7 +39,10 @@ export default function Footer() {
           <div className="footer__brand">
             <div>
               <p className="footer__word">Obsign</p>
-              <p className="footer__tag">Credentials anyone can recompute.</p>
+              <p className="footer__tag">
+                Verifiable credentials that anyone can recompute for themselves, without
+                trusting a central server.
+              </p>
             </div>
           </div>
 
@@ -51,7 +54,7 @@ export default function Footer() {
                   {c.links.map((l) => (
                     <li key={l.label}>
                       {l.href === '#' ? (
-                        // Placeholder link — not yet wired to a destination.
+                        // Placeholder link that is not yet wired to a destination.
                         <a href={l.href} aria-disabled="true">
                           {l.label}
                         </a>

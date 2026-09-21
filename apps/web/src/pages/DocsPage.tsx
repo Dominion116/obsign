@@ -2,9 +2,9 @@ import './DocsPage.css'
 
 const RECEIPT_SECTIONS = [
   {
-    title: 'Recomputable IDs',
+    title: 'Recomputable identifiers',
     body: [
-      'The heart of the design: given the same credential and evidence, any party reproduces the exact same receiptId.',
+      'This is the heart of the entire design. When two people begin with the same credential and the same evidence, they will independently arrive at the identical receipt identifier every time. The three lines below show precisely how that identifier is derived, so nothing about the process is hidden.',
     ],
     lines: [
       'credentialHash = keccak256(utf8(JCS(credential)))',
@@ -15,34 +15,34 @@ const RECEIPT_SECTIONS = [
   {
     title: 'Canonicalization',
     body: [
-      'Inputs are canonicalized with RFC 8785 (JCS), so key order never matters and two machines hash the same bytes.',
+      'Before anything is hashed, the inputs are canonicalized using RFC 8785, the JSON Canonicalization Scheme. This guarantees that the order of keys and other formatting choices carry no weight, which is why two different machines will always hash exactly the same bytes and reach the same result.',
     ],
   },
   {
     title: 'Verdict metadata',
     body: [
-      'Verdict details are appended outside the hashed inputs. Payment, latency, or who asked never touch the ID.',
+      'Details about the verdict are recorded alongside the receipt but deliberately kept outside the hashed inputs. As a result, factors such as whether payment was made, how long the call took, or who requested it can never influence the identifier itself.',
     ],
   },
 ]
 
 const MODULES = [
-  'Quorum — a threshold of independent co-signers approved the same message',
-  'Onchain event — a pinned transaction or log exists on Base, never against latest',
-  'Artifact hash — a fetched artifact matches a recorded SHA-256 checksum',
+  'The quorum module confirms that a defined threshold of independent co-signers has approved the very same message.',
+  'The on-chain event module confirms that a specific transaction or log exists on Base, always evaluated against a pinned block rather than the latest chain tip.',
+  'The artifact hash module confirms that a fetched artifact matches the SHA-256 checksum recorded in the credential.',
 ]
 
 const REASON_CODES = ['OK', 'QUORUM_THRESHOLD_NOT_MET', 'EVENT_NOT_FOUND', 'REVOKED']
 
 const API_ENDPOINTS = [
   { method: 'POST', path: '/api/v1/verify', note: 'x402-gated', body: '{ credential, evidence }' },
-  { method: 'GET', path: '/api/v1/receipts/:receiptId', note: '', body: '—' },
-  { method: 'GET', path: '/api/v1/credentials/:id', note: '', body: '—' },
+  { method: 'GET', path: '/api/v1/receipts/:receiptId', note: '', body: 'None' },
+  { method: 'GET', path: '/api/v1/credentials/:id', note: '', body: 'None' },
   { method: 'POST', path: '/api/v1/credentials', note: 'issuer-auth', body: 'credential draft + evidence' },
-  { method: 'POST', path: '/api/v1/credentials/:id/revoke', note: 'issuer-auth', body: '—' },
-  { method: 'GET', path: '/api/v1/issuers/:address', note: '', body: '—' },
-  { method: 'GET', path: '/api/v1/health', note: '', body: '—' },
-  { method: 'POST', path: '/api/mcp', note: 'streamable HTTP', body: '—' },
+  { method: 'POST', path: '/api/v1/credentials/:id/revoke', note: 'issuer-auth', body: 'None' },
+  { method: 'GET', path: '/api/v1/issuers/:address', note: '', body: 'None' },
+  { method: 'GET', path: '/api/v1/health', note: '', body: 'None' },
+  { method: 'POST', path: '/api/mcp', note: 'streamable HTTP', body: 'None' },
 ]
 
 const MCP_TOOLS = [
@@ -64,7 +64,7 @@ const offline = verify.offline({ credential, evidence })`
 
 const INVARIANTS = [
   { code: 'INV-1', text: 'The core is pure. No network, database, ambient clock, or randomness.' },
-  { code: 'INV-2', text: 'Receipts are recomputable — a third party reproduces the same receiptId.' },
+  { code: 'INV-2', text: 'Receipts are recomputable, so an independent third party can reproduce the same receiptId.' },
   { code: 'INV-3', text: 'Payment never affects validity. API, CLI, and third party all agree.' },
   { code: 'INV-4', text: 'The database is a cache. MongoDB is never required to recompute a receipt.' },
   { code: 'INV-5', text: 'The LLM is outside the validity path. Model output can explain, never decide.' },
@@ -106,7 +106,9 @@ export default function DocsPage() {
             <section id="receipt" className="docs__section">
               <h2 className="docs__section-title">The receipt</h2>
               <p className="docs__section-lead">
-                A receipt is the canonical result object every verifier path returns.
+                A receipt is the canonical result object that every verification path
+                returns, whether the check ran through the API, the command line, or a
+                fully offline reproduction. The shape shown below is the same in all cases.
               </p>
 
               <div className="docs__code-block">
@@ -144,7 +146,9 @@ export default function DocsPage() {
             <section id="modules" className="docs__section">
               <h2 className="docs__section-title">Evidence modules</h2>
               <p className="docs__section-lead">
-                Every credential must back its claim with exactly one machine-checkable module.
+                Every credential has to back its claim with exactly one machine-checkable
+                module. Restricting each credential to a single module keeps verification
+                unambiguous, since there is never more than one rule deciding the outcome.
               </p>
               <ul className="docs__list">
                 {MODULES.map((m) => (
@@ -158,8 +162,9 @@ export default function DocsPage() {
             <section id="reason-codes" className="docs__section">
               <h2 className="docs__section-title">Reason codes</h2>
               <p className="docs__section-lead">
-                A bare boolean is never enough. Every verification returns a fixed,
-                machine-readable reason code.
+                A simple true or false answer is never enough to act on with confidence.
+                For that reason, every verification returns a fixed, machine-readable
+                reason code that explains exactly why a credential passed or failed.
               </p>
               <div className="docs__codes">
                 {REASON_CODES.map((c) => (
@@ -173,8 +178,9 @@ export default function DocsPage() {
             <section id="api" className="docs__section">
               <h2 className="docs__section-title">API</h2>
               <p className="docs__section-lead">
-                REST surface, versioned and machine-readable. Unpaid verification returns
-                an x402 challenge.
+                The REST surface is versioned and designed to be read by machines as easily
+                as by people. When a verification request arrives without payment, the API
+                responds with an x402 challenge so the caller can settle and continue.
               </p>
               <div className="docs__table-wrap">
                 <table className="docs__table">
@@ -191,7 +197,7 @@ export default function DocsPage() {
                       <tr key={e.method + e.path}>
                         <td><code className="docs__method">{e.method}</code></td>
                         <td><code className="docs__path">{e.path}</code></td>
-                        <td className="docs__muted">{e.note || '—'}</td>
+                        <td className="docs__muted">{e.note || 'None'}</td>
                         <td><code className="docs__path">{e.body}</code></td>
                       </tr>
                     ))}
@@ -203,7 +209,10 @@ export default function DocsPage() {
             <section id="mcp" className="docs__section">
               <h2 className="docs__section-title">MCP tools</h2>
               <p className="docs__section-lead">
-                Exposed over streamable HTTP at <code className="docs__inline-code-tag">/api/mcp</code>.
+                These tools are exposed over streamable HTTP at{' '}
+                <code className="docs__inline-code-tag">/api/mcp</code>, which lets AI agents
+                and other automated clients issue and verify credentials directly as part
+                of their own workflows.
               </p>
               <div className="docs__table-wrap">
                 <table className="docs__table">
@@ -219,7 +228,7 @@ export default function DocsPage() {
                       <tr key={t.name}>
                         <td><code className="docs__path">{t.name}</code></td>
                         <td>{t.desc}</td>
-                        <td className="docs__muted">{t.gate || '—'}</td>
+                        <td className="docs__muted">{t.gate || 'None'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -230,8 +239,10 @@ export default function DocsPage() {
             <section id="sdk" className="docs__section">
               <h2 className="docs__section-title">SDK</h2>
               <p className="docs__section-lead">
-                <code className="docs__inline-code-tag">@obsign/sdk</code> exposes typed API
-                helpers and fully offline verification.
+                The <code className="docs__inline-code-tag">@obsign/sdk</code> package gives
+                you fully typed helpers for the API along with a verification path that runs
+                entirely offline, so you can confirm a receipt without making a single
+                network request when you need to.
               </p>
               <pre className="docs__code-block">{SDK_SNIPPET}</pre>
             </section>
@@ -239,8 +250,9 @@ export default function DocsPage() {
             <section id="invariants" className="docs__section">
               <h2 className="docs__section-title">Invariants</h2>
               <p className="docs__section-lead">
-                These rules override any other instruction. If a change would break one,
-                stop and surface the conflict first.
+                The following invariants take precedence over any other instruction in the
+                system. If a proposed change would break even one of them, the right move
+                is to stop and raise the conflict for review before going any further.
               </p>
               <ul className="docs__invariants">
                 {INVARIANTS.map((i) => (

@@ -24,7 +24,7 @@ export default function CredentialsPage() {
 
   const onRevoke = async (id: string) => {
     const confirmed = window.confirm(
-      'Revoke this credential? Verifiers will return REVOKED for its receipt.',
+      'Are you sure you want to revoke this credential? Once revoked, anyone who verifies its receipt will receive a REVOKED result, and this action cannot be undone from the dashboard.',
     )
     if (!confirmed) return
 
@@ -52,11 +52,13 @@ export default function CredentialsPage() {
             <div>
               <p className="eyebrow">Issuer dashboard</p>
               <h1 className="creds__title">
-                Your <span className="script-accent">credentials.</span>
+                Manage the credentials <span className="script-accent">you issue.</span>
               </h1>
               <p className="creds__lead">
-                Issue, track, and revoke credentials. Wallet authentication required to
-                publish new ones.
+                This dashboard gives you a single place to issue new credentials, follow
+                each one as it moves from pending to anchored, and revoke anything that
+                should no longer be trusted. Publishing a new credential requires wallet
+                authentication, which keeps issuing authority firmly in your hands.
               </p>
             </div>
             <Link className="btn btn--primary creds__new" to="/app/issue">
@@ -127,7 +129,7 @@ export default function CredentialsPage() {
                           {c.status === 'anchored' ? (
                             <code className="creds__mono">{c.anchorTx}</code>
                           ) : (
-                            <span className="creds__muted">—</span>
+                            <span className="creds__muted">Not yet anchored</span>
                           )}
                         </td>
                         <td className="creds__muted">
@@ -158,8 +160,11 @@ export default function CredentialsPage() {
 
           <div className="creds__note">
             <p className="creds__note-body">
-              Data shown here is a local demo. Issuer keys never touch this dashboard —
-              they live behind the KeyProvider interface (INV-7).
+              The records shown here are a local demonstration rather than live production
+              data. It is worth noting that issuer keys never pass through this dashboard
+              at any point. They remain safely behind the KeyProvider interface described
+              in invariant INV-7, so the interface you are using can display and manage
+              credentials without ever touching the sensitive key material itself.
             </p>
           </div>
         </div>

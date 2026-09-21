@@ -23,11 +23,14 @@ export default function StatusPage() {
           <div className="status__head">
             <p className="eyebrow">System status</p>
             <h1 className="status__title">
-              All systems <span className="script-accent">operational.</span>
+              A live look at <span className="script-accent">every service.</span>
             </h1>
             <p className="status__lead">
-              Live health of the verification surface, the MCP endpoint, the deterministic
-              core, and the Base Sepolia anchor.
+              This page reports the current health of the pieces you rely on, including the
+              verification API, the MCP endpoint that automated agents connect through, the
+              deterministic core that produces every verdict, and the Base Sepolia anchor
+              that timestamps receipts. Each service is listed below with a short note on
+              exactly what is being measured.
             </p>
           </div>
 
@@ -36,13 +39,15 @@ export default function StatusPage() {
             <div>
               <h2 className="status__overview-title">
                 {loading
-                  ? 'Checking systems…'
+                  ? 'Checking the health of every service right now'
                   : allOperational
-                    ? 'All systems operational'
-                    : 'Some systems need attention'}
+                    ? 'Every service is currently operating normally'
+                    : 'One or more services currently need attention'}
               </h2>
               <p className="status__overview-time">
-                {loading ? 'Fetching latest health…' : 'Last checked just now'}
+                {loading
+                  ? 'We are fetching the latest readings for you.'
+                  : 'These readings were refreshed a moment ago.'}
               </p>
             </div>
           </div>
@@ -77,12 +82,13 @@ export default function StatusPage() {
           </ul>
 
           <div className="status__note">
-            <p className="status__note-title">About this page</p>
+            <p className="status__note-title">What this status actually covers</p>
             <p className="status__note-body">
-              Status reflects the deployed API surface. Because receipts are recomputable
-              offline, a partial outage of the hosted API never invalidates existing
-              credentials — you can still verify against the published spec and public
-              chain state.
+              The readings above describe the health of our hosted API surface and nothing
+              more. Because every receipt can be recomputed offline, a partial outage here
+              never puts your existing credentials at risk. Even if this service were fully
+              unavailable, you could still verify any credential yourself by working
+              directly from the published specification and public chain state.
             </p>
           </div>
         </div>

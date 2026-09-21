@@ -65,24 +65,24 @@ export default function VerifyWidget() {
     <div className="widget" role="region" aria-label="Verify a credential">
       <form className="widget__form" onSubmit={onVerify}>
         <label className="widget__label" htmlFor="widget-input">
-          <span className="eyebrow widget__eyebrow">Live verify</span>
+          <span className="eyebrow widget__eyebrow">Verify something right now</span>
         </label>
         <div className="widget__field">
           <textarea
             id="widget-input"
             className="widget__input"
-            placeholder="Paste a receipt ID or credential JSON to begin."
+            placeholder="Paste a receipt ID or a full credential in JSON to get started, then choose Verify to see the result."
             rows={4}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             aria-live="polite"
           />
           <button type="submit" className="btn btn--primary widget__submit" disabled={status === 'validating'}>
-            {status === 'validating' ? 'Verifying…' : 'Verify'}
+            {status === 'validating' ? 'Checking the proof…' : 'Verify this credential'}
           </button>
         </div>
         <button type="button" className="widget__sample" onClick={onTrySample}>
-          Try a sample
+          Load a known-good sample instead
         </button>
       </form>
 
@@ -113,9 +113,11 @@ function StatusView(props: {
     case 'idle':
       return (
         <div className="widget__state widget__state--idle">
-          <p className="widget__state-title">Paste input to begin</p>
+          <p className="widget__state-title">Nothing to check just yet</p>
           <p className="widget__state-hint">
-            Use “Try a sample” to load a known-good vector.
+            Paste a credential or receipt into the field above to begin, and the verdict
+            along with its recomputed hashes will appear here. If you would rather see how
+            it works first, load the known-good sample and watch a real receipt come back.
           </p>
         </div>
       )
@@ -123,16 +125,18 @@ function StatusView(props: {
       return (
         <div className="widget__state widget__state--validating">
           <span className="widget__spinner" aria-hidden="true" />
-          <p className="widget__state-title">Verifying…</p>
+          <p className="widget__state-title">Recomputing the receipt from your input…</p>
         </div>
       )
     case 'valid':
       return (
         <div className="widget__state widget__state--valid">
           <p className="widget__badge">Valid</p>
-          <p className="widget__state-title">This credential checks out</p>
+          <p className="widget__state-title">This credential holds up under verification</p>
           <p className="widget__state-meta">
-            reasonCode: <code className="widget__code">{receipt?.reasonCode}</code>
+            The core returned the reason code{' '}
+            <code className="widget__code">{receipt?.reasonCode}</code>, which confirms the
+            evidence satisfied every rule for this claim.
           </p>
           {receipt && (
             <div className="widget__receipt-line">
@@ -158,9 +162,12 @@ function StatusView(props: {
       return (
         <div className="widget__state widget__state--invalid">
           <p className="widget__badge widget__badge--warn">Invalid</p>
-          <p className="widget__state-title">Verification failed</p>
+          <p className="widget__state-title">This credential did not pass verification</p>
           <p className="widget__state-meta">
-            reasonCode: <code className="widget__code">{errorMsg || 'QUORUM_THRESHOLD_NOT_MET'}</code>
+            The core returned the reason code{' '}
+            <code className="widget__code">{errorMsg || 'QUORUM_THRESHOLD_NOT_MET'}</code>,
+            which tells you precisely which rule the evidence failed to meet rather than
+            leaving you with a bare rejection.
           </p>
         </div>
       )
@@ -168,12 +175,15 @@ function StatusView(props: {
       return (
         <div className="widget__state widget__state--unpaid">
           <p className="widget__badge widget__badge--warn">Payment required</p>
-          <p className="widget__state-title">x402 challenge</p>
+          <p className="widget__state-title">The server returned an x402 payment challenge</p>
           <p className="widget__state-hint">
-            This verification requires payment. Free during the testnet pilot.
+            This particular verification is set up to require a small payment before it
+            runs, which the x402 protocol handles automatically on your behalf. While the
+            testnet pilot is under way there is no charge at all, so you can continue and
+            complete the check for free.
           </p>
           <button className="btn btn--primary" type="button" onClick={onIdle}>
-            Pay &amp; verify
+            Pay and continue verifying
           </button>
         </div>
       )
@@ -181,9 +191,14 @@ function StatusView(props: {
       return (
         <div className="widget__state widget__state--error">
           <p className="widget__badge widget__badge--error">Error</p>
-          <p className="widget__state-title">Something went wrong</p>
+          <p className="widget__state-title">The verification could not be completed</p>
+          <p className="widget__state-hint">
+            Something interrupted this check before it could finish, which is usually a
+            temporary network problem rather than anything wrong with your credential. Your
+            input is still in place, so you can run it again without retyping anything.
+          </p>
           <button className="btn btn--secondary" type="button" onClick={onRetry}>
-            Retry
+            Try the verification again
           </button>
         </div>
       )
@@ -196,7 +211,7 @@ function RecomputePanel(props: { receipt: DemoReceipt | null }) {
 
   return (
     <div className={`widget__recompute ${show ? '' : 'widget__recompute--empty'}`}>
-      <p className="widget__recompute-title">Recomputation</p>
+      <p className="widget__recompute-title">Recomputed hashes</p>
       {show ? (
         <dl className="widget__hashes">
           <div className="widget__hash-row">
@@ -219,7 +234,11 @@ function RecomputePanel(props: { receipt: DemoReceipt | null }) {
           </div>
         </dl>
       ) : (
-        <p className="widget__recompute-empty">Hashes appear here after verification.</p>
+        <p className="widget__recompute-empty">
+          Once you run a verification, the credential hash, the evidence hash, and the
+          final receipt identifier will be shown here so you can compare them against the
+          values published in the specification and confirm the result independently.
+        </p>
       )}
     </div>
   )

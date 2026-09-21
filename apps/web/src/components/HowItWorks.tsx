@@ -3,18 +3,18 @@ import './HowItWorks.css'
 const STEPS = [
   {
     n: '01',
-    title: 'Issue',
-    body: 'An issuer mints a credential with machine-checkable evidence attached.',
+    title: 'Issue the credential',
+    body: 'An issuer composes a credential and attaches machine-checkable evidence to it, so the claim carries everything a third party needs to confirm it rather than relying on a signature alone.',
   },
   {
     n: '02',
-    title: 'Anchor',
-    body: 'The receipt hash is committed on Base, publicly timestamped and immutable.',
+    title: 'Anchor it on Base',
+    body: 'The resulting receipt hash is committed to the Base network, where it becomes a public, tamper-resistant timestamp that proves exactly what was issued and precisely when it happened.',
   },
   {
     n: '03',
-    title: 'Verify',
-    body: 'Anyone recomputes the receipt offline — no trust in our server required.',
+    title: 'Verify it anywhere',
+    body: 'Anyone can recompute the same receipt offline from the published inputs, which means the verdict never depends on our servers staying online or on any private access to our systems.',
   },
 ]
 

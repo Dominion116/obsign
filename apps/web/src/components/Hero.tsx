@@ -2,7 +2,12 @@ import { Link } from '../lib/router'
 import VerifyWidget from './VerifyWidget'
 import './Hero.css'
 
-const TRUST = ['Built on Base', 'x402 payments', 'MCP-native', 'Open spec']
+const TRUST = [
+  'Anchored on Base',
+  'Pays over x402',
+  'Native MCP support',
+  'Fully open specification',
+]
 
 export default function Hero() {
   return (
@@ -14,14 +19,16 @@ export default function Hero() {
 
       <div className="hero__inner container">
         <div className="hero__copy">
-          <p className="eyebrow">Proof, not promises</p>
+          <p className="eyebrow">Proof you can reproduce yourself</p>
           <h1 className="hero__title">
             Credentials anyone <span className="script-accent">can recompute.</span>
           </h1>
           <p className="hero__sub">
-            Obsign turns “I was there” or “this is genuine” into a receipt that any
-            person, app, or AI agent verifies independently — no trust in our server
-            required.
+            Obsign turns everyday claims like “I attended this event” or “this document
+            is genuine” into a verifiable receipt that any person, application, or AI
+            agent can reproduce on their own. You never have to take our word for it,
+            because every verdict is derived from a published specification and public
+            on-chain state that you are free to inspect and recompute at any time.
           </p>
           <div className="hero__ctas">
             <Link className="btn btn--primary" to="/app/verify">
