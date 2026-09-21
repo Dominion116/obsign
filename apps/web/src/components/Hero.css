@@ -69,12 +69,17 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 1.25rem;
+  /* Allow the column to shrink inside the grid so long words can wrap */
+  min-width: 0;
 }
 
 .hero__title {
   font-size: clamp(2.5rem, 6.4vw, 4.1rem);
   color: var(--color-navy);
   max-width: 16ch;
+  /* Prevent the large script word from bleeding past the viewport */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .hero__sub {

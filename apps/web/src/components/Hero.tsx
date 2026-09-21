@@ -24,9 +24,7 @@ export default function Hero() {
             Credentials anyone <span className="script-accent">can recompute.</span>
           </h1>
           <p className="hero__sub">
-            Obsign turns everyday claims into verifiable receipts that any person, app, or
-            AI agent can reproduce independently. Every verdict comes from a published spec
-            and public on-chain state, so you never have to take our word for it.
+            Turn everyday claims into receipts anyone can independently verify.
           </p>
           <div className="hero__ctas">
             <Link className="btn btn--primary" to="/app/verify">
