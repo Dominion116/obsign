@@ -8,6 +8,10 @@ out/
 lib/
 *.tsbuildinfo
 
+# The web app has real source under src/lib/ (not a build output) - keep it tracked
+!apps/web/src/lib/
+!apps/web/src/lib/**
+
 # Contracts / Hardhat & Foundry
 contracts/deployments/localhost/
 contracts/deployments/hardhat/
