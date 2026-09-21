@@ -14,12 +14,13 @@ export default function Nav() {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
-    onScroll()
+    onScroll() // check on initial mount
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   useEffect(() => {
+    // Lock body scroll when mobile menu is open
     document.body.style.overflow = open ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
@@ -43,9 +44,11 @@ export default function Nav() {
         </nav>
 
         <div className="nav__actions">
+          {/* This CTA is now hidden on mobile via CSS to prevent squeezing */}
           <a className="btn btn--primary nav__cta" href="#verify">
             Verify a credential
           </a>
+          
           <button
             className="nav__toggle"
             aria-expanded={open}
