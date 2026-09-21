@@ -1,6 +1,6 @@
 .footer {
-  background: var(--ink);
-  color: var(--text-on-navy);
+  background: var(--color-navy);
+  color: var(--color-paper);
   border-top: var(--border-w-thick) solid var(--accent);
   padding-block: 3.5rem 2rem;
 }
@@ -14,21 +14,6 @@
   display: flex;
   align-items: flex-start;
   gap: 0.8rem;
-}
-
-.footer__mark {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
-  background: var(--color-navy);
-  color: var(--accent);
-  font-family: var(--font-script);
-  font-size: 1.7rem;
-  line-height: 1;
-  box-shadow: 2px 2px 0 0 var(--accent);
-  flex: none;
 }
 
 .footer__word {
@@ -77,7 +62,7 @@
 
 .footer__col a:hover,
 .footer__col a:focus-visible {
-  color: var(--text-on-navy);
+  color: var(--color-mist);
 }
 
 .footer__badge {

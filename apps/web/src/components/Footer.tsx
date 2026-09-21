@@ -35,9 +35,6 @@ export default function Footer() {
       <div className="container">
         <div className="footer__top">
           <div className="footer__brand">
-            <span className="footer__mark" aria-hidden="true">
-              o
-            </span>
             <div>
               <p className="footer__word">Obsign</p>
               <p className="footer__tag">Credentials anyone can recompute.</p>

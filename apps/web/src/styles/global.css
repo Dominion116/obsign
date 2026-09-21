@@ -135,13 +135,13 @@ button {
 }
 
 .btn--primary {
-  background: var(--accent);
-  color: var(--ink);
+  background: var(--color-paper);
+  color: var(--color-navy);
   box-shadow: var(--shadow-card);
 }
 
 .btn--primary:hover {
-  background: var(--accent-strong);
+  background: var(--color-mist);
   transform: translate(-2px, -2px);
   box-shadow: 8px 8px 0 0 #000000;
 }
