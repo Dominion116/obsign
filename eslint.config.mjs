@@ -3,6 +3,20 @@
 import js from '@eslint/js'
 import tseslint from 'typescript-eslint'
 
+// Node globals for tooling/scripts/config files (dependency-free).
+const nodeGlobals = {
+  process: 'readonly',
+  console: 'readonly',
+  Buffer: 'readonly',
+  __dirname: 'readonly',
+  __filename: 'readonly',
+  module: 'readonly',
+  require: 'readonly',
+  URL: 'readonly',
+  TextEncoder: 'readonly',
+  TextDecoder: 'readonly',
+}
+
 export default tseslint.config(
   {
     ignores: [
@@ -12,7 +26,9 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/*.tsbuildinfo',
       'contracts/**',
-      'apps/web/dist/**',
+      // The web app has its own toolchain (React/Vite) and lint setup; it is
+      // not part of the shared workspace lint scope.
+      'apps/web/**',
       'coverage/**',
     ],
   },
@@ -27,6 +43,13 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+  {
+    // Node-run tooling, scripts, and config files.
+    files: ['scripts/**/*.{mjs,js}', '**/*.config.{ts,mjs,js}', 'eslint.config.mjs'],
+    languageOptions: {
+      globals: nodeGlobals,
     },
   },
   {

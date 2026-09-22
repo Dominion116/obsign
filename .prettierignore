@@ -1,9 +1,22 @@
+# Prettier scope — checked in CI (RULE-1). Keep the format check focused on
+# code/config authored in this monorepo; leave pre-existing app, docs, contracts,
+# generated output, and prose untouched.
+
 node_modules/
 dist/
 build/
 lib/
 coverage/
 *.tsbuildinfo
+
+# Separate toolchains / not owned by the shared workspace format rules
 contracts/
-apps/web/dist/
+apps/web/
+docs/
+
+# Prose and CI YAML are not enforced by prettier here
+**/*.md
+.github/
+
+# Golden vectors are hand-authored fixtures with intentional layout
 spec/vectors/*.json
