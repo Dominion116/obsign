@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {Test} from "forge-std/Test.sol";
-import {ObsignPolicyRegistry} from "../src/ObsignPolicyRegistry.sol";
-import {IObsignPolicyRegistry} from "../src/interfaces.sol";
+import { Test } from "forge-std/Test.sol";
+import { ObsignPolicyRegistry } from "../src/ObsignPolicyRegistry.sol";
+import { IObsignPolicyRegistry } from "../src/interfaces.sol";
 
 contract ObsignPolicyRegistryTest is Test {
     ObsignPolicyRegistry internal reg;
@@ -54,9 +54,7 @@ contract ObsignPolicyRegistryTest is Test {
         assertTrue(reg.isRegistered(h));
         assertEq(reg.registrantOf(h), who);
 
-        vm.expectRevert(
-            abi.encodeWithSelector(ObsignPolicyRegistry.AlreadyRegistered.selector, h)
-        );
+        vm.expectRevert(abi.encodeWithSelector(ObsignPolicyRegistry.AlreadyRegistered.selector, h));
         vm.prank(who);
         reg.registerPolicy(h);
     }

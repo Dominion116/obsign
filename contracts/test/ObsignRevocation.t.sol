@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {Test} from "forge-std/Test.sol";
-import {ObsignRevocation} from "../src/ObsignRevocation.sol";
-import {IObsignRevocation} from "../src/interfaces.sol";
+import { Test } from "forge-std/Test.sol";
+import { ObsignRevocation } from "../src/ObsignRevocation.sol";
+import { IObsignRevocation } from "../src/interfaces.sol";
 
 contract ObsignRevocationTest is Test {
     ObsignRevocation internal rev;

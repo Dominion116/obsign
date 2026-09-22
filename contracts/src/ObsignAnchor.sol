@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IObsignAnchor} from "./interfaces.sol";
+import { IObsignAnchor } from "./interfaces.sol";
 
 /// @title ObsignAnchor
 /// @notice Immutable, append-only registry committing a receiptId + credentialHash

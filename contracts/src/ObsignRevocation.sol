@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IObsignRevocation} from "./interfaces.sol";
+import { IObsignRevocation } from "./interfaces.sol";
 
 /// @title ObsignRevocation
 /// @notice Immutable, issuer-scoped revocation registry (FR-2.2). No proxy, no

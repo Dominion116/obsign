@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {Script} from "forge-std/Script.sol";
-import {console2} from "forge-std/console2.sol";
-import {ObsignAnchor} from "../src/ObsignAnchor.sol";
-import {ObsignRevocation} from "../src/ObsignRevocation.sol";
-import {ObsignIssuerRegistry} from "../src/ObsignIssuerRegistry.sol";
-import {ObsignPolicyRegistry} from "../src/ObsignPolicyRegistry.sol";
+import { Script } from "forge-std/Script.sol";
+import { console2 } from "forge-std/console2.sol";
+import { ObsignAnchor } from "../src/ObsignAnchor.sol";
+import { ObsignRevocation } from "../src/ObsignRevocation.sol";
+import { ObsignIssuerRegistry } from "../src/ObsignIssuerRegistry.sol";
+import { ObsignPolicyRegistry } from "../src/ObsignPolicyRegistry.sol";
 
 /// @notice Deploys the four immutable Obsign contracts and writes their addresses
 ///         to contracts/deployments/84532.json.

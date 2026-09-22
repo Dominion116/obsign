@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IObsignPolicyRegistry} from "./interfaces.sol";
+import { IObsignPolicyRegistry } from "./interfaces.sol";
 
 /// @title ObsignPolicyRegistry
 /// @notice Immutable, append-only registry anchoring a policy hash onchain (A4).

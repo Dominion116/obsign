@@ -3,9 +3,10 @@
 // the SDK performs all I/O here, then reader.ts builds a synchronous ChainReader
 // over the resulting fixture so the pure verifier never awaits or touches viem.
 
-import type { Address, Hex, PublicClient } from 'viem'
+import type { Address, Hex } from 'viem'
 import type { ChainFixture } from '@obsign/core'
 import { revocationAbi, type ObsignAddresses } from './contracts.js'
+import type { ObsignChainClient } from './client.js'
 
 /** Minimal onchain-event evidence fields the snapshot needs. */
 export interface OnchainEventRef {
@@ -34,7 +35,7 @@ export interface SnapshotRequest {
  * Confirmations are computed as (head - blockNumber).
  */
 export async function fetchSnapshot(
-  client: PublicClient,
+  client: ObsignChainClient,
   addresses: Pick<ObsignAddresses, 'revocation'>,
   req: SnapshotRequest,
 ): Promise<ChainFixture> {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {IObsignIssuerRegistry} from "./interfaces.sol";
+import { IObsignIssuerRegistry } from "./interfaces.sol";
 
 /// @title ObsignIssuerRegistry
 /// @notice Immutable, permissionless issuer registry (FR-2.3). No proxy, no

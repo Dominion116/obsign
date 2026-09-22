@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {Test} from "forge-std/Test.sol";
-import {ObsignIssuerRegistry} from "../src/ObsignIssuerRegistry.sol";
-import {IObsignIssuerRegistry} from "../src/interfaces.sol";
+import { Test } from "forge-std/Test.sol";
+import { ObsignIssuerRegistry } from "../src/ObsignIssuerRegistry.sol";
+import { IObsignIssuerRegistry } from "../src/interfaces.sol";
 
 contract ObsignIssuerRegistryTest is Test {
     ObsignIssuerRegistry internal reg;

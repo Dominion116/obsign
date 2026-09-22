@@ -3,9 +3,9 @@
 // to @obsign/core is always sync and pinned; viem stays behind this boundary.
 
 import { chainReaderFromFixture, type ChainReader, type ChainFixture } from '@obsign/core'
-import type { PublicClient } from 'viem'
 import { fetchSnapshot, type SnapshotRequest } from './snapshot.js'
 import type { ObsignAddresses } from './contracts.js'
+import type { ObsignChainClient } from './client.js'
 
 /** Build a sync ChainReader over an already-fetched snapshot fixture. */
 export function chainReaderFromSnapshot(snapshot: ChainFixture): ChainReader {
@@ -13,7 +13,7 @@ export function chainReaderFromSnapshot(snapshot: ChainFixture): ChainReader {
 }
 
 export interface CreateChainReaderOptions {
-  client: PublicClient
+  client: ObsignChainClient
   addresses: Pick<ObsignAddresses, 'revocation'>
   request: SnapshotRequest
 }

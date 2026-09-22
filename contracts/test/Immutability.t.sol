@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {Test} from "forge-std/Test.sol";
-import {ObsignAnchor} from "../src/ObsignAnchor.sol";
-import {ObsignRevocation} from "../src/ObsignRevocation.sol";
-import {ObsignIssuerRegistry} from "../src/ObsignIssuerRegistry.sol";
-import {ObsignPolicyRegistry} from "../src/ObsignPolicyRegistry.sol";
+import { Test } from "forge-std/Test.sol";
+import { ObsignAnchor } from "../src/ObsignAnchor.sol";
+import { ObsignRevocation } from "../src/ObsignRevocation.sol";
+import { ObsignIssuerRegistry } from "../src/ObsignIssuerRegistry.sol";
+import { ObsignPolicyRegistry } from "../src/ObsignPolicyRegistry.sol";
 
 /// @notice Immutability guarantees (D11 / FR-2.4): no owner/admin, no proxy, and
 ///         no self-destruct/delegatecall in the deployed bytecode. A written

@@ -15,7 +15,7 @@ export {
   type DeploymentsFile,
 } from './contracts.js'
 
-export { createChainClient, type ChainClientOptions } from './client.js'
+export { createChainClient, type ChainClientOptions, type ObsignChainClient } from './client.js'
 
 export {
   fetchSnapshot,

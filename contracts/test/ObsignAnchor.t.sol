@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {Test} from "forge-std/Test.sol";
-import {ObsignAnchor} from "../src/ObsignAnchor.sol";
-import {IObsignAnchor} from "../src/interfaces.sol";
+import { Test } from "forge-std/Test.sol";
+import { ObsignAnchor } from "../src/ObsignAnchor.sol";
+import { IObsignAnchor } from "../src/interfaces.sol";
 
 contract ObsignAnchorTest is Test {
     ObsignAnchor internal anchor;
