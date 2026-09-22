@@ -1,20 +1,13 @@
-import { execFileSync } from 'node:child_process'
-import { createRequire } from 'node:module'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { join } from 'node:path'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { chainReaderFromFixture, evidenceStoreFromFixture, verify } from '@obsign/core'
+import { run } from '../src/index.js'
 
 // The CLI must produce a receipt whose derived truth is byte-identical to
-// @obsign/core for the same inputs. We run the real CLI entry via vite-node and
-// compare against a direct core call.
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const CLI_ENTRY = join(__dirname, '..', 'src', 'index.ts')
-const require = createRequire(import.meta.url)
-const VITE_NODE_ENTRY = require.resolve('vite-node/vite-node.mjs')
+// @obsign/core for the same inputs. We drive the exported run() in-process and
+// capture stdout, avoiding brittle subprocess/argv plumbing.
 
 const credential = {
   v: 1,
@@ -46,6 +39,7 @@ const context = {
 }
 
 let dir: string
+let out: string
 
 beforeAll(() => {
   dir = mkdtempSync(join(tmpdir(), 'obsign-cli-'))
@@ -58,32 +52,44 @@ afterAll(() => {
   rmSync(dir, { recursive: true, force: true })
 })
 
-function runCli(extra: string[]): string {
-  return execFileSync(
-    process.execPath,
-    [
-      VITE_NODE_ENTRY,
-      CLI_ENTRY,
-      '--',
-      'verify',
-      '--credential',
-      join(dir, 'c.json'),
-      '--evidence',
-      join(dir, 'e.json'),
-      '--context',
-      join(dir, 'ctx.json'),
-      ...extra,
-    ],
-    { encoding: 'utf8' },
-  )
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+function captureStdout(): { restore: () => void; text: () => string } {
+  let buf = ''
+  const impl = (chunk: unknown): boolean => {
+    buf += String(chunk)
+    return true
+  }
+  const spy = vi.spyOn(process.stdout, 'write').mockImplementation(impl as never)
+  return { restore: () => spy.mockRestore(), text: () => buf }
+}
+
+function baseArgs(extra: string[]): string[] {
+  return [
+    'verify',
+    '--credential',
+    join(dir, 'c.json'),
+    '--evidence',
+    join(dir, 'e.json'),
+    '--context',
+    join(dir, 'ctx.json'),
+    ...extra,
+  ]
 }
 
 describe('obsign verify CLI', () => {
   it('emits a receipt matching core exactly', () => {
-    const out = runCli(['--out', join(dir, 'receipt.json')])
-    expect(out).toContain('valid OK')
+    out = join(dir, 'receipt.json')
+    const cap = captureStdout()
+    const code = run(baseArgs(['--out', out]))
+    cap.restore()
 
-    const receipt = JSON.parse(readFileSync(join(dir, 'receipt.json'), 'utf8'))
+    expect(code).toBe(0)
+    expect(cap.text()).toContain('valid OK')
+
+    const receipt = JSON.parse(readFileSync(out, 'utf8'))
     const core = verify(credential, evidence, {
       now: context.now,
       chain: chainReaderFromFixture(context.chain),
@@ -97,10 +103,29 @@ describe('obsign verify CLI', () => {
     expect(receipt.verifier).toBe('obsign-core/1.0.0')
   })
 
+  it('prints the receipt to stdout when no --out is given', () => {
+    const cap = captureStdout()
+    const code = run(baseArgs([]))
+    cap.restore()
+
+    expect(code).toBe(0)
+    const receipt = JSON.parse(cap.text())
+    expect(receipt.result).toBe('valid')
+    expect(receipt.reasonCode).toBe('OK')
+    expect(receipt.receiptId).toMatch(/^0x[0-9a-f]{64}$/)
+  })
+
   it('receiptId is stable across invocations', () => {
-    const first = JSON.parse(runCli([]))
-    const second = JSON.parse(runCli([]))
-    expect(first.receiptId).toBe(second.receiptId)
-    expect(first.credentialHash).toBe(second.credentialHash)
+    const first = captureStdout()
+    run(baseArgs([]))
+    first.restore()
+    const second = captureStdout()
+    run(baseArgs([]))
+    second.restore()
+
+    const a = JSON.parse(first.text())
+    const b = JSON.parse(second.text())
+    expect(a.receiptId).toBe(b.receiptId)
+    expect(a.credentialHash).toBe(b.credentialHash)
   })
 })
