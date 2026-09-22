@@ -17,11 +17,7 @@ export {
 
 export { createChainClient, type ChainClientOptions, type ObsignChainClient } from './client.js'
 
-export {
-  fetchSnapshot,
-  type SnapshotRequest,
-  type OnchainEventRef,
-} from './snapshot.js'
+export { fetchSnapshot, type SnapshotRequest, type OnchainEventRef } from './snapshot.js'
 
 export {
   createChainReader,
