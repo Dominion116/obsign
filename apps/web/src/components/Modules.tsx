@@ -52,7 +52,7 @@ export default function Modules() {
           ))}
         </div>
         <Link className="btn btn--primary modules__docs-link" to="/app/docs#modules">
-          See how each module verifies in the docs
+          See how module verifies in docs
         </Link>
       </div>
     </section>

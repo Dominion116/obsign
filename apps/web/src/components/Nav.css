@@ -164,6 +164,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  /* Fill the sheet so the CTA can be pushed to the very bottom */
+  flex: 1;
 }
 
 .nav__sheet-links a:not(.nav__sheet-cta) {
@@ -177,7 +179,8 @@
 }
 
 .nav__sheet-cta {
-  margin-top: 2rem;
+  /* Push the button to the bottom of the dropdown sheet */
+  margin-top: auto;
   text-align: center;
 }
 

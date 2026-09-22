@@ -12,10 +12,21 @@ html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 1rem);
+  /* Never allow the document to be wider than the viewport. `clip` (not
+     `hidden`) contains stray horizontal overflow without creating a scroll
+     container, so `position: sticky` on the nav keeps working. */
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
+  /* Pin the body to the viewport width so hard offset shadows, decorative
+     blobs, or long tokens can't push the page wider than the screen and
+     trigger the horizontal scroll/wobble on mobile. */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   font-family: var(--font-body);
   font-weight: 400;
   line-height: 1.65;
@@ -25,6 +36,18 @@ body {
   text-rendering: optimizeLegibility;
   /* Safety net: long unbreakable strings wrap instead of forcing page scroll */
   overflow-wrap: break-word;
+  /* Hide the visible vertical scrollbar while keeping the page scrollable. */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge/IE */
+}
+
+/* Hide the scrollbar on WebKit/Blink (Chrome, Safari, Edge) without
+   disabling scroll. */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 img,
