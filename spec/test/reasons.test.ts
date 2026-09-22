@@ -124,7 +124,7 @@ describe('reason codes — issuer', () => {
     const ev = quorumEvidence(cred, ['a', 'b'], 2)
     const registry = issuerRegistryFromFixture({
       '0x9999999999999999999999999999999999999999': { active: true },
-    })
+    })!
     expect(verify(cred, ev, ctx({ registry })).reasonCode).toBe('UNKNOWN_ISSUER')
   })
 
@@ -133,7 +133,7 @@ describe('reason codes — issuer', () => {
     const ev = quorumEvidence(cred, ['a', 'b'], 2)
     const registry = issuerRegistryFromFixture({
       '0x1111111111111111111111111111111111111111': { active: false },
-    })
+    })!
     expect(verify(cred, ev, ctx({ registry })).reasonCode).toBe('ISSUER_NOT_ACTIVE')
   })
 })

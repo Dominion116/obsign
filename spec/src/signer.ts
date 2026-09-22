@@ -137,8 +137,8 @@ function hmacSha256(key: Uint8Array, msg: Uint8Array): Uint8Array {
 function rfc6979k(privKey: Uint8Array, h1: Uint8Array): bigint {
   const z = mod(bytesToBig(h1), N)
   const zOctets = bigTo32(z)
-  let v = new Uint8Array(32).fill(0x01)
-  let k = new Uint8Array(32).fill(0x00)
+  let v: Uint8Array = new Uint8Array(32).fill(0x01)
+  let k: Uint8Array = new Uint8Array(32).fill(0x00)
   k = hmacSha256(k, concatBytes(v, Uint8Array.of(0x00), privKey, zOctets))
   v = hmacSha256(k, v)
   k = hmacSha256(k, concatBytes(v, Uint8Array.of(0x01), privKey, zOctets))

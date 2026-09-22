@@ -4,6 +4,8 @@
 //
 // Pure per INV-1: no clock, network, filesystem, or randomness.
 
+import { isHex } from './hash.js'
+
 // Strict hex (even-length) is required only where bytes are actually parsed.
 // Identifier / opaque-digest fields in this spec's fixtures use illustrative
 // `0x…` tokens (e.g. `0xcred…`, `0xblock…`, `0xtx…`) that are not strict hex, so
