@@ -74,10 +74,10 @@ jobs:
           REVOCATION=$(jq -r .revocation deployments/84532.json)
           REGISTRY=$(jq -r .issuerRegistry deployments/84532.json)
           POLICY=$(jq -r .policyRegistry deployments/84532.json)
-          forge verify-contract "$ANCHOR" src/ObsignAnchor.sol:ObsignAnchor --chain base_sepolia --watch
-          forge verify-contract "$REVOCATION" src/ObsignRevocation.sol:ObsignRevocation --chain base_sepolia --watch
-          forge verify-contract "$REGISTRY" src/ObsignIssuerRegistry.sol:ObsignIssuerRegistry --chain base_sepolia --watch
-          forge verify-contract "$POLICY" src/ObsignPolicyRegistry.sol:ObsignPolicyRegistry --chain base_sepolia --watch
+          forge verify-contract "$ANCHOR" src/ObsignAnchor.sol:ObsignAnchor --chain base-sepolia --watch
+          forge verify-contract "$REVOCATION" src/ObsignRevocation.sol:ObsignRevocation --chain base-sepolia --watch
+          forge verify-contract "$REGISTRY" src/ObsignIssuerRegistry.sol:ObsignIssuerRegistry --chain base-sepolia --watch
+          forge verify-contract "$POLICY" src/ObsignPolicyRegistry.sol:ObsignPolicyRegistry --chain base-sepolia --watch
 
       - name: Upload deployments artifact
         if: ${{ always() }}

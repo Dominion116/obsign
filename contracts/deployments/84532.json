@@ -4,9 +4,9 @@
   "status": "deployed",
   "note": "Live Base Sepolia deployment. Source of truth for SDK/env addresses. Each deploy-testnet run redeploys and overwrites this. RULE-1: deploys run in CI or by a human, never by the agent.",
   "verifiedOnBasescan": false,
-  "verificationNote": "On-chain deploy succeeded; run BaseScan verification via Etherscan V2 (foundry.toml). Set verifiedOnBasescan true once confirmed.",
-  "anchor": "0xBcAFBD23a8BbF284bbdaFbc78537fC696CECB078",
-  "revocation": "0x2266461AF2CEED3b87709f34eC136DE841791f03",
-  "issuerRegistry": "0x3fc9bEf44b87d5245ef051876cB3Bd0c0Ac0Ae20",
-  "policyRegistry": "0x27F29e854B8374d9cb7404EA0701160771e5F3ce"
+  "verificationNote": "On-chain deploy succeeded; run BaseScan verification via Etherscan V2 (foundry.toml), using --chain base-sepolia. Set verifiedOnBasescan true once confirmed.",
+  "anchor": "0xA0949e65A78171e5aE637f589ba58D9b3d0Fc81B",
+  "revocation": "0x9c675D82C24A6dA7aFE8d6CacA8376b78647d299",
+  "issuerRegistry": "0x9dEb208515bB3A9F2c5BB94136aedd42e3709Ef3",
+  "policyRegistry": "0xD022E7F757B26F05137f19d608fB196B5de0C1D0"
 }
