@@ -12,13 +12,30 @@ import { ObsignPolicyRegistry } from "../src/ObsignPolicyRegistry.sol";
 ///         record can never be altered (covered per-contract elsewhere); here we
 ///         assert the code itself carries no upgrade/kill path.
 contract ImmutabilityTest is Test {
+    /// @dev Scan executable opcodes for SELFDESTRUCT (0xff) / DELEGATECALL (0xf4).
+    ///      A naive byte scan false-positives on PUSH immediates and the trailing
+    ///      CBOR metadata, so we (1) strip the Solidity metadata using its declared
+    ///      length in the last two bytes, and (2) skip PUSH1..PUSH32 immediate data
+    ///      while walking, so only real opcodes are inspected.
     function _assertNoUpgradeOpcodes(bytes memory code) internal pure {
-        // SELFDESTRUCT = 0xff, DELEGATECALL = 0xf4. Neither may appear in the
-        // runtime bytecode of an immutable, admin-less contract.
-        for (uint256 i = 0; i < code.length; i++) {
+        uint256 len = code.length;
+        if (len < 2) return;
+
+        // Trailing metadata: last 2 bytes are the big-endian CBOR length.
+        uint256 metaLen = (uint256(uint8(code[len - 2])) << 8) | uint256(uint8(code[len - 1]));
+        uint256 end = len >= metaLen + 2 ? len - metaLen - 2 : len;
+
+        uint256 i = 0;
+        while (i < end) {
             uint8 op = uint8(code[i]);
             assertTrue(op != 0xff, "SELFDESTRUCT present");
             assertTrue(op != 0xf4, "DELEGATECALL present");
+            // PUSH1..PUSH32 (0x60..0x7f) carry (op - 0x5f) immediate bytes.
+            if (op >= 0x60 && op <= 0x7f) {
+                i += (op - 0x5f) + 1;
+            } else {
+                i += 1;
+            }
         }
     }
 
