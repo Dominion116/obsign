@@ -22,7 +22,9 @@ runs = 512
 base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
 
 [etherscan]
-base_sepolia = { key = "${BASESCAN_API_KEY}", chain = 84532, url = "https://api-sepolia.basescan.org/api" }
+# Etherscan API V2 (multichain). BaseScan's V1 endpoint is deprecated; V2 routes
+# by chainid. The same API key works across Etherscan-family explorers.
+base_sepolia = { key = "${BASESCAN_API_KEY}", chain = 84532, url = "https://api.etherscan.io/v2/api" }
 
 # forge fmt
 [fmt]

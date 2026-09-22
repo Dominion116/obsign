@@ -52,26 +52,35 @@ jobs:
           BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
         run: forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia
 
-      - name: Deploy + verify
+      - name: Deploy (broadcast)
         working-directory: contracts
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+        run: forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --broadcast
+
+      - name: Verify on BaseScan (Etherscan V2)
+        if: ${{ inputs.verify }}
+        working-directory: contracts
+        # Non-fatal: the on-chain deploy already succeeded and addresses are
+        # captured below regardless. --resume verifies the just-broadcast
+        # contracts without redeploying, using the V2 endpoint in foundry.toml.
+        continue-on-error: true
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
           BASESCAN_API_KEY: ${{ secrets.BASESCAN_API_KEY }}
-        run: |
-          if [ "${{ inputs.verify }}" = "true" ]; then
-            forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --broadcast --verify
-          else
-            forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --broadcast
-          fi
+        run: forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --resume --verify
 
       - name: Upload deployments artifact
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: deployments-84532
           path: contracts/deployments/84532.json
 
       - name: Open PR with updated addresses
+        if: ${{ always() }}
         uses: peter-evans/create-pull-request@v6
         with:
           branch: chore/deploy-84532

@@ -1,11 +1,12 @@
 {
   "chainId": 84532,
   "network": "base-sepolia",
-  "status": "pending-deploy",
-  "note": "Populated by the deploy-testnet CI workflow (or a human) running script/Deploy.s.sol against Base Sepolia. Addresses below are zero until the first real deploy; do not treat zero addresses as live. RULE-1: never deployed locally.",
-  "deployer": "0x0000000000000000000000000000000000000000",
-  "anchor": "0x0000000000000000000000000000000000000000",
-  "revocation": "0x0000000000000000000000000000000000000000",
-  "issuerRegistry": "0x0000000000000000000000000000000000000000",
-  "policyRegistry": "0x0000000000000000000000000000000000000000"
+  "status": "deployed",
+  "note": "Live Base Sepolia deployment. Source of truth for SDK/env addresses. Redeploy overwrites this. RULE-1: deploys run in CI or by a human, never by the agent.",
+  "verifiedOnBasescan": false,
+  "verificationNote": "On-chain deploy succeeded; BaseScan verification pending (V1 endpoint was deprecated — foundry.toml now targets Etherscan API V2). Re-run verification with the forge verify-contract commands.",
+  "anchor": "0xE60D97cBBbf99Ce3bC17A436Ed9eb57c3B3aC7c3",
+  "revocation": "0xF0BaFb4664298E5e9e2d03eF453bdbEEcAAB8440",
+  "issuerRegistry": "0x897B2A14E902f42af4cdc6CBd31C32D845f0CE9e",
+  "policyRegistry": "0x157cbdD9074930a39e07e3fA8f4a042Ceaa13de8"
 }
