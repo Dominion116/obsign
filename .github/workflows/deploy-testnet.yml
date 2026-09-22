@@ -63,14 +63,21 @@ jobs:
         if: ${{ inputs.verify }}
         working-directory: contracts
         # Non-fatal: the on-chain deploy already succeeded and addresses are
-        # captured below regardless. --resume verifies the just-broadcast
-        # contracts without redeploying, using the V2 endpoint in foundry.toml.
+        # captured below regardless. Verifies exactly the addresses just written
+        # to deployments/84532.json (no redeploy), via the V2 endpoint in
+        # foundry.toml. No constructor args on any contract.
         continue-on-error: true
         env:
-          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
           BASESCAN_API_KEY: ${{ secrets.BASESCAN_API_KEY }}
-        run: forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --resume --verify
+        run: |
+          ANCHOR=$(jq -r .anchor deployments/84532.json)
+          REVOCATION=$(jq -r .revocation deployments/84532.json)
+          REGISTRY=$(jq -r .issuerRegistry deployments/84532.json)
+          POLICY=$(jq -r .policyRegistry deployments/84532.json)
+          forge verify-contract "$ANCHOR" src/ObsignAnchor.sol:ObsignAnchor --chain base_sepolia --watch
+          forge verify-contract "$REVOCATION" src/ObsignRevocation.sol:ObsignRevocation --chain base_sepolia --watch
+          forge verify-contract "$REGISTRY" src/ObsignIssuerRegistry.sol:ObsignIssuerRegistry --chain base_sepolia --watch
+          forge verify-contract "$POLICY" src/ObsignPolicyRegistry.sol:ObsignPolicyRegistry --chain base_sepolia --watch
 
       - name: Upload deployments artifact
         if: ${{ always() }}
