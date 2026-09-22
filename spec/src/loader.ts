@@ -37,10 +37,7 @@ export function validateVectorShape(v: unknown, source: string): asserts v is Go
     `${source}: expectedReasonCode "${String(o.expectedReasonCode)}" is not in the closed set`,
   )
   if (o.expectedResult === 'valid') {
-    assert(
-      o.expectedReasonCode === 'OK',
-      `${source}: a valid result must carry reasonCode OK`,
-    )
+    assert(o.expectedReasonCode === 'OK', `${source}: a valid result must carry reasonCode OK`)
   } else {
     assert(
       o.expectedReasonCode !== 'OK',

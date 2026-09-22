@@ -22,7 +22,7 @@ const FORBIDDEN = [
   { label: 'ambient clock new Date()', re: /\bnew\s+Date\s*\(\s*\)/ },
   { label: 'randomness Math.random', re: /\bMath\.random\s*\(/ },
   { label: 'crypto randomness', re: /\b(randomBytes|getRandomValues|randomUUID)\s*\(/ },
-  { label: "node:http import", re: /from\s+['"]node:https?['"]/ },
+  { label: 'node:http import', re: /from\s+['"]node:https?['"]/ },
   { label: 'axios import', re: /from\s+['"]axios['"]/ },
   { label: 'mongodb import', re: /from\s+['"]mongodb['"]/ },
   { label: 'mongoose import', re: /from\s+['"]mongoose['"]/ },
