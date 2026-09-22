@@ -133,9 +133,7 @@ export interface ArtifactHashEvidence {
 export type Evidence = QuorumEvidence | OnchainEventEvidence | ArtifactHashEvidence
 
 /** Kind classification result. */
-export type KindCheck =
-  | { kind: EvidenceKind }
-  | { unknownKind: true }
+export type KindCheck = { kind: EvidenceKind } | { unknownKind: true }
 
 /** Determine the evidence kind, or flag it as unknown (spec §1.2). */
 export function classifyEvidenceKind(value: unknown): KindCheck {

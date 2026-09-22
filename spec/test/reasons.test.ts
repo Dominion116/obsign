@@ -8,12 +8,7 @@ import {
   verify,
   type VerificationContext,
 } from '@obsign/core'
-import {
-  addressFromPrivate,
-  fixtureKey,
-  fixtureSign,
-  personalSign,
-} from '../src/signer.js'
+import { addressFromPrivate, fixtureKey, fixtureSign, personalSign } from '../src/signer.js'
 
 // Reaches every reason code in spec/receipt.md §6 with at least one assertion,
 // independent of the frozen golden vectors. Quorum-OK paths use the

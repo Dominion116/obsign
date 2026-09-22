@@ -5,11 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import {
-  chainReaderFromFixture,
-  evidenceStoreFromFixture,
-  verify,
-} from '@obsign/core'
+import { chainReaderFromFixture, evidenceStoreFromFixture, verify } from '@obsign/core'
 
 // The CLI must produce a receipt whose derived truth is byte-identical to
 // @obsign/core for the same inputs. We run the real CLI entry via vite-node and

@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  bytesToHex,
-  hexToBytes,
-  keccak256,
-  recoverPersonalAddress,
-} from '@obsign/core'
+import { bytesToHex, hexToBytes, keccak256, recoverPersonalAddress } from '@obsign/core'
 import { addressFromPrivate, fixtureKey, personalSign, publicKey } from '../src/signer.js'
 
 // Round-trips the tooling signer against the core's recovery path. If these two

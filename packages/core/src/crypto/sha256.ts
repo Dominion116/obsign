@@ -31,7 +31,7 @@ export function sha256(bytes: Uint8Array): Uint8Array {
 
   const bitLen = bytes.length * 8
   // Padded length: message + 0x80 + zeros + 8-byte length, multiple of 64.
-  const padLen = ((bytes.length + 8) >> 6 << 6) + 64
+  const padLen = (((bytes.length + 8) >> 6) << 6) + 64
   const msg = new Uint8Array(padLen)
   msg.set(bytes)
   msg[bytes.length] = 0x80
