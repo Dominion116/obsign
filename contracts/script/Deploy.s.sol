@@ -25,7 +25,7 @@ import { ObsignPolicyRegistry } from "../src/ObsignPolicyRegistry.sol";
 ///         BASE_SEPOLIA_RPC_URL, BASESCAN_API_KEY.
 contract Deploy is Script {
     function run() external {
-        uint256 pk = vm.envUint("DEPLOYER_PRIVATE_KEY");
+        uint256 pk = _loadDeployerKey();
         address deployer = vm.addr(pk);
 
         vm.startBroadcast(pk);
@@ -47,6 +47,17 @@ contract Deploy is Script {
             address(issuerRegistry),
             address(policyRegistry)
         );
+    }
+
+    /// @dev Load DEPLOYER_PRIVATE_KEY tolerant of a missing "0x" prefix. A 32-byte
+    ///      key is parsed as bytes32 (so both "0x…" and bare-hex secrets work).
+    function _loadDeployerKey() internal view returns (uint256) {
+        string memory raw = vm.envString("DEPLOYER_PRIVATE_KEY");
+        bytes memory b = bytes(raw);
+        bool has0x =
+            b.length >= 2 && b[0] == bytes1("0") && (b[1] == bytes1("x") || b[1] == bytes1("X"));
+        string memory hexStr = has0x ? raw : string.concat("0x", raw);
+        return uint256(vm.parseBytes32(hexStr));
     }
 
     /// @dev Writes deployments/84532.json. Uses vm.serialize/vm.writeJson so the
