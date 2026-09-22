@@ -162,16 +162,23 @@ export function run(argv: string[]): number {
   return receipt.result === 'valid' ? 0 : 1
 }
 
-// Entry point when executed directly (works under node and vite-node, where
-// import.meta.url and argv[1] use different path forms — compare basenames).
-function isDirectRun(): boolean {
-  const entry = process.argv[1]
-  if (!entry) return false
-  const argvBase = entry.replace(/\\/g, '/').split('/').pop() ?? ''
-  const urlBase = import.meta.url.split('/').pop() ?? ''
-  return argvBase === urlBase || argvBase === 'index.ts' || argvBase === 'index.js'
+// Locate this module's entry within process.argv. Works whether argv[1] is node,
+// the vite-node loader, or the script itself; returns -1 when we were imported
+// (argv holds the test runner, not this file), so auto-run stays off in tests.
+function selfArgvIndex(): number {
+  return process.argv.findIndex((a) => {
+    const p = a.replace(/\\/g, '/')
+    return p.endsWith('cli/src/index.ts') || p.endsWith('cli/src/index.js')
+  })
 }
 
-if (isDirectRun()) {
-  process.exit(run(process.argv.slice(2)))
+// User args start after our entry; strip a leading `--` passthrough separator.
+function userArgs(selfIdx: number): string[] {
+  const args = process.argv.slice(selfIdx + 1)
+  return args[0] === '--' ? args.slice(1) : args
+}
+
+const selfIdx = selfArgvIndex()
+if (selfIdx >= 0) {
+  process.exit(run(userArgs(selfIdx)))
 }
