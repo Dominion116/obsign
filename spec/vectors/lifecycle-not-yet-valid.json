@@ -1,0 +1,30 @@
+{
+  "name": "lifecycle-not-yet-valid",
+  "description": "A well-formed quorum credential whose validFrom is after ctx.now. Must fail with NOT_YET_VALID.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred000000000000000000000000000000000000000000000000000000000c",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x2222222222222222222222222222222222222222",
+    "claim": { "type": "attendance", "context": "obsign-hackathon-2027", "details": {} },
+    "evidenceRefs": ["0xevd000000000000000000000000000000000000000000000000000000000c"],
+    "issuedAt": "2027-01-01T00:00:00.000Z",
+    "validFrom": "2027-06-01T00:00:00.000Z",
+    "validUntil": "2028-06-01T00:00:00.000Z",
+    "nonce": "0x00000000000000000000000000000015"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "quorum",
+    "credentialHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "threshold": 2,
+    "messageHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "signers": [
+      { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signature": "0xaa0c" },
+      { "address": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "signature": "0xbb0c" }
+    ]
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "NOT_YET_VALID"
+}

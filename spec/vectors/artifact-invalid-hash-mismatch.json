@@ -1,0 +1,28 @@
+{
+  "name": "artifact-invalid-hash-mismatch",
+  "description": "Artifact-hash evidence records a sha256 that does not match the bytes served by the EvidenceStore fixture (tampered artifact). Must fail with ARTIFACT_HASH_MISMATCH.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred0000000000000000000000000000000000000000000000000000000009",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x6666666666666666666666666666666666666666",
+    "claim": { "type": "artifact", "context": "release-attestation", "details": { "name": "build.tar.gz" } },
+    "evidenceRefs": ["0xevd0000000000000000000000000000000000000000000000000000000009"],
+    "issuedAt": "2026-09-16T00:00:00.000Z",
+    "validFrom": "2026-09-16T00:00:00.000Z",
+    "validUntil": "2027-09-16T00:00:00.000Z",
+    "nonce": "0x00000000000000000000000000000012"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "artifact-hash",
+    "algo": "sha256",
+    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "uri": "gridfs://artifacts/0009",
+    "mime": "application/gzip",
+    "bytes": 4
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "ARTIFACT_HASH_MISMATCH"
+}

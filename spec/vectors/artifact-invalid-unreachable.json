@@ -1,0 +1,28 @@
+{
+  "name": "artifact-invalid-unreachable",
+  "description": "Artifact-hash evidence references a uri that the EvidenceStore fixture cannot serve. Must fail with ARTIFACT_UNREACHABLE.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred000000000000000000000000000000000000000000000000000000000a",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x6666666666666666666666666666666666666666",
+    "claim": { "type": "artifact", "context": "release-attestation", "details": {} },
+    "evidenceRefs": ["0xevd000000000000000000000000000000000000000000000000000000000a"],
+    "issuedAt": "2026-09-16T00:00:00.000Z",
+    "validFrom": "2026-09-16T00:00:00.000Z",
+    "validUntil": "2027-09-16T00:00:00.000Z",
+    "nonce": "0x00000000000000000000000000000013"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "artifact-hash",
+    "algo": "sha256",
+    "hash": "0x9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "uri": "gridfs://artifacts/does-not-exist",
+    "mime": "application/gzip",
+    "bytes": 4
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "ARTIFACT_UNREACHABLE"
+}

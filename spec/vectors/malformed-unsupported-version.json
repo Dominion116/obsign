@@ -1,0 +1,29 @@
+{
+  "name": "malformed-unsupported-version",
+  "description": "Credential envelope declares v: 2, which the v:1 verifier does not understand. Must fail with UNSUPPORTED_VERSION.",
+  "credential": {
+    "v": 2,
+    "credentialId": "0xcred000000000000000000000000000000000000000000000000000000000e",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x2222222222222222222222222222222222222222",
+    "claim": { "type": "attendance", "context": "obsign-hackathon-2026", "details": {} },
+    "evidenceRefs": ["0xevd000000000000000000000000000000000000000000000000000000000e"],
+    "issuedAt": "2026-09-13T00:00:00.000Z",
+    "validFrom": "2026-09-13T00:00:00.000Z",
+    "validUntil": "2027-09-13T00:00:00.000Z",
+    "nonce": "0x00000000000000000000000000000017"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "quorum",
+    "credentialHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "threshold": 1,
+    "messageHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "signers": [
+      { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signature": "0xaa0e" }
+    ]
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "UNSUPPORTED_VERSION"
+}

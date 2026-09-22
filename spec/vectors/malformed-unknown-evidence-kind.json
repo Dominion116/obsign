@@ -1,0 +1,24 @@
+{
+  "name": "malformed-unknown-evidence-kind",
+  "description": "Evidence declares a kind the verifier does not recognize. Must fail with UNKNOWN_EVIDENCE_KIND.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred00000000000000000000000000000000000000000000000000000000010",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x2222222222222222222222222222222222222222",
+    "claim": { "type": "custom", "context": "obsign-hackathon-2026", "details": {} },
+    "evidenceRefs": ["0xevd00000000000000000000000000000000000000000000000000000000010"],
+    "issuedAt": "2026-09-13T00:00:00.000Z",
+    "validFrom": "2026-09-13T00:00:00.000Z",
+    "validUntil": "2027-09-13T00:00:00.000Z",
+    "nonce": "0x00000000000000000000000000000019"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "biometric-scan",
+    "payload": "0xnotarealkind"
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "UNKNOWN_EVIDENCE_KIND"
+}

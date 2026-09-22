@@ -1,0 +1,30 @@
+{
+  "name": "quorum-invalid-duplicate-signer",
+  "description": "Two signatures are supplied for threshold 2 but both come from the same signer address. Must fail with DUPLICATE_QUORUM_SIGNER.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred0000000000000000000000000000000000000000000000000000000004",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x2222222222222222222222222222222222222222",
+    "claim": { "type": "attendance", "context": "obsign-hackathon-2026", "details": {} },
+    "evidenceRefs": ["0xevd0000000000000000000000000000000000000000000000000000000004"],
+    "issuedAt": "2026-09-13T00:00:00.000Z",
+    "validFrom": "2026-09-13T00:00:00.000Z",
+    "validUntil": "2027-09-13T00:00:00.000Z",
+    "nonce": "0x0000000000000000000000000000000d"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "quorum",
+    "credentialHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "threshold": 2,
+    "messageHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "signers": [
+      { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signature": "0xaa04" },
+      { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signature": "0xaa04b" }
+    ]
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "DUPLICATE_QUORUM_SIGNER"
+}

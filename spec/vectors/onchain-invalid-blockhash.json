@@ -1,0 +1,50 @@
+{
+  "name": "onchain-invalid-blockhash",
+  "description": "Onchain-event evidence pins blockNumber 12345678 with a blockHash that does not match the chain fixture's block hash (a reorg or forged pin). Must fail closed with BLOCK_HASH_MISMATCH.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred0000000000000000000000000000000000000000000000000000000006",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x4444444444444444444444444444444444444444",
+    "claim": { "type": "membership", "context": "base-builders", "details": {} },
+    "evidenceRefs": ["0xevd0000000000000000000000000000000000000000000000000000000006"],
+    "issuedAt": "2026-09-15T00:00:00.000Z",
+    "validFrom": "2026-09-15T00:00:00.000Z",
+    "validUntil": "2027-09-15T00:00:00.000Z",
+    "nonce": "0x0000000000000000000000000000000f"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "onchain-event",
+    "chainId": 84532,
+    "address": "0x5555555555555555555555555555555555555555",
+    "blockNumber": 12345678,
+    "blockHash": "0xdeadbeef00000000000000000000000000000000000000000000000000000000",
+    "txHash": "0xtx000000000000000000000000000000000000000000000000000000000aa01",
+    "logIndex": 3,
+    "confirmations": 12,
+    "expect": {
+      "event": "Transfer(address,address,uint256)",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+      ],
+      "data": "0x"
+    }
+  },
+  "context": {
+    "now": "2026-10-01T00:00:00.000Z",
+    "chain": {
+      "blocks": {
+        "12345678": {
+          "hash": "0xblock000000000000000000000000000000000000000000000000000000aa01",
+          "number": 12345678,
+          "confirmations": 40
+        }
+      },
+      "logs": [],
+      "revoked": []
+    }
+  },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "BLOCK_HASH_MISMATCH"
+}

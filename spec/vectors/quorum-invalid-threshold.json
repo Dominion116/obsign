@@ -1,0 +1,29 @@
+{
+  "name": "quorum-invalid-threshold",
+  "description": "Quorum requires threshold 2 but only one valid signature is supplied. Must fail with QUORUM_THRESHOLD_NOT_MET.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred0000000000000000000000000000000000000000000000000000000003",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x2222222222222222222222222222222222222222",
+    "claim": { "type": "attendance", "context": "obsign-hackathon-2026", "details": {} },
+    "evidenceRefs": ["0xevd0000000000000000000000000000000000000000000000000000000003"],
+    "issuedAt": "2026-09-13T00:00:00.000Z",
+    "validFrom": "2026-09-13T00:00:00.000Z",
+    "validUntil": "2027-09-13T00:00:00.000Z",
+    "nonce": "0x0000000000000000000000000000000c"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "quorum",
+    "credentialHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "threshold": 2,
+    "messageHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "signers": [
+      { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signature": "0xaa03" }
+    ]
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "QUORUM_THRESHOLD_NOT_MET"
+}

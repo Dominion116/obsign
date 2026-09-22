@@ -1,0 +1,30 @@
+{
+  "name": "lifecycle-expired",
+  "description": "A well-formed quorum credential whose validUntil is before ctx.now. Must fail with EXPIRED.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred000000000000000000000000000000000000000000000000000000000b",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x2222222222222222222222222222222222222222",
+    "claim": { "type": "attendance", "context": "obsign-hackathon-2025", "details": {} },
+    "evidenceRefs": ["0xevd000000000000000000000000000000000000000000000000000000000b"],
+    "issuedAt": "2025-09-13T00:00:00.000Z",
+    "validFrom": "2025-09-13T00:00:00.000Z",
+    "validUntil": "2026-09-13T00:00:00.000Z",
+    "nonce": "0x00000000000000000000000000000014"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "quorum",
+    "credentialHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "threshold": 2,
+    "messageHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "signers": [
+      { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signature": "0xaa0b" },
+      { "address": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "signature": "0xbb0b" }
+    ]
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "invalid",
+  "expectedReasonCode": "EXPIRED"
+}

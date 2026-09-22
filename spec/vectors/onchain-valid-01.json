@@ -1,0 +1,60 @@
+{
+  "name": "onchain-valid-01",
+  "description": "Onchain-event evidence pinned to a specific Base Sepolia block. Block hash matches, confirmations sufficient, and the expected log exists at the pinned tx/logIndex.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred0000000000000000000000000000000000000000000000000000000005",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x4444444444444444444444444444444444444444",
+    "claim": { "type": "membership", "context": "base-builders", "details": {} },
+    "evidenceRefs": ["0xevd0000000000000000000000000000000000000000000000000000000005"],
+    "issuedAt": "2026-09-15T00:00:00.000Z",
+    "validFrom": "2026-09-15T00:00:00.000Z",
+    "validUntil": "2027-09-15T00:00:00.000Z",
+    "nonce": "0x0000000000000000000000000000000e"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "onchain-event",
+    "chainId": 84532,
+    "address": "0x5555555555555555555555555555555555555555",
+    "blockNumber": 12345678,
+    "blockHash": "0xblock000000000000000000000000000000000000000000000000000000aa01",
+    "txHash": "0xtx000000000000000000000000000000000000000000000000000000000aa01",
+    "logIndex": 3,
+    "confirmations": 12,
+    "expect": {
+      "event": "Transfer(address,address,uint256)",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+      ],
+      "data": "0x"
+    }
+  },
+  "context": {
+    "now": "2026-10-01T00:00:00.000Z",
+    "chain": {
+      "blocks": {
+        "12345678": {
+          "hash": "0xblock000000000000000000000000000000000000000000000000000000aa01",
+          "number": 12345678,
+          "confirmations": 40
+        }
+      },
+      "logs": [
+        {
+          "txHash": "0xtx000000000000000000000000000000000000000000000000000000000aa01",
+          "logIndex": 3,
+          "address": "0x5555555555555555555555555555555555555555",
+          "topics": [
+            "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+          ],
+          "data": "0x"
+        }
+      ],
+      "revoked": []
+    }
+  },
+  "expectedResult": "valid",
+  "expectedReasonCode": "OK"
+}

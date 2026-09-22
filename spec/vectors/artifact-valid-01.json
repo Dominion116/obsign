@@ -1,0 +1,28 @@
+{
+  "name": "artifact-valid-01",
+  "description": "Artifact-hash evidence whose recorded sha256 matches the bytes served by the EvidenceStore fixture. Within validity window; not revoked.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred0000000000000000000000000000000000000000000000000000000008",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x6666666666666666666666666666666666666666",
+    "claim": { "type": "artifact", "context": "release-attestation", "details": { "name": "build.tar.gz" } },
+    "evidenceRefs": ["0xevd0000000000000000000000000000000000000000000000000000000008"],
+    "issuedAt": "2026-09-16T00:00:00.000Z",
+    "validFrom": "2026-09-16T00:00:00.000Z",
+    "validUntil": "2027-09-16T00:00:00.000Z",
+    "nonce": "0x00000000000000000000000000000011"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "artifact-hash",
+    "algo": "sha256",
+    "hash": "0x9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "uri": "gridfs://artifacts/0008",
+    "mime": "application/gzip",
+    "bytes": 4
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "valid",
+  "expectedReasonCode": "OK"
+}

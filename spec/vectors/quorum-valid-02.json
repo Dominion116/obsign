@@ -1,0 +1,31 @@
+{
+  "name": "quorum-valid-02",
+  "description": "Role credential proven by a 2-of-3 signer quorum. Threshold met with three authorized unique signers; within validity window; not revoked.",
+  "credential": {
+    "v": 1,
+    "credentialId": "0xcred0000000000000000000000000000000000000000000000000000000002",
+    "issuer": "0x1111111111111111111111111111111111111111",
+    "subject": "0x3333333333333333333333333333333333333333",
+    "claim": { "type": "role", "context": "obsign-hackathon-2026", "details": { "role": "facilitator" } },
+    "evidenceRefs": ["0xevd0000000000000000000000000000000000000000000000000000000002"],
+    "issuedAt": "2026-09-14T00:00:00.000Z",
+    "validFrom": "2026-09-14T00:00:00.000Z",
+    "validUntil": "2027-09-14T00:00:00.000Z",
+    "nonce": "0x0000000000000000000000000000000b"
+  },
+  "evidence": {
+    "v": 1,
+    "kind": "quorum",
+    "credentialHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "threshold": 2,
+    "messageHash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+    "signers": [
+      { "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "signature": "0xaa02" },
+      { "address": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "signature": "0xbb02" },
+      { "address": "0xcccccccccccccccccccccccccccccccccccccccc", "signature": "0xcc02" }
+    ]
+  },
+  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "expectedResult": "valid",
+  "expectedReasonCode": "OK"
+}

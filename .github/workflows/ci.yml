@@ -1,0 +1,75 @@
+name: CI
+
+# All builds, typechecks, lint, and tests run here — never locally (RULE-1).
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workspace:
+    name: typecheck · lint · format · purity · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Core purity (INV-1)
+        run: npm run check:core-purity
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format
+
+      - name: Test (golden vectors + suites)
+        run: npm test
+
+  contracts:
+    name: foundry contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check for a Foundry project
+        id: detect
+        run: |
+          if [ -f contracts/foundry.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "No contracts/foundry.toml yet (Phase 2). Skipping Foundry tests."
+          fi
+
+      - name: Install Foundry
+        if: steps.detect.outputs.present == 'true'
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Build contracts
+        if: steps.detect.outputs.present == 'true'
+        working-directory: contracts
+        run: forge build --sizes
+
+      - name: Test contracts
+        if: steps.detect.outputs.present == 'true'
+        working-directory: contracts
+        run: forge test -vvv
