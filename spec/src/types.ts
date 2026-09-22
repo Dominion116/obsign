@@ -93,10 +93,7 @@ export interface ArtifactHashEvidence {
 }
 
 export type Evidence =
-  | QuorumEvidence
-  | OnchainEventEvidence
-  | ArtifactHashEvidence
-  | Record<string, unknown>
+  QuorumEvidence | OnchainEventEvidence | ArtifactHashEvidence | Record<string, unknown>
 
 /**
  * Injected verification context (spec §4). The reference core consumes exactly
