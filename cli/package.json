@@ -1,15 +1,14 @@
 {
-  "name": "@obsign/spec",
+  "name": "@obsign/cli",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Obsign normative receipt spec, golden vectors, and the vector test harness.",
+  "description": "Obsign CLI — obsign verify. Thin wrapper over @obsign/core producing identical receipts.",
+  "bin": {
+    "obsign": "src/index.ts"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "exports": {
-    ".": "./src/index.ts",
-    "./vectors": "./src/loader.ts"
-  },
   "scripts": {
     "typecheck": "tsc -b",
     "test": "vitest run"

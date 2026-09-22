@@ -96,17 +96,33 @@ export type Evidence =
   QuorumEvidence | OnchainEventEvidence | ArtifactHashEvidence | Record<string, unknown>
 
 /**
- * Injected verification context (spec §4). The reference core consumes exactly
- * this — no ambient clock, network, DB, or randomness (INV-1).
+ * Injected verification context (spec §4). The reference core consumes injected
+ * read ports built from these fixtures — no ambient clock, network, DB, or
+ * randomness (INV-1). The `chain` shape backs the ChainReader; `artifacts` backs
+ * the EvidenceStore; `registry` backs the optional IssuerRegistry.
  */
 export interface VectorContext {
   now: string
-  /** Optional pinned chain fixture used by onchain-event vectors. */
+  /** Optional pinned chain fixture used by onchain-event / revocation vectors. */
   chain?: {
     blocks?: Record<string, { hash: string; number: number; confirmations: number }>
-    logs?: Array<Record<string, unknown>>
+    logs?: Array<{
+      txHash?: string
+      logIndex?: number
+      address?: string
+      topics?: string[]
+      data?: string
+    }>
     revoked?: string[]
   }
+  /** Optional artifact byte fixture (uri -> bytes) backing the EvidenceStore. */
+  artifacts?: Record<string, { hex?: string; utf8?: string }>
+  /** Optional issuer registry fixture backing the IssuerRegistry. */
+  registry?: Record<string, { active: boolean }>
+  /** Optional out-of-band EIP-191 issuer signature over the credentialHash. */
+  issuerSignature?: string
+  /** Optional authorized quorum signer set for the credential. */
+  authorizedSigners?: string[]
 }
 
 /**

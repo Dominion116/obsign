@@ -1,0 +1,16 @@
+{
+  "name": "@obsign/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Obsign pure reference verifier — canonicalization, hashing, evidence modules, and verify(). Pure (INV-1): no clock, network, filesystem, or randomness.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  }
+}

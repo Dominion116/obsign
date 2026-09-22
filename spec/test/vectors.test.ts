@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest'
+import { verify } from '@obsign/core'
 import { loadVectors, VECTORS_DIR } from '../src/loader.js'
+import { prepareVector } from '../src/prepare.js'
 import { REASON_CODES, isReasonCode } from '../src/types.js'
 
-// Phase 0 harness: proves every golden vector loads, is structurally valid, and
-// declares a reason code from the closed set with a consistent result. The
-// verification engine (packages/core) arrives in Phase 1; this file will then
-// also run each vector through verify() and assert receiptId + reasonCode.
+// Phase 1 harness: every golden vector loads, is structurally valid, and runs
+// through the reference core. Each vector must produce its expectedReasonCode;
+// once frozen (expectedReceiptId present), the recomputed receiptId must match
+// byte-for-byte. Quorum signatures authored as placeholders are materialized
+// deterministically by prepareVector, so valid vectors verify for real even
+// before `npm run freeze:vectors` pins their signatures.
 //
 // RULE-1: executed in CI, never as a local build step.
 
@@ -61,6 +65,30 @@ describe('golden vectors', () => {
       if (vector.expectedReceiptId !== undefined) {
         expect(vector.expectedReceiptId).toMatch(/^0x[0-9a-f]{64}$/)
       }
+    })
+
+    it('verifies through the reference core to the expected reason code', () => {
+      const { credential, evidence, ctx } = prepareVector(vector)
+      const result = verify(credential, evidence, ctx)
+      expect(result.reasonCode).toBe(vector.expectedReasonCode)
+      expect(result.result).toBe(vector.expectedResult)
+    })
+
+    it('matches the frozen receiptId when present', () => {
+      if (vector.expectedReceiptId === undefined) return
+      const { credential, evidence, ctx } = prepareVector(vector)
+      const result = verify(credential, evidence, ctx)
+      expect(result.receiptId).toBe(vector.expectedReceiptId)
+    })
+
+    it('recomputes an identical receiptId across repeated runs (determinism)', () => {
+      const a = prepareVector(vector)
+      const b = prepareVector(vector)
+      const ra = verify(a.credential, a.evidence, a.ctx)
+      const rb = verify(b.credential, b.evidence, b.ctx)
+      expect(ra.receiptId).toBe(rb.receiptId)
+      expect(ra.credentialHash).toBe(rb.credentialHash)
+      expect(ra.evidenceHash).toBe(rb.evidenceHash)
     })
   })
 })

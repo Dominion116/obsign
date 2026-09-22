@@ -22,7 +22,11 @@
     "mime": "application/gzip",
     "bytes": 4
   },
-  "context": { "now": "2026-10-01T00:00:00.000Z", "chain": { "revoked": [] } },
+  "context": {
+    "now": "2026-10-01T00:00:00.000Z",
+    "chain": { "revoked": [] },
+    "artifacts": { "gridfs://artifacts/0009": { "utf8": "test" } }
+  },
   "expectedResult": "invalid",
   "expectedReasonCode": "ARTIFACT_HASH_MISMATCH"
 }

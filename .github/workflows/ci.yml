@@ -15,7 +15,11 @@ concurrency:
 jobs:
   workspace:
     name: typecheck · lint · format · purity · test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +44,44 @@ jobs:
 
       - name: Test (golden vectors + suites)
         run: npm test
+
+  # Cross-platform receiptId equality (INV-2). Recomputes every golden vector on
+  # Linux and Windows and asserts the receiptIds are byte-identical across OSes.
+  determinism:
+    name: cross-platform receiptId equality
+    needs: workspace
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm install
+      - name: Emit receiptId digest for all vectors
+        run: npm run receipt:digest > digest-${{ matrix.os }}.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ matrix.os }}
+          path: digest-${{ matrix.os }}.txt
+
+  compare-digests:
+    name: compare cross-platform digests
+    needs: determinism
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: digest-*
+          merge-multiple: true
+      - name: Assert Linux and Windows digests are identical
+        run: |
+          diff digest-ubuntu-latest.txt digest-windows-latest.txt \
+            && echo "receiptIds are byte-identical across platforms" \
+            || (echo "cross-platform receiptId mismatch" && exit 1)
 
   contracts:
     name: foundry contracts
