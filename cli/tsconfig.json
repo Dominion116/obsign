@@ -7,6 +7,6 @@
     "lib": ["ES2020"],
     "resolveJsonModule": true
   },
-  "references": [{ "path": "../packages/core" }],
+  "references": [{ "path": "../packages/core" }, { "path": "../packages/sdk" }],
   "include": ["src", "test"]
 }

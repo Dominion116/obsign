@@ -1,0 +1,10 @@
+{
+  "name": "@obsign/agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Obsign Sentinel vetting agent (Phase 6). Placeholder package so the declared npm workspace resolves; implemented in a later phase.",
+  "scripts": {
+    "typecheck": "node -e \"process.exit(0)\""
+  }
+}

@@ -1,0 +1,84 @@
+name: Deploy testnet
+
+# Manual, secret-gated deploy of the Obsign contracts to Base Sepolia.
+# RULE-1: deploys run here (CI) or via a human — never as a local build step.
+# Trigger: Actions tab → "Deploy testnet" → Run workflow.
+
+on:
+  workflow_dispatch:
+    inputs:
+      verify:
+        description: 'Verify on BaseScan after deploy'
+        type: boolean
+        default: true
+
+concurrency:
+  group: deploy-testnet
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy + verify (Base Sepolia)
+    runs-on: ubuntu-latest
+    # Requires repo secrets: DEPLOYER_PRIVATE_KEY (funded testnet key),
+    # BASE_SEPOLIA_RPC_URL, BASESCAN_API_KEY.
+    environment: base-sepolia
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard — secrets present
+        env:
+          RPC: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: |
+          if [ -z "$RPC" ] || [ -z "$KEY" ]; then
+            echo "Missing DEPLOYER_PRIVATE_KEY / BASE_SEPOLIA_RPC_URL secrets." >&2
+            exit 1
+          fi
+
+      - uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install forge-std
+        working-directory: contracts
+        run: |
+          if [ ! -d lib/forge-std ]; then
+            forge install foundry-rs/forge-std --no-commit || forge install foundry-rs/forge-std
+          fi
+
+      - name: Dry run (simulate + gas, no broadcast)
+        working-directory: contracts
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+        run: forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia
+
+      - name: Deploy + verify
+        working-directory: contracts
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          BASESCAN_API_KEY: ${{ secrets.BASESCAN_API_KEY }}
+        run: |
+          if [ "${{ inputs.verify }}" = "true" ]; then
+            forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --broadcast --verify
+          else
+            forge script script/Deploy.s.sol:Deploy --rpc-url base_sepolia --broadcast
+          fi
+
+      - name: Upload deployments artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployments-84532
+          path: contracts/deployments/84532.json
+
+      - name: Open PR with updated addresses
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/deploy-84532
+          title: 'chore(contracts): update Base Sepolia deployment addresses'
+          commit-message: 'chore(contracts): update deployments/84532.json from testnet deploy'
+          body: |
+            Automated from the Deploy testnet workflow. Review the addresses and
+            confirm they are verified on BaseScan Sepolia before merging.
+          add-paths: |
+            contracts/deployments/84532.json

@@ -1,0 +1,102 @@
+name: Contracts integration (Base Sepolia)
+
+# Secret-gated live integration: the reorg/pinned-read fork test and the
+# "anchor → read via SDK → core verify" + revocation equivalence test against
+# Base Sepolia. Runs on pushes to the default branch and on manual dispatch.
+# Fork PRs cannot read secrets, so every job self-skips there; the secret-free
+# forge unit/fuzz job in ci.yml still gates those PRs.
+#
+# RULE-1: all execution is in CI. Required repo secrets:
+#   BASE_SEPOLIA_RPC_URL, OBSIGN_INTEGRATION_KEY (funded testnet key).
+# Required vars (or committed deployments/84532.json): ANCHOR_CONTRACT_ADDRESS,
+#   REVOCATION_CONTRACT_ADDRESS.
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: contracts-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fork-reorg:
+    name: forge reorg / pinned-read (fork)
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.repository == github.event.repository.full_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard — RPC secret present
+        id: guard
+        env:
+          RPC: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+        run: |
+          if [ -z "$RPC" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "No BASE_SEPOLIA_RPC_URL secret; skipping live fork test."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: foundry-rs/foundry-toolchain@v1
+        if: steps.guard.outputs.run == 'true'
+
+      - name: Install forge-std
+        if: steps.guard.outputs.run == 'true'
+        working-directory: contracts
+        run: |
+          if [ ! -d lib/forge-std ]; then
+            forge install foundry-rs/forge-std --no-commit || forge install foundry-rs/forge-std
+          fi
+
+      - name: Reorg / pinned-read fork test
+        if: steps.guard.outputs.run == 'true'
+        working-directory: contracts
+        env:
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+        run: forge test --match-path 'test/ReorgFork.t.sol' -vvv
+
+  sdk-integration:
+    name: anchor → read → core verify (SDK)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard — integration secrets present
+        id: guard
+        env:
+          RPC: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          KEY: ${{ secrets.OBSIGN_INTEGRATION_KEY }}
+        run: |
+          if [ -z "$RPC" ] || [ -z "$KEY" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Missing BASE_SEPOLIA_RPC_URL / OBSIGN_INTEGRATION_KEY; skipping live SDK integration."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.run == 'true'
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        if: steps.guard.outputs.run == 'true'
+        run: npm install
+
+      - name: Resolve deployed addresses from deployments/84532.json
+        if: steps.guard.outputs.run == 'true'
+        id: addr
+        run: |
+          node -e "const d=require('./contracts/deployments/84532.json');if(!d.anchor||/^0x0+$/.test(d.anchor)){console.error('deployments/84532.json has no live addresses; deploy first.');process.exit(1)}console.log('anchor='+d.anchor);console.log('revocation='+d.revocation)" >> "$GITHUB_OUTPUT"
+
+      - name: SDK live integration test
+        if: steps.guard.outputs.run == 'true'
+        env:
+          OBSIGN_INTEGRATION_RPC: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          OBSIGN_INTEGRATION_KEY: ${{ secrets.OBSIGN_INTEGRATION_KEY }}
+          ANCHOR_CONTRACT_ADDRESS: ${{ steps.addr.outputs.anchor }}
+          REVOCATION_CONTRACT_ADDRESS: ${{ steps.addr.outputs.revocation }}
+        run: npx vitest run packages/sdk/test/integration.testnet.test.ts

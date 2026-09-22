@@ -308,7 +308,7 @@ The product is being built in phases, each gated by its own acceptance criteria.
 | --- | --- | --- |
 | 0 | Foundations and spec: monorepo, canonicalization spec, golden vectors, CI | Scaffolded |
 | 1 | Deterministic core and CLI: pure verifier, three evidence modules, `obsign verify` | Scaffolded |
-| 2 | Onchain layer: anchor, revocation, issuer registry contracts on Base Sepolia | Scaffolded |
+| 2 | Onchain layer: anchor, revocation, issuer registry (+ policy registry) contracts on Base Sepolia, SDK ChainReader | Implemented (deploy runs in CI) |
 | 3 | Issuance and multi-issuer platform: keys, database, queue, anchoring | Not started |
 | 4 | Verification API, x402, and MCP: paid verify endpoint, MCP tools, SDK publish | Not started |
 | 5 | Web app and landing page | Landing page implemented |

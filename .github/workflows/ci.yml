@@ -105,12 +105,33 @@ jobs:
         if: steps.detect.outputs.present == 'true'
         uses: foundry-rs/foundry-toolchain@v1
 
+      - name: Install forge-std
+        if: steps.detect.outputs.present == 'true'
+        working-directory: contracts
+        run: |
+          if [ ! -d lib/forge-std ]; then
+            forge install foundry-rs/forge-std --no-commit || forge install foundry-rs/forge-std
+          fi
+
+      - name: Format check (forge fmt)
+        if: steps.detect.outputs.present == 'true'
+        working-directory: contracts
+        run: forge fmt --check
+
       - name: Build contracts
         if: steps.detect.outputs.present == 'true'
         working-directory: contracts
         run: forge build --sizes
 
-      - name: Test contracts
+      - name: Test contracts (unit + fuzz + immutability)
         if: steps.detect.outputs.present == 'true'
         working-directory: contracts
+        # Secret-free: the reorg fork test self-skips when BASE_SEPOLIA_RPC_URL is
+        # unset, so this gate passes on fork PRs without any secrets.
         run: forge test -vvv
+
+      - name: Coverage summary
+        if: steps.detect.outputs.present == 'true'
+        working-directory: contracts
+        continue-on-error: true
+        run: forge coverage --report summary

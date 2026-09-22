@@ -1,0 +1,31 @@
+# Foundry configuration for the Obsign onchain layer (Phase 2).
+# RULE-1: forge build/test run in CI only — never locally.
+
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+evm_version = "cancun"
+# Deterministic, immutable contracts: no proxies, no admin (D11 / FR-2.4).
+bytecode_hash = "none"
+fs_permissions = [{ access = "read-write", path = "./deployments" }]
+
+[fuzz]
+runs = 512
+
+[rpc_endpoints]
+base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
+
+[etherscan]
+base_sepolia = { key = "${BASESCAN_API_KEY}", chain = 84532, url = "https://api-sepolia.basescan.org/api" }
+
+# forge fmt
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
