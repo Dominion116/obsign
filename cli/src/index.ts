@@ -162,8 +162,16 @@ export function run(argv: string[]): number {
   return receipt.result === 'valid' ? 0 : 1
 }
 
-// Entry point when executed directly.
-const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))
-if (isMain) {
+// Entry point when executed directly (works under node and vite-node, where
+// import.meta.url and argv[1] use different path forms — compare basenames).
+function isDirectRun(): boolean {
+  const entry = process.argv[1]
+  if (!entry) return false
+  const argvBase = entry.replace(/\\/g, '/').split('/').pop() ?? ''
+  const urlBase = import.meta.url.split('/').pop() ?? ''
+  return argvBase === urlBase || argvBase === 'index.ts' || argvBase === 'index.js'
+}
+
+if (isDirectRun()) {
   process.exit(run(process.argv.slice(2)))
 }

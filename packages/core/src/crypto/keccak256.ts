@@ -1,8 +1,10 @@
 // Dependency-free Keccak-256 (Ethereum SHA3 variant, 0x01 padding).
 //
-// Ported from apps/web/src/lib/keccak.ts into the shared pure core. This is the
-// single source of truth for keccak-256; the web demo re-imports the concept but
-// packages/core is authoritative (spec/receipt.md §3).
+// This is the single source of truth for keccak-256 (spec/receipt.md §3); the
+// web demo re-imports the concept but packages/core is authoritative.
+//
+// Uses the canonical in-place Keccak-f[1600] permutation (standard RHO/PI lane
+// schedule) so outputs match every conforming implementation byte-for-byte.
 //
 // Pure per INV-1: no clock, network, filesystem, or randomness.
 
@@ -33,61 +35,55 @@ const RC: bigint[] = [
   0x8000000080008008n,
 ]
 
-const ROT: number[][] = [
-  [0, 36, 3, 41, 18],
-  [1, 44, 10, 45, 2],
-  [62, 6, 43, 15, 61],
-  [28, 55, 25, 21, 56],
-  [27, 20, 39, 8, 14],
+// Lane rotation offsets and destination indices for the combined ρ/π step,
+// iterating lanes 1..24 (lane 0 is fixed).
+const RHO = [
+  1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 2, 14, 27, 41, 56, 8, 25, 43, 62, 18, 39, 61, 20, 44,
 ]
-
-const PI: number[][] = [
-  [0, 3, 1, 4, 2],
-  [1, 4, 2, 0, 3],
-  [2, 0, 3, 1, 4],
-  [3, 1, 4, 2, 0],
-  [4, 2, 0, 3, 1],
+const PI = [
+  10, 7, 11, 17, 18, 3, 5, 16, 8, 21, 24, 4, 15, 23, 19, 13, 12, 2, 20, 14, 22, 9, 6, 1,
 ]
 
 const MASK64 = 0xffffffffffffffffn
 
 function rotl64(x: bigint, n: number): bigint {
-  return ((x << BigInt(n)) | (x >> BigInt(64 - n))) & MASK64
+  const b = BigInt(n)
+  return ((x << b) | (x >> (64n - b))) & MASK64
 }
 
-function keccakF(a: bigint[]): void {
+function keccakF(s: bigint[]): void {
+  const C = new Array<bigint>(5)
   for (let round = 0; round < 24; round++) {
-    const C = new Array<bigint>(5)
-    const D = new Array<bigint>(5)
+    // θ (theta)
     for (let x = 0; x < 5; x++) {
-      C[x] = a[x] ^ a[x + 5] ^ a[x + 10] ^ a[x + 15] ^ a[x + 20]
+      C[x] = s[x] ^ s[x + 5] ^ s[x + 10] ^ s[x + 15] ^ s[x + 20]
     }
     for (let x = 0; x < 5; x++) {
-      D[x] = C[(x + 4) % 5] ^ rotl64(C[(x + 1) % 5], 1)
-    }
-    for (let x = 0; x < 5; x++) {
-      for (let y = 0; y < 5; y++) {
-        a[x + 5 * y] ^= D[x]
+      const d = C[(x + 4) % 5] ^ rotl64(C[(x + 1) % 5], 1)
+      for (let y = 0; y < 25; y += 5) {
+        s[x + y] ^= d
       }
     }
 
-    const b = new Array<bigint>(25)
-    for (let y = 0; y < 5; y++) {
+    // ρ (rho) and π (pi) combined, walking lanes 1..24.
+    let last = s[1]
+    for (let x = 0; x < 24; x++) {
+      const j = PI[x]
+      const tmp = s[j]
+      s[j] = rotl64(last, RHO[x])
+      last = tmp
+    }
+
+    // χ (chi)
+    for (let y = 0; y < 25; y += 5) {
+      for (let x = 0; x < 5; x++) C[x] = s[y + x]
       for (let x = 0; x < 5; x++) {
-        const ny = PI[x][y]
-        const nx = (x + y) % 5
-        const v = a[x + 5 * y]
-        b[ny + 5 * nx] = rotl64(v, ROT[y][x])
+        s[y + x] = C[x] ^ (~C[(x + 1) % 5] & C[(x + 2) % 5] & MASK64)
       }
     }
 
-    for (let y = 0; y < 5; y++) {
-      for (let x = 0; x < 5; x++) {
-        const i = x + 5 * y
-        a[i] = b[i] ^ (~b[((x + 1) % 5) + 5 * y] & b[((x + 2) % 5) + 5 * y])
-      }
-    }
-    a[0] ^= RC[round]
+    // ι (iota)
+    s[0] ^= RC[round]
   }
 }
 
@@ -105,8 +101,7 @@ export function keccak256(bytes: Uint8Array): Uint8Array {
       for (let j = 0; j < 8; j++) {
         laneBytes[j] = block[i * 8 + j] ?? 0
       }
-      const lane = laneView.getBigUint64(0, true)
-      state[i] ^= lane
+      state[i] ^= laneView.getBigUint64(0, true)
     }
     keccakF(state)
   }
