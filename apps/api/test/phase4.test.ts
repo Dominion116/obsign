@@ -105,7 +105,7 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     })
     expect(res.statusCode).toBe(402)
     const body = res.json()
-    expect(body.x402Version).toBe(1)
+    expect(body.x402Version).toBe(2)
     expect(Array.isArray(body.accepts)).toBe(true)
     expect(body.accepts[0].payTo).toBe(CONFIG.x402PayeeAddress)
     expect(body.accepts[0].amount).toBe('10000')
@@ -215,7 +215,7 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     const toolResult = res.json().result
     expect(toolResult.isError).toBe(true)
     const payload = JSON.parse(toolResult.content[0].text)
-    expect(payload.x402.x402Version).toBe(1)
+    expect(payload.x402.x402Version).toBe(2)
   })
 
   it('GET /api/v1/health reports service, DB, and queue status', async () => {
