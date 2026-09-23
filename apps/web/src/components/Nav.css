@@ -141,13 +141,18 @@
 .nav__sheet {
   position: fixed;
   inset: var(--nav-h, 70px) 0 0 0;
-  height: calc(100vh - var(--nav-h, 70px)); /* Ensure it doesn't overflow the viewport */
-  overflow-y: auto; /* Allow scrolling if menu items exceed screen height */
+  /* `inset` sizes the sheet to the remaining visible viewport. The dynamic
+     viewport value accounts for mobile browser toolbars expanding or hiding. */
+  height: calc(100vh - var(--nav-h, 70px));
+  height: calc(100dvh - var(--nav-h, 70px));
+  overflow: hidden;
+  overscroll-behavior: contain;
   background: var(--color-paper);
   z-index: 49;
-  padding: 2rem var(--gutter, 1.5rem);
-  display: flex;
-  flex-direction: column;
+  padding: clamp(1rem, 4vh, 2rem) var(--gutter, 1.5rem) max(1rem, env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 1rem;
   transform: translateY(-8px);
   opacity: 0;
   pointer-events: none;
@@ -164,8 +169,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  /* Fill the sheet so the CTA can be pushed to the very bottom */
-  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .nav__sheet-links a:not(.nav__sheet-cta) {
@@ -179,8 +186,8 @@
 }
 
 .nav__sheet-cta {
-  /* Push the button to the bottom of the dropdown sheet */
-  margin-top: auto;
+  /* Kept outside the scrolling links so it always remains in the viewport. */
+  width: 100%;
   text-align: center;
 }
 

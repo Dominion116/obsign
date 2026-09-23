@@ -118,16 +118,16 @@ export default function Nav({ brandTo, links, cta, right }: NavProps) {
           {links.map((l) => (
             <NavLink key={l.href} item={l} onNavigate={() => setOpen(false)} />
           ))}
-          {cta && (
-            <Link
-              className="btn btn--primary nav__sheet-cta"
-              to={cta.to}
-              onClick={() => setOpen(false)}
-            >
-              {cta.label}
-            </Link>
-          )}
         </nav>
+        {cta && (
+          <Link
+            className="btn btn--primary nav__sheet-cta"
+            to={cta.to}
+            onClick={() => setOpen(false)}
+          >
+            {cta.label}
+          </Link>
+        )}
       </div>
     </header>
   )
