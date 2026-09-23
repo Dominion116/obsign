@@ -8,6 +8,7 @@
 // SDK's chain lib), then enforce domain, chain, nonce single-use, and validity
 // window ourselves.
 
+import { webcrypto } from 'node:crypto'
 import { SiweMessage } from 'siwe'
 import { recoverMessageAddress } from 'viem'
 import { SignJWT, jwtVerify } from 'jose'
@@ -53,7 +54,7 @@ export function createMongoNonceStore(col: Collection<SiweNonceDoc>): NonceStore
 function randomNonce(): string {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   const bytes = new Uint8Array(17)
-  globalThis.crypto.getRandomValues(bytes)
+  webcrypto.getRandomValues(bytes)
   let out = ''
   for (const b of bytes) out += alphabet[b % alphabet.length]
   return out

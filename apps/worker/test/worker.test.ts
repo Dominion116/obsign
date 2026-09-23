@@ -88,15 +88,18 @@ describe.skipIf(SKIP)('worker handlers', () => {
   })
 
   it('runDrain leases, dispatches, and acks a batch', async () => {
-    await deps.queue.enqueue({
-      type: 'confirmAnchor',
-      dedupeKey: 'drain:1',
-      payload: {
-        credentialId: '0x' + 'aa'.repeat(32),
-        receiptId: '0x' + 'cc'.repeat(32),
-        txHash: '0x' + 'dd'.repeat(32),
+    await deps.queue.enqueue(
+      {
+        type: 'confirmAnchor',
+        dedupeKey: 'drain:1',
+        payload: {
+          credentialId: '0x' + 'aa'.repeat(32),
+          receiptId: '0x' + 'cc'.repeat(32),
+          txHash: '0x' + 'dd'.repeat(32),
+        },
       },
-    })
+      0,
+    )
     const processed = await runDrain(deps, 'confirmAnchor', 5, 0)
     expect(processed).toBe(1)
     expect(await deps.queue.depth('confirmAnchor')).toBe(0)
