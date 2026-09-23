@@ -10,7 +10,9 @@ services:
     plan: free
     # Build the whole workspace so @obsign/{core,sdk,platform,worker} compile,
     # then esbuild-bundle apps/api into a single runnable dist/server.js.
-    buildCommand: npm ci && npm run build -w @obsign/api
+    # `npm install` (not `npm ci`): this monorepo intentionally commits no root
+    # package-lock.json (CI uses `npm install` too), so `npm ci` would fail.
+    buildCommand: npm install && npm run build -w @obsign/api
     startCommand: node apps/api/dist/server.js
     healthCheckPath: /api/v1/health
     envVars:
@@ -30,3 +32,12 @@ services:
         value: '5242880'
       - key: ANCHOR_MIN_CONFIRMATIONS
         value: '12'
+      # x402 payment gate (Phase 4). Set per-environment in the Render dashboard.
+      # Empty values keep the service booting but make /api/v1/verify unusable
+      # (the 402 challenge would advertise no payee), so set all three to go live.
+      - key: X402_PAYEE_ADDRESS
+        sync: false
+      - key: X402_PRICE_USDC
+        sync: false
+      - key: X402_FACILITATOR_URL
+        sync: false
