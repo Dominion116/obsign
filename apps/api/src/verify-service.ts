@@ -40,7 +40,7 @@ export async function runVerify(deps: VerifyDeps, input: VerifyInput): Promise<R
 }
 
 /** Extract onchain-event coordinates from evidence for a live snapshot fetch. */
-export function onchainEventRefs(evidence: unknown): SnapshotRequest['events'] {
+export function onchainEventRefs(evidence: unknown): NonNullable<SnapshotRequest['events']> {
   const items = Array.isArray(evidence) ? evidence : [evidence]
   const refs: NonNullable<SnapshotRequest['events']> = []
   for (const item of items) {
