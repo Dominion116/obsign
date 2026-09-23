@@ -9,9 +9,9 @@ import deployments from '../../../../contracts/deployments/84532.json'
 export function getAddresses(): ObsignAddresses {
   const env = import.meta.env
   return resolveAddresses(deployments, {
-    anchor: env.VITE_ANCHOR_ADDRESS as string | undefined,
-    revocation: env.VITE_REVOCATION_ADDRESS as string | undefined,
-    issuerRegistry: env.VITE_ISSUER_REGISTRY_ADDRESS as string | undefined,
-    policyRegistry: env.VITE_POLICY_REGISTRY_ADDRESS as string | undefined,
+    anchor: env.VITE_ANCHOR_ADDRESS as `0x${string}` | undefined,
+    revocation: env.VITE_REVOCATION_ADDRESS as `0x${string}` | undefined,
+    issuerRegistry: env.VITE_ISSUER_REGISTRY_ADDRESS as `0x${string}` | undefined,
+    policyRegistry: env.VITE_POLICY_REGISTRY_ADDRESS as `0x${string}` | undefined,
   })
 }

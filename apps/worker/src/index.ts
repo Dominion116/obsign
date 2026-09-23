@@ -124,7 +124,7 @@ export async function runDrain(
   const jobs = await deps.queue.lease(type as never, now, 60_000, limit)
   for (const job of jobs) {
     try {
-      const result = await handler(job.payload, deps)
+      const result = await handler(job.payload as Record<string, unknown>, deps)
       if (notYetConfirmed(result)) {
         await deps.queue.defer(job.id, now + DEFER_MS, now)
       } else {

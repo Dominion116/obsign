@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { SiweService, SiweVerificationError, createMongoNonceStore } from '../src/siwe.js'
 import { collections, ensureIndexes } from '../src/mongo.js'
 import { SKIP_MONGO_TESTS, startMemoryMongo, type MemoryMongo } from './helpers/memory-mongo.js'

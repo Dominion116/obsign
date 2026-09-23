@@ -166,7 +166,7 @@ function anchorRepo(c: Collections): AnchorRepo {
       await c.anchors.updateOne(
         { credentialId: doc.credentialId },
         {
-          $set: { ...defined(doc), updatedAt: now },
+          $set: { ...defined({ ...doc }), updatedAt: now },
           $setOnInsert: { createdAt: now },
         },
         { upsert: true },

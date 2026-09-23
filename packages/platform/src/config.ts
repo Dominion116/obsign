@@ -5,7 +5,7 @@
 
 import { createRequire } from 'node:module'
 import { readFileSync } from 'node:fs'
-import { resolveAddresses, type ObsignAddresses } from '@obsign/sdk'
+import { resolveAddresses, type DeploymentsFile, type ObsignAddresses } from '@obsign/sdk'
 
 /** Fully-resolved platform configuration. */
 export interface PlatformConfig {
@@ -78,7 +78,7 @@ export function loadConfig(env: Env = process.env): PlatformConfig {
 
 /** Resolve live contract addresses from deployments/84532.json with env overrides. */
 export function loadAddresses(env: Env = process.env): ObsignAddresses {
-  const deployments = loadDeploymentsFile(env)
+  const deployments = loadDeploymentsFile(env) as DeploymentsFile | undefined
   return resolveAddresses(deployments, {
     anchor: env.ANCHOR_CONTRACT_ADDRESS,
     revocation: env.REVOCATION_CONTRACT_ADDRESS,
