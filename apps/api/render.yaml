@@ -1,0 +1,32 @@
+# Render deployment for the Obsign API (P3-5). A single Node web service serving
+# the public REST + SIWE endpoints and the CRON_SECRET-guarded internal routes.
+# cron-jobs.org calls POST /internal/cron/drain on a schedule (keep-alive + drain).
+#
+# RULE-1: builds/deploys run in Render/CI, never locally.
+services:
+  - type: web
+    name: obsign-api
+    runtime: node
+    plan: free
+    # Build the whole workspace so @obsign/{core,sdk,platform,worker} compile,
+    # then esbuild-bundle apps/api into a single runnable dist/server.js.
+    buildCommand: npm ci && npm run build -w @obsign/api
+    startCommand: node apps/api/dist/server.js
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: BASE_SEPOLIA_RPC_URL
+        sync: false
+      - key: SESSION_JWT_SECRET
+        generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: CHAIN_ID
+        value: "84532"
+      - key: EVIDENCE_MAX_BYTES
+        value: "5242880"
+      - key: ANCHOR_MIN_CONFIRMATIONS
+        value: "12"

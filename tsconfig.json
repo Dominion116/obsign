@@ -4,6 +4,9 @@
     { "path": "./spec" },
     { "path": "./packages/core" },
     { "path": "./packages/sdk" },
+    { "path": "./packages/platform" },
+    { "path": "./apps/api" },
+    { "path": "./apps/worker" },
     { "path": "./cli" }
   ]
 }

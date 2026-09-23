@@ -211,3 +211,48 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* Interactive issue form (Phase 3, self-custodial issuance). */
+.issue__form {
+  margin: var(--space-6, 2rem) 0;
+  padding: var(--space-5, 1.5rem);
+  border: var(--border-w-thick, 2px) solid var(--border, #111);
+  border-radius: var(--radius, 12px);
+  background: var(--color-paper, #fff);
+  display: grid;
+  gap: var(--space-4, 1rem);
+  max-width: 40rem;
+}
+.issue__form-title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.issue__field {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+.issue__field input {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border, #111);
+  border-radius: 8px;
+  font: inherit;
+}
+.issue__hint {
+  margin: 0;
+  color: var(--color-muted, #666);
+}
+.issue__error {
+  margin: 0;
+  color: #b00020;
+  word-break: break-word;
+}
+.issue__result {
+  display: grid;
+  gap: 0.35rem;
+}
+.nav__wallet {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}

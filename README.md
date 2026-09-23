@@ -287,7 +287,7 @@ These rules override any other instruction. If a change would break one, stop an
 | INV-4 | The database is a cache. MongoDB is never required to recompute a receipt. |
 | INV-5 | The LLM is outside the validity path. Model output can explain, never decide. |
 | INV-6 | Chain reads are pinned. Verify against a specific block, never `latest`. |
-| INV-7 | No plaintext issuer keys in MongoDB. Key material lives behind the `KeyProvider` interface. |
+| INV-7 | No plaintext issuer keys in MongoDB. Under Phase 3 self-custody, issuers hold their own keys and the server stores none — satisfied by construction. |
 
 ### Repository scripts
 
@@ -309,10 +309,47 @@ The product is being built in phases, each gated by its own acceptance criteria.
 | 0 | Foundations and spec: monorepo, canonicalization spec, golden vectors, CI | Scaffolded |
 | 1 | Deterministic core and CLI: pure verifier, three evidence modules, `obsign verify` | Scaffolded |
 | 2 | Onchain layer: anchor, revocation, issuer registry (+ policy registry) contracts on Base Sepolia, SDK ChainReader | Implemented (deploy runs in CI) |
-| 3 | Issuance and multi-issuer platform: keys, database, queue, anchoring | Not started |
+| 3 | Issuance and multi-issuer platform: self-custodial issuers (SIWE), durable queue, evidence store, confirm/index worker, Fastify API on Render | Implemented (deploy runs on Render/CI) |
 | 4 | Verification API, x402, and MCP: paid verify endpoint, MCP tools, SDK publish | Not started |
-| 5 | Web app and landing page | Landing page implemented |
+| 5 | Web app and landing page | Landing page + issuer console implemented |
 | 6 | Hardening and mainnet launch: KMS migration, audit, mainnet deploy | Not started |
+
+### Phase 3 — self-custodial issuance platform
+
+Phase 3 deliberately supersedes the original PRD custody model. Issuers are
+**self-custodial**: they connect their own wallet (RainbowKit + wagmi), sign in
+with **SIWE** (EIP-4361), and submit `registerIssuer` / `anchor` / `revoke`
+transactions **from their own address**, so `msg.sender == issuer` and P2-3
+issuer-scoped revocation holds with **no funded platform relayer**. Because no
+issuer key material ever reaches the server, INV-7 is satisfied by construction
+(the `KeyProvider` / HD-seed model from PRD D12 / FR-3.1 / §4.2 is intentionally
+dropped for issuers; `OBSIGN_HD_SEED` is reserved for the Phase 6 agent wallet).
+
+Workspaces added:
+
+- **`packages/platform`** — framework-agnostic domain + infra: Mongo cache/queue
+  (INV-4), SIWE, GridFS evidence store, chain indexer, credential service.
+- **`apps/api`** — a single **Fastify** service (deploys to **Render**) serving
+  the REST + SIWE endpoints and the `CRON_SECRET`-guarded drain/webhook routes.
+- **`apps/worker`** — the confirm/index handlers (`confirmAnchor`,
+  `reflectRevocation`, `reapExpired`) driven by `runDrain`. It **watches** each
+  submitted `txHash` to `ANCHOR_MIN_CONFIRMATIONS` and upserts the cache — it
+  never sends transactions (a reinterpretation of FR-3.5 for self-custody).
+
+Deploy notes (P3-5):
+
+- **Render**: `apps/api/render.yaml` describes a single Node web service. Build
+  `npm ci && npm run build -w @obsign/api` (esbuild bundles the workspace TS
+  into `apps/api/dist/server.js`), start `node apps/api/dist/server.js`, health
+  check `/api/v1/health`. Set `MONGODB_URI`, `BASE_SEPOLIA_RPC_URL`,
+  `FRONTEND_ORIGIN`; `SESSION_JWT_SECRET` / `CRON_SECRET` can be generated.
+- **cron-jobs.org**: schedule `POST /internal/cron/drain` with the `CRON_SECRET`
+  (as `Authorization: Bearer <secret>` or `x-cron-secret`) to both keep the free
+  service warm and drain the queue; `POST /internal/webhook/drain` triggers an
+  immediate drain after issuance/revocation.
+- **Preconditions**: Phase 2 CI green, and `contracts/deployments/84532.json`
+  holds live addresses (it does — `resolveAddresses` throws on zero
+  placeholders, so writes/reads fail fast otherwise).
 
 ## Contributing
 

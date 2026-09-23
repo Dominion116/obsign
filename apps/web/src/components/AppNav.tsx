@@ -1,4 +1,5 @@
 import Nav, { type NavItem } from './Nav'
+import WalletControls from './WalletControls'
 
 // Cross-page navigation between the functional /app surfaces.
 const LINKS: NavItem[] = [
@@ -11,5 +12,5 @@ const LINKS: NavItem[] = [
 
 export default function AppNav() {
   // The brand/logo is the primary way back to the landing page.
-  return <Nav brandTo="/" links={LINKS} />
+  return <Nav brandTo="/" links={LINKS} right={<WalletControls />} />
 }

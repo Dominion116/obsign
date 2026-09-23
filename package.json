@@ -11,7 +11,9 @@
     "spec",
     "packages/core",
     "packages/sdk",
+    "packages/platform",
     "packages/agent",
+    "apps/api",
     "apps/web",
     "apps/worker",
     "cli"
@@ -23,6 +25,7 @@
     "format:write": "prettier --write .",
     "test": "vitest run",
     "check:core-purity": "node scripts/check-core-purity.mjs",
+    "check:key-leak": "node scripts/check-key-leak.mjs",
     "freeze:vectors": "vite-node spec/tools/freeze.ts",
     "receipt:digest": "vite-node spec/tools/receipt-digest.ts"
   },
@@ -30,6 +33,7 @@
     "@eslint/js": "^9.12.0",
     "@types/node": "^20.16.10",
     "eslint": "^9.12.0",
+    "mongodb-memory-server": "^10.1.2",
     "prettier": "3.9.8",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.8.0",

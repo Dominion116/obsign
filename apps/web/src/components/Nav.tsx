@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useIsActive } from '../lib/router'
 import './Nav.css'
 
@@ -14,6 +14,8 @@ export interface NavProps {
   links: NavItem[]
   /** Optional primary call-to-action shown on the right. */
   cta?: { label: string; to: string }
+  /** Optional custom controls rendered in the right-hand actions area. */
+  right?: ReactNode
 }
 
 function NavLink({
@@ -44,7 +46,7 @@ function NavLink({
  * Shared, prop-driven navigation shell. Landing and app surfaces compose it
  * with their own link sets (see LandingNav / AppNav).
  */
-export default function Nav({ brandTo, links, cta }: NavProps) {
+export default function Nav({ brandTo, links, cta, right }: NavProps) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -88,6 +90,8 @@ export default function Nav({ brandTo, links, cta }: NavProps) {
               {cta.label}
             </Link>
           )}
+
+          {right}
 
           <button
             className="nav__toggle"

@@ -47,9 +47,29 @@ export default tseslint.config(
   },
   {
     // Node-run tooling, scripts, and config files.
-    files: ['scripts/**/*.{mjs,js}', '**/*.config.{ts,mjs,js}', 'eslint.config.mjs'],
+    files: ['scripts/**/*.{mjs,js}', '**/build.mjs', '**/*.config.{ts,mjs,js}', 'eslint.config.mjs'],
     languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
       globals: nodeGlobals,
+    },
+  },
+  {
+    // Server workspaces (Phase 3): platform domain/infra, the Fastify API, and
+    // the worker handlers run under Node and legitimately touch process.env,
+    // timers, and the fetch/URL globals. The core-purity gate still forbids any
+    // of this in packages/core (INV-1).
+    files: ['apps/api/**/*.{ts,tsx}', 'apps/worker/**/*.{ts,tsx}', 'packages/platform/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...nodeGlobals,
+        fetch: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        AbortController: 'readonly',
+      },
     },
   },
   {

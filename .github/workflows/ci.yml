@@ -33,6 +33,9 @@ jobs:
       - name: Core purity (INV-1)
         run: npm run check:core-purity
 
+      - name: Key-leak guard (SEC-1)
+        run: npm run check:key-leak
+
       - name: Typecheck
         run: npm run typecheck
 

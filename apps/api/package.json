@@ -1,0 +1,29 @@
+{
+  "name": "@obsign/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Obsign API — single Fastify service (Render). Serves public REST + SIWE endpoints and CRON_SECRET-guarded drain/webhook routes. Domain logic lives in @obsign/platform; the confirm/index handlers come from @obsign/worker.",
+  "main": "src/server.ts",
+  "types": "src/server.ts",
+  "exports": {
+    ".": "./src/server.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "build": "node build.mjs",
+    "start": "node dist/server.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/multipart": "^9.0.1",
+    "@obsign/platform": "0.1.0",
+    "@obsign/worker": "0.1.0",
+    "fastify": "^5.1.0",
+    "mongodb": "^6.9.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

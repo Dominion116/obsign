@@ -1,4 +1,5 @@
 import { Link } from '../lib/router'
+import IssueForm from '../components/IssueForm'
 import './IssuePage.css'
 
 const CHECKLIST = [
@@ -45,6 +46,8 @@ export default function IssuePage() {
               </article>
             ))}
           </div>
+
+          <IssueForm />
 
           <div className="issue__actions">
             <Link className="btn btn--primary" to="/app/verify">

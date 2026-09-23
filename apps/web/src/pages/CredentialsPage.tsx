@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link } from '../lib/router'
 import { useAsyncData } from '../lib/useAsyncData'
-import { fetchCredentials, revokeCredential, type Credential } from '../lib/api'
+import { fetchCredentials, type Credential } from '../lib/api'
+import { revokeCredentialOnChain } from '../lib/issuance'
 import Skeleton from '../components/Skeleton'
 import './CredentialsPage.css'
 
@@ -29,12 +30,17 @@ export default function CredentialsPage() {
     if (!confirmed) return
 
     setRevoking((r) => ({ ...r, [id]: true }))
-    // Optimistically flip the row to revoked; the API call reconciles it.
+    // Optimistically flip the row to revoked; the on-chain tx + API reconcile it.
     setData((prev) =>
       (prev ?? []).map((c) => (c.id === id ? { ...c, status: 'revoked', anchorTx: c.anchorTx } : c)),
     )
     try {
-      await revokeCredential(id)
+      // Issuer's own wallet submits revoke(credentialId); the API records the tx
+      // and the worker reflects it into the cache (P2-3 / P3-4).
+      await revokeCredentialOnChain(id)
+    } catch {
+      // On-chain revoke failed (e.g. demo data / wallet rejected) — leave the
+      // optimistic state; a refresh will reconcile against the cache.
     } finally {
       setRevoking((r) => {
         const next = { ...r }
@@ -160,11 +166,11 @@ export default function CredentialsPage() {
 
           <div className="creds__note">
             <p className="creds__note-body">
-              The records shown here are a local demonstration rather than live production
-              data. It is worth noting that issuer keys never pass through this dashboard
-              at any point. They remain safely behind the KeyProvider interface described
-              in invariant INV-7, so the interface you are using can display and manage
-              credentials without ever touching the sensitive key material itself.
+              The records shown here fall back to a local demonstration when the API is
+              unreachable. Issuer keys never reach this dashboard or the server: issuers are
+              self-custodial and sign in with their own wallet (SIWE), and every anchor and
+              revoke transaction is submitted directly from that wallet. Because no issuer key
+              material exists server-side, invariant INV-7 holds by construction.
             </p>
           </div>
         </div>

@@ -1,0 +1,20 @@
+{
+  "name": "@obsign/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Obsign worker — confirm/index pipeline (P3-4). Watches submitted txHashes to >= ANCHOR_MIN_CONFIRMATIONS and upserts the anchors/revocations cache. No HTTP of its own; driven by runDrain.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@obsign/platform": "0.1.0",
+    "mongodb": "^6.9.0"
+  }
+}

@@ -1,0 +1,68 @@
+name: Phase 3 integration (Base Sepolia)
+
+# End-to-end test of the issuance platform: two distinct issuer wallets each
+# register + issue + anchor a credential → confirmAnchor → cache reflects both;
+# revocation by the credential's own issuer returns REVOKED; a non-issuer revoke
+# does NOT flip status (P2-3). Runs on main-branch pushes and manual dispatch.
+#
+# RULE-1: all execution in CI. Required repo secrets:
+#   BASE_SEPOLIA_RPC_URL, OBSIGN_INTEGRATION_KEY (funded testnet key).
+# Required: contracts/deployments/84532.json has live addresses (precondition 2).
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: phase3-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  issuer-platform:
+    name: two-issuer issue → anchor → revoke (SDK + worker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard — required secrets present
+        id: guard
+        env:
+          RPC: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          KEY: ${{ secrets.OBSIGN_INTEGRATION_KEY }}
+        run: |
+          if [ -z "$RPC" ] || [ -z "$KEY" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Missing secrets; skipping Phase 3 integration."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.run == 'true'
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        if: steps.guard.outputs.run == 'true'
+        run: npm install
+
+      - name: Resolve deployed contract addresses
+        if: steps.guard.outputs.run == 'true'
+        id: addr
+        run: |
+          node -e "
+          const d=require('./contracts/deployments/84532.json');
+          if(!d.anchor||/^0x0+$/.test(d.anchor)){console.error('deployments/84532.json missing live addresses.');process.exit(1)}
+          console.log('anchor='+d.anchor);console.log('revocation='+d.revocation);console.log('issuerRegistry='+d.issuerRegistry)
+          " >> "$GITHUB_OUTPUT"
+
+      - name: Phase 3 integration test
+        if: steps.guard.outputs.run == 'true'
+        env:
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          OBSIGN_INTEGRATION_KEY: ${{ secrets.OBSIGN_INTEGRATION_KEY }}
+          ANCHOR_CONTRACT_ADDRESS: ${{ steps.addr.outputs.anchor }}
+          REVOCATION_CONTRACT_ADDRESS: ${{ steps.addr.outputs.revocation }}
+          ISSUER_REGISTRY_ADDRESS: ${{ steps.addr.outputs.issuerRegistry }}
+        run: npx vitest run packages/platform/test/integration.testnet.test.ts
