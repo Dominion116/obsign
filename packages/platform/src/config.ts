@@ -3,8 +3,9 @@
 // functions, not top-level reads, so importing this module never throws and unit
 // tests can construct infra directly against an in-memory Mongo.
 
-import { createRequire } from 'node:module'
 import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
 import { resolveAddresses, type DeploymentsFile, type ObsignAddresses } from '@obsign/sdk'
 
 /** Fully-resolved platform configuration. */
@@ -123,8 +124,14 @@ export function loadAddresses(env: Env = process.env): ObsignAddresses {
 
 /** Read contracts/deployments/84532.json (the committed source of truth). */
 export function loadDeploymentsFile(_env: Env = process.env): unknown {
-  const require = createRequire(import.meta.url)
-  const file = require.resolve('../../contracts/deployments/84532.json')
+  // Resolve the committed deployments file relative to this module's own location
+  // so it works both from the TS source (packages/platform/src/config.ts) and the
+  // esbuild production bundle (apps/api/dist/server.js) — in both layouts the
+  // repo-root contracts/ directory is exactly three levels up. The path is built
+  // dynamically (fileURLToPath + resolve) so esbuild leaves it as a plain runtime
+  // read instead of trying to inline or copy the JSON as a bundled asset.
+  const here = dirname(fileURLToPath(import.meta.url))
+  const file = resolve(here, '../../../contracts/deployments/84532.json')
   return JSON.parse(readFileSync(file, 'utf8')) as unknown
 }
 
