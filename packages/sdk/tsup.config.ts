@@ -9,7 +9,14 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm', 'cjs'],
   outDir: 'dist',
-  dts: true,
+  // A dedicated non-composite tsconfig: the workspace tsconfig.json is
+  // `composite: true` (for project references), which makes the rollup .d.ts
+  // program reject files not in its file list (TS6307). tsconfig.build.json
+  // drops composite and includes all of src so the dts bundle resolves.
+  tsconfig: 'tsconfig.build.json',
+  // Inline @obsign/core's types into the bundle so the published .d.ts is
+  // self-contained (no @obsign/* dependency), matching the JS `noExternal`.
+  dts: { resolve: [/^@obsign\//] },
   clean: true,
   sourcemap: true,
   target: 'node18',
