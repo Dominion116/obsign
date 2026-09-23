@@ -23,8 +23,12 @@ base_sepolia = "${BASE_SEPOLIA_RPC_URL}"
 
 [etherscan]
 # Etherscan API V2 (multichain). BaseScan's V1 endpoint is deprecated; V2 routes
-# by chainid. The same API key works across Etherscan-family explorers.
-base_sepolia = { key = "${BASESCAN_API_KEY}", chain = 84532, url = "https://api.etherscan.io/v2/api" }
+# by chainid. Do NOT hardcode the V2 `url` here: forge builds the multichain
+# endpoint itself and appends the required `?chainid=` from `chain`. Supplying an
+# explicit url makes forge send it verbatim, dropping the chainid param, which the
+# V2 API rejects with "Missing chainid parameter". Key comes from etherscan.io
+# (one key works across all Etherscan-family explorers via V2).
+base_sepolia = { key = "${BASESCAN_API_KEY}", chain = 84532 }
 
 # forge fmt
 [fmt]
