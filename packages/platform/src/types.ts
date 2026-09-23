@@ -132,3 +132,22 @@ export interface SiweNonceDoc {
   nonce: string
   createdAt: Date
 }
+
+/**
+ * A consumed x402 payment proof (Phase 4, FR-4.4). Recorded so a replayed proof
+ * is rejected. This is cache/replay-guard only (INV-4): it never feeds a verdict
+ * or a receiptId, and payment never affects validity (INV-3).
+ */
+export interface PaymentProofDoc {
+  /** Deterministic id derived from the payment payload; the replay key. */
+  proofId: string
+  /** The resource the payment was accepted for (e.g. /api/v1/verify). */
+  resource: string
+  /** The amount the facilitator settled, as reported (opaque string). */
+  amount: string
+  /** Payer address, when the facilitator reports it. */
+  payer?: string
+  /** Settlement tx hash, when the facilitator reports it. */
+  txHash?: string
+  consumedAt: Date
+}

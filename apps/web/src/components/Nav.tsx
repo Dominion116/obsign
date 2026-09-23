@@ -16,6 +16,8 @@ export interface NavProps {
   cta?: { label: string; to: string }
   /** Optional custom controls rendered in the right-hand actions area. */
   right?: ReactNode
+  /** Optional control rendered in the fixed action area of the mobile menu. */
+  mobileAction?: ReactNode
 }
 
 function NavLink({
@@ -46,7 +48,7 @@ function NavLink({
  * Shared, prop-driven navigation shell. Landing and app surfaces compose it
  * with their own link sets (see LandingNav / AppNav).
  */
-export default function Nav({ brandTo, links, cta, right }: NavProps) {
+export default function Nav({ brandTo, links, cta, right, mobileAction }: NavProps) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -119,14 +121,19 @@ export default function Nav({ brandTo, links, cta, right }: NavProps) {
             <NavLink key={l.href} item={l} onNavigate={() => setOpen(false)} />
           ))}
         </nav>
-        {cta && (
-          <Link
-            className="btn btn--primary nav__sheet-cta"
-            to={cta.to}
-            onClick={() => setOpen(false)}
-          >
-            {cta.label}
-          </Link>
+        {(cta || mobileAction) && (
+          <div className="nav__sheet-actions">
+            {mobileAction}
+            {cta && (
+              <Link
+                className="btn btn--primary nav__sheet-cta"
+                to={cta.to}
+                onClick={() => setOpen(false)}
+              >
+                {cta.label}
+              </Link>
+            )}
+          </div>
         )}
       </div>
     </header>

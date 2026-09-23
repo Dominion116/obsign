@@ -6,6 +6,12 @@
     "types": ["node"],
     "lib": ["ES2020"]
   },
-  "references": [{ "path": "../../packages/platform" }, { "path": "../worker" }],
+  "references": [
+    { "path": "../../packages/core" },
+    { "path": "../../packages/sdk" },
+    { "path": "../../packages/platform" },
+    { "path": "../../spec" },
+    { "path": "../worker" }
+  ],
   "include": ["src", "test"]
 }

@@ -21,6 +21,9 @@ const CONFIG: PlatformConfig = {
   revocationAddress: '0x' + '22'.repeat(20),
   issuerRegistryAddress: '0x' + '33'.repeat(20),
   policyRegistryAddress: '0x' + '44'.repeat(20),
+  x402PayeeAddress: '0x' + '55'.repeat(20),
+  x402PriceUsdc: '0.01',
+  x402FacilitatorUrl: 'http://127.0.0.1:1',
 }
 
 describe.skipIf(SKIP)('Obsign API', () => {

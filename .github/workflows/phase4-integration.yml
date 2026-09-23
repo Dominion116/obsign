@@ -1,0 +1,63 @@
+name: Phase 4 integration (x402 on Base Sepolia)
+
+# End-to-end test of the paid verification loop: an unpaid POST /api/v1/verify
+# returns a 402 challenge; a paid request settles through a real x402 facilitator
+# and returns a well-formed receipt. Runs on main-branch pushes and manual
+# dispatch.
+#
+# RULE-1: all execution in CI. Required repo secrets:
+#   X402_FACILITATOR_URL  — a reachable x402 facilitator (verify/settle)
+#   X402_PAYEE_ADDRESS    — the payee the payment authorizes
+#   X402_PRICE_USDC       — the advertised price
+#   X402_PAYMENT_HEADER   — a base64 X-PAYMENT proof valid for the above
+# Optional: BASE_SEPOLIA_RPC_URL.
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: phase4-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  x402-loop:
+    name: 402 → settle → receipt (live facilitator)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard — required secrets present
+        id: guard
+        env:
+          FAC: ${{ secrets.X402_FACILITATOR_URL }}
+          PAY: ${{ secrets.X402_PAYMENT_HEADER }}
+          PAYEE: ${{ secrets.X402_PAYEE_ADDRESS }}
+          PRICE: ${{ secrets.X402_PRICE_USDC }}
+        run: |
+          if [ -z "$FAC" ] || [ -z "$PAY" ] || [ -z "$PAYEE" ] || [ -z "$PRICE" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Missing secrets; skipping Phase 4 integration."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.run == 'true'
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        if: steps.guard.outputs.run == 'true'
+        run: npm install
+
+      - name: Phase 4 x402 integration test
+        if: steps.guard.outputs.run == 'true'
+        env:
+          X402_FACILITATOR_URL: ${{ secrets.X402_FACILITATOR_URL }}
+          X402_PAYEE_ADDRESS: ${{ secrets.X402_PAYEE_ADDRESS }}
+          X402_PRICE_USDC: ${{ secrets.X402_PRICE_USDC }}
+          X402_PAYMENT_HEADER: ${{ secrets.X402_PAYMENT_HEADER }}
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+        run: npx vitest run apps/api/test/x402-live.testnet.test.ts

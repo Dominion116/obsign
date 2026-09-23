@@ -5,6 +5,36 @@ import { useState } from 'react'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useSession } from '../lib/session'
 
+function WalletButton() {
+  return (
+    <ConnectButton.Custom>
+      {({ account, chain, mounted, openAccountModal, openChainModal, openConnectModal }) => {
+        if (!mounted || !account || !chain) {
+          return (
+            <button type="button" className="btn btn--primary nav__connect" onClick={openConnectModal}>
+              Connect wallet
+            </button>
+          )
+        }
+
+        if (chain.unsupported) {
+          return (
+            <button type="button" className="btn btn--primary nav__connect" onClick={openChainModal}>
+              Wrong network
+            </button>
+          )
+        }
+
+        return (
+          <button type="button" className="btn btn--secondary nav__account" onClick={openAccountModal}>
+            {account.displayName}
+          </button>
+        )
+      }}
+    </ConnectButton.Custom>
+  )
+}
+
 export default function WalletControls() {
   const { isConnected, hasSession, login, logout } = useSession()
   const [busy, setBusy] = useState(false)
@@ -29,7 +59,7 @@ export default function WalletControls() {
 
   return (
     <div className="nav__wallet">
-      <ConnectButton showBalance={false} chainStatus="icon" accountStatus="address" />
+      <WalletButton />
       {isConnected &&
         (signedIn ? (
           <button type="button" className="btn btn--secondary" onClick={onSignOut}>

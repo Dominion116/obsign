@@ -27,7 +27,9 @@
     "check:core-purity": "node scripts/check-core-purity.mjs",
     "check:key-leak": "node scripts/check-key-leak.mjs",
     "freeze:vectors": "vite-node spec/tools/freeze.ts",
-    "receipt:digest": "vite-node spec/tools/receipt-digest.ts"
+    "receipt:digest": "vite-node spec/tools/receipt-digest.ts",
+    "build:sdk": "npm run -w @obsign/sdk build",
+    "smoke:sdk": "node scripts/sdk-offline-smoke.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",

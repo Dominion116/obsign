@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import LandingNav from './components/LandingNav'
 import AppNav from './components/AppNav'
 import Hero from './components/Hero'
+import About from './components/About'
 import HowItWorks from './components/HowItWorks'
 import Modules from './components/Modules'
 import CTA from './components/CTA'
@@ -74,6 +75,7 @@ export default function App() {
         <LandingNav />
         <main>
           <Hero />
+          <About />
           <HowItWorks />
           <Modules />
           <CTA />

@@ -1,20 +1,44 @@
 {
   "name": "@obsign/sdk",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "type": "module",
-  "description": "Obsign SDK — viem-based live chain reader. Fetches a pinned snapshot (INV-6) and produces a synchronous core ChainReader. viem lives here, never in @obsign/core (INV-1).",
+  "description": "Obsign SDK — offline receipt verification, a REST/x402 API client, and a viem-based pinned chain reader (INV-6). @obsign/core is bundled so the published package verifies offline with no workspace dependency.",
+  "license": "MIT",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "typecheck": "tsc -b",
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
     "test": "vitest run"
   },
   "dependencies": {
-    "@obsign/core": "0.1.0",
     "viem": "^2.21.0"
-  }
+  },
+  "devDependencies": {
+    "@obsign/core": "0.1.0",
+    "tsup": "^8.3.0"
+  },
+  "sideEffects": false
 }

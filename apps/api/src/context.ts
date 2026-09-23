@@ -8,6 +8,7 @@ import {
   CredentialService,
   GridFSEvidenceStore,
   LeaseQueue,
+  PaymentProofStore,
   SiweService,
   collections,
   createMongoNonceStore,
@@ -26,6 +27,7 @@ export interface AppContext {
   evidence: GridFSEvidenceStore
   indexer: ChainIndexer
   credentials: CredentialService
+  payments: PaymentProofStore
   worker: WorkerDeps
 }
 
@@ -55,7 +57,8 @@ export function buildContext(db: Db, config: PlatformConfig): AppContext {
     minConfirmations: config.anchorMinConfirmations,
   })
   const credentials = new CredentialService(repos, queue)
+  const payments = new PaymentProofStore(collections(db).paymentProofs)
   const worker = buildWorkerDeps(db, config)
 
-  return { config, repos, queue, siwe, evidence, indexer, credentials, worker }
+  return { config, repos, queue, siwe, evidence, indexer, credentials, payments, worker }
 }

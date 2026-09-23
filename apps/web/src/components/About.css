@@ -1,0 +1,102 @@
+.about {
+  background: var(--color-paper);
+  overflow: visible;
+}
+
+.about__card {
+  position: relative;
+  background: var(--color-navy);
+  border: var(--border-w-thick) solid var(--border);
+  border-radius: var(--radius-card-alt);
+  box-shadow: 10px 10px 0 0 var(--color-accent);
+}
+
+.about__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.15rem;
+  padding: clamp(2rem, 5vw, 3.5rem);
+}
+
+.about__eyebrow {
+  color: var(--color-accent);
+}
+
+.about__title {
+  max-width: 18ch;
+  color: var(--text-on-navy);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+}
+
+.about__title .script-accent {
+  color: var(--color-accent);
+}
+
+.about__lead,
+.about__body {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--text-muted-on-navy);
+}
+
+.about__lead {
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.7;
+}
+
+.about__body {
+  font-size: 0.94rem;
+  line-height: 1.7;
+}
+
+.about__action {
+  margin-top: 0.45rem;
+}
+
+.about__quote {
+  position: absolute;
+  top: -2.15rem;
+  right: clamp(1.25rem, 6vw, 4rem);
+  z-index: 1;
+  display: grid;
+  width: 4.3rem;
+  height: 4.3rem;
+  place-items: center;
+  color: var(--color-navy);
+  background: var(--color-accent);
+  border: var(--border-w-thick) solid var(--border);
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 5.5rem;
+  font-weight: 700;
+  line-height: 1.05;
+  padding-top: 1.55rem;
+}
+
+/* Align the card’s top edge with the badge centre so the border visibly
+   continues through the amber quotation mark. */
+.about__quote::after {
+  content: '';
+  position: absolute;
+  top: calc(50% - 1.5px);
+  left: -1rem;
+  z-index: 1;
+  width: calc(100% + 2rem);
+  height: var(--border-w-thick);
+  background: var(--border);
+}
+
+@media (max-width: 480px) {
+  .about__quote {
+    top: -1.75rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 4.5rem;
+    padding-top: 1.3rem;
+  }
+
+  .about__content {
+    padding-top: 2.5rem;
+  }
+}

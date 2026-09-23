@@ -138,3 +138,28 @@ jobs:
         working-directory: contracts
         continue-on-error: true
         run: forge coverage --report summary
+
+  # SDK publish readiness (FR-4.8). Bundles the SDK exactly as it ships to npm
+  # (@obsign/core inlined by tsup) and verifies a golden vector offline through
+  # the built dist entrypoint — the "installs and verifies a vector offline"
+  # acceptance, without needing a registry.
+  sdk-publish:
+    name: sdk build + offline verify
+    needs: workspace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm install
+      - name: Build the publishable SDK bundle
+        run: npm run build:sdk
+      - name: Verify a golden vector offline via the built SDK
+        run: npm run smoke:sdk
+      - name: Assert the tarball is self-contained (no @obsign/* runtime dep)
+        working-directory: packages/sdk
+        run: |
+          npm pack --dry-run --json > pack.json
+          node -e "const p=require('./package.json'); const d=Object.keys(p.dependencies||{}); if(d.some(x=>x.startsWith('@obsign/'))){console.error('published SDK must not depend on @obsign/* at runtime:',d);process.exit(1)} console.log('runtime deps:',d.join(', ')||'(none)')"
+

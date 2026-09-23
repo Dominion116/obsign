@@ -24,3 +24,15 @@ export {
   chainReaderFromSnapshot,
   type CreateChainReaderOptions,
 } from './reader.js'
+
+export { verifyOffline, type OfflineVerifyOptions } from './verify.js'
+
+export {
+  ObsignClient,
+  X402PaymentRequiredError,
+  ObsignApiError,
+  type ObsignClientOptions,
+  type VerifyOptions,
+  type X402Challenge,
+  type FetchLike,
+} from './api-client.js'

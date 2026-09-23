@@ -23,6 +23,15 @@ export interface PlatformConfig {
   revocationAddress: string
   issuerRegistryAddress: string
   policyRegistryAddress: string
+  /**
+   * x402 payment gate (Phase 4, FR-4.3). Empty strings mean "unconfigured": the
+   * verify route then rejects with a 402 that carries no payTo, which is a
+   * deployment misconfiguration rather than a Phase 3 boot failure — so these are
+   * optional here and never touch the verdict or the hashes (INV-3).
+   */
+  x402PayeeAddress: string
+  x402PriceUsdc: string
+  x402FacilitatorUrl: string
 }
 
 type Env = Record<string, string | undefined>
@@ -52,6 +61,11 @@ function intOr(env: Env, key: string, fallback: number): number {
   return n
 }
 
+function strOr(env: Env, key: string, fallback: string): string {
+  const v = env[key]
+  return v === undefined || v === '' ? fallback : v
+}
+
 /**
  * Load and validate the full platform config. Throws a single, actionable error
  * when a required secret is missing. Optional numeric knobs fall back to the
@@ -73,6 +87,9 @@ export function loadConfig(env: Env = process.env): PlatformConfig {
     revocationAddress: addr.revocation,
     issuerRegistryAddress: addr.issuerRegistry,
     policyRegistryAddress: addr.policyRegistry,
+    x402PayeeAddress: strOr(env, 'X402_PAYEE_ADDRESS', ''),
+    x402PriceUsdc: strOr(env, 'X402_PRICE_USDC', ''),
+    x402FacilitatorUrl: strOr(env, 'X402_FACILITATOR_URL', ''),
   }
 }
 

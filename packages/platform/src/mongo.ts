@@ -10,6 +10,7 @@ import type {
   EvidenceDoc,
   IssuerDoc,
   JobDoc,
+  PaymentProofDoc,
   ReceiptDoc,
   RevocationDoc,
   SiweNonceDoc,
@@ -49,6 +50,7 @@ export interface Collections {
   queue: Collection<JobDoc>
   audit: Collection<AuditDoc>
   siweNonces: Collection<SiweNonceDoc>
+  paymentProofs: Collection<PaymentProofDoc>
 }
 
 /** Resolve typed collections against a Db handle. */
@@ -63,6 +65,7 @@ export function collections(db: Db): Collections {
     queue: db.collection<JobDoc>('queue'),
     audit: db.collection<AuditDoc>('audit'),
     siweNonces: db.collection<SiweNonceDoc>('siwe_nonces'),
+    paymentProofs: db.collection<PaymentProofDoc>('x402_proofs'),
   }
 }
 
@@ -94,5 +97,9 @@ export async function ensureIndexes(db: Db): Promise<void> {
     c.audit.createIndex({ at: 1 }),
     c.siweNonces.createIndex({ createdAt: 1 }, { expireAfterSeconds: SIWE_NONCE_TTL_SECONDS }),
     c.siweNonces.createIndex({ nonce: 1 }, { unique: true }),
+    // Single-use x402 proofs (FR-4.4): uniqueness is what makes replay a
+    // duplicate-key error. No TTL — a replayed proof must be rejected forever.
+    c.paymentProofs.createIndex({ proofId: 1 }, { unique: true }),
+    c.paymentProofs.createIndex({ consumedAt: 1 }),
   ])
 }

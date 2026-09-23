@@ -16,6 +16,7 @@ export {
 export * from './repositories/index.js'
 export * from './queue.js'
 export * from './evidence-store.js'
+export * from './payment-proof-store.js'
 export * from './siwe.js'
 export * from './chain-indexer.js'
 export * from './credential-service.js'
