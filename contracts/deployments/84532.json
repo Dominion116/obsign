@@ -1,12 +1,8 @@
 {
+  "anchor": "0xAA5F020e5c0228612e92A21854510154790d273B",
   "chainId": 84532,
-  "network": "base-sepolia",
-  "status": "deployed",
-  "note": "Live Base Sepolia deployment. Source of truth for SDK/env addresses. Deploys are idempotent via CREATE2 (fixed salt): re-running deploy-testnet recomputes the same deterministic addresses and skips already-deployed contracts, so this file is stable across runs. NOTE: the addresses below predate the CREATE2 change (nonce-based CREATE); the next deploy-testnet run will write the new deterministic set once, then stay stable. RULE-1: deploys run in CI or by a human, never by the agent.",
-  "verifiedOnBasescan": false,
-  "verificationNote": "On-chain deploy succeeded; run BaseScan verification via Etherscan V2 (foundry.toml), using --chain base-sepolia. Set verifiedOnBasescan true once confirmed.",
-  "anchor": "0xA0949e65A78171e5aE637f589ba58D9b3d0Fc81B",
-  "revocation": "0x9c675D82C24A6dA7aFE8d6CacA8376b78647d299",
-  "issuerRegistry": "0x9dEb208515bB3A9F2c5BB94136aedd42e3709Ef3",
-  "policyRegistry": "0xD022E7F757B26F05137f19d608fB196B5de0C1D0"
+  "deployer": "0x420f9F9deA7fA318eA8996C8aA00ad9738D98072",
+  "issuerRegistry": "0xC75B262Ef7e6EB1d520B2929732A1CB4ba58b63a",
+  "policyRegistry": "0xdf8387709cCfeFE5CE61Af1b1F70A76a4cDBf920",
+  "revocation": "0x7B87089d705C924a8ceb9115bb297d62BD5DAe8a"
 }
