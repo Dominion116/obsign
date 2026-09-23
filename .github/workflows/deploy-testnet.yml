@@ -16,6 +16,9 @@ concurrency:
   group: deploy-testnet
   cancel-in-progress: false
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     name: deploy + verify (Base Sepolia)
@@ -92,15 +95,15 @@ jobs:
           name: deployments-84532
           path: contracts/deployments/84532.json
 
-      - name: Open PR with updated addresses
+      - name: Commit updated addresses
         if: ${{ always() }}
-        uses: peter-evans/create-pull-request@v6
-        with:
-          branch: chore/deploy-84532
-          title: 'chore(contracts): update Base Sepolia deployment addresses'
-          commit-message: 'chore(contracts): update deployments/84532.json from testnet deploy'
-          body: |
-            Automated from the Deploy testnet workflow. Review the addresses and
-            confirm they are verified on BaseScan Sepolia before merging.
-          add-paths: |
-            contracts/deployments/84532.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add contracts/deployments/84532.json
+          if git diff --cached --quiet; then
+            echo "No deployment changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(contracts): update deployments/84532.json from testnet deploy"
+          git push origin HEAD:${{ github.ref_name }}
