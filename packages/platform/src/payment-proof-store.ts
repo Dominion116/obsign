@@ -23,9 +23,7 @@ const DUPLICATE_KEY = 11000
 
 function isDuplicateKeyError(err: unknown): boolean {
   return (
-    typeof err === 'object' &&
-    err !== null &&
-    (err as { code?: unknown }).code === DUPLICATE_KEY
+    typeof err === 'object' && err !== null && (err as { code?: unknown }).code === DUPLICATE_KEY
   )
 }
 

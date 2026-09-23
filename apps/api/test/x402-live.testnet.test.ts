@@ -29,8 +29,7 @@ const payee = process.env.X402_PAYEE_ADDRESS
 const price = process.env.X402_PRICE_USDC
 
 const enabled =
-  process.platform !== 'win32' &&
-  Boolean(facilitatorUrl && paymentHeader && payee && price)
+  process.platform !== 'win32' && Boolean(facilitatorUrl && paymentHeader && payee && price)
 
 describe.skipIf(!enabled)('Phase 4 live x402 loop (secret-gated)', () => {
   let server: MongoMemoryServer

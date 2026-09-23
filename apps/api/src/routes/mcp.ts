@@ -224,5 +224,7 @@ export function registerMcpRoutes(
   })
 
   // The streamable-HTTP GET (server-initiated stream) is unused here.
-  app.get('/api/mcp', async (_request, reply) => reply.code(405).send({ error: 'method not allowed' }))
+  app.get('/api/mcp', async (_request, reply) =>
+    reply.code(405).send({ error: 'method not allowed' }),
+  )
 }
