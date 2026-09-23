@@ -16,12 +16,17 @@ const API_ENDPOINTS = [
   { method: 'GET', path: '/api/v1/issuers/:address', access: 'Public', body: 'None' },
 ]
 
-const SDK_SNIPPET = `import { verify } from '@dominionli/obsign-sdk'
+const SDK_SNIPPET = `import { verifyOffline, ObsignClient } from '@dominionli/obsign-sdk'
 
-const receipt = await verify({ credential, evidence })
+// Recompute a receipt locally — no network, no trust in Obsign's servers.
+const offline = verifyOffline(credential, evidence, {
+  now: new Date().toISOString(),
+})
+console.log(offline.result, offline.reasonCode, offline.receiptId)
 
-// Verify locally with no network request.
-const offlineReceipt = verify.offline({ credential, evidence })`
+// Or verify against a running Obsign API (x402-gated).
+const client = new ObsignClient({ baseUrl: 'https://obsign.onrender.com' })
+const receipt = await client.verify(credential, evidence)`
 
 export default function DocsPage() {
   return (

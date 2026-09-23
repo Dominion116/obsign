@@ -1,6 +1,6 @@
 # @dominionli/obsign-sdk
 
-Client SDK for [Obsign](https://github.com/Kilo-Org/kilocode) — turn a claim into a
+Client SDK for [Obsign](https://github.com/Dominion116/obsign) — turn a claim into a
 recomputable receipt. Verify credentials **offline** (no network, no trust in
 Obsign's servers) or against a running Obsign API over REST + x402.
 
