@@ -51,6 +51,8 @@ export function registerVerifyRoutes(
 
     const outcome = await gate.settle(request.headers, VERIFY_RESOURCE)
     if (!outcome.paid) {
+      // x402 v2: advertise the requirements in the PAYMENT-REQUIRED header too.
+      reply.header('PAYMENT-REQUIRED', outcome.challengeHeader)
       return reply.code(outcome.status).send(outcome.challenge)
     }
 
@@ -61,6 +63,8 @@ export function registerVerifyRoutes(
     // Cache is a convenience; a failure here must never fail the verification.
     await cacheReceipt(ctx, receipt, credential).catch(() => {})
 
+    // x402 v2: echo the settlement result in the PAYMENT-RESPONSE header.
+    reply.header('PAYMENT-RESPONSE', outcome.settlementHeader)
     return reply.code(200).send({ ...receipt, paid: true })
   })
 }

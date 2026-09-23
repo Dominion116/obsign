@@ -22,8 +22,12 @@ const CONFIG: PlatformConfig = {
   issuerRegistryAddress: '0x' + '33'.repeat(20),
   policyRegistryAddress: '0x' + '44'.repeat(20),
   x402PayeeAddress: '0x' + '55'.repeat(20),
-  x402PriceUsdc: '0.01',
+  x402PriceUsdc: '10000',
   x402FacilitatorUrl: 'http://127.0.0.1:1',
+  x402Network: 'eip155:84532',
+  x402AssetAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+  x402AssetName: 'USDC',
+  x402AssetVersion: '2',
 }
 
 describe.skipIf(SKIP)('Obsign API', () => {

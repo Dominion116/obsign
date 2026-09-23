@@ -48,7 +48,11 @@ export async function buildApp(
   const facilitator = overrides.facilitator ?? createHttpFacilitator(config.x402FacilitatorUrl)
   const gate = new X402Gate({
     payeeAddress: config.x402PayeeAddress,
-    priceUsdc: config.x402PriceUsdc,
+    amount: config.x402PriceUsdc,
+    network: config.x402Network,
+    asset: config.x402AssetAddress,
+    assetName: config.x402AssetName,
+    assetVersion: config.x402AssetVersion,
     facilitator,
     proofs: ctx.payments,
     logger: { warn: (obj, msg) => app.log.warn(obj as Record<string, unknown>, msg) },

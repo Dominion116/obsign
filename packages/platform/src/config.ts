@@ -24,14 +24,24 @@ export interface PlatformConfig {
   issuerRegistryAddress: string
   policyRegistryAddress: string
   /**
-   * x402 payment gate (Phase 4, FR-4.3). Empty strings mean "unconfigured": the
-   * verify route then rejects with a 402 that carries no payTo, which is a
-   * deployment misconfiguration rather than a Phase 3 boot failure — so these are
-   * optional here and never touch the verdict or the hashes (INV-3).
+   * x402 payment gate (Phase 4, FR-4.3), x402 protocol v2. Empty payee/asset mean
+   * "unconfigured": the verify route then rejects with a 402 that advertises no
+   * payTo, which is a deployment misconfiguration rather than a Phase 3 boot
+   * failure — so these are optional here and never touch the verdict or the hashes
+   * (INV-3).
    */
   x402PayeeAddress: string
+  /** Advertised amount in the asset's atomic units (USDC 6dp: "10000" = 0.01). */
   x402PriceUsdc: string
   x402FacilitatorUrl: string
+  /** CAIP-2 network id (Base Sepolia = eip155:84532). */
+  x402Network: string
+  /** ERC-20 asset (USDC) contract address the payment must transfer. */
+  x402AssetAddress: string
+  /** EIP-712 domain name of the asset (USDC) — used to build the exact scheme sig. */
+  x402AssetName: string
+  /** EIP-712 domain version of the asset (USDC on Base Sepolia is "2"). */
+  x402AssetVersion: string
 }
 
 type Env = Record<string, string | undefined>
@@ -90,6 +100,10 @@ export function loadConfig(env: Env = process.env): PlatformConfig {
     x402PayeeAddress: strOr(env, 'X402_PAYEE_ADDRESS', ''),
     x402PriceUsdc: strOr(env, 'X402_PRICE_USDC', ''),
     x402FacilitatorUrl: strOr(env, 'X402_FACILITATOR_URL', ''),
+    x402Network: strOr(env, 'X402_NETWORK', `eip155:${intOr(env, 'CHAIN_ID', DEFAULTS.chainId)}`),
+    x402AssetAddress: strOr(env, 'X402_ASSET_ADDRESS', ''),
+    x402AssetName: strOr(env, 'X402_ASSET_NAME', 'USDC'),
+    x402AssetVersion: strOr(env, 'X402_ASSET_VERSION', '2'),
   }
 }
 

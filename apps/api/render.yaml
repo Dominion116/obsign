@@ -32,12 +32,23 @@ services:
         value: '5242880'
       - key: ANCHOR_MIN_CONFIRMATIONS
         value: '12'
-      # x402 payment gate (Phase 4). Set per-environment in the Render dashboard.
-      # Empty values keep the service booting but make /api/v1/verify unusable
-      # (the 402 challenge would advertise no payee), so set all three to go live.
+      # x402 payment gate (Phase 4, x402 v2). Set per-environment in the Render
+      # dashboard. Empty payee/asset keep the service booting but make
+      # /api/v1/verify unusable (the 402 challenge advertises no payTo).
       - key: X402_PAYEE_ADDRESS
         sync: false
+      # Amount in atomic units of the asset (USDC 6dp: 10000 = 0.01 USDC).
       - key: X402_PRICE_USDC
         sync: false
+      # Testnet: https://x402.org/facilitator
       - key: X402_FACILITATOR_URL
         sync: false
+      - key: X402_NETWORK
+        value: 'eip155:84532'
+      # Base Sepolia USDC + its EIP-712 domain (exact-EVM signature construction).
+      - key: X402_ASSET_ADDRESS
+        value: '0x036CbD53842c5426634e7929541eC2318f3dCF7e'
+      - key: X402_ASSET_NAME
+        value: 'USDC'
+      - key: X402_ASSET_VERSION
+        value: '2'

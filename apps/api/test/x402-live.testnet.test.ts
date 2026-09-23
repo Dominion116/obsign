@@ -57,6 +57,11 @@ describe.skipIf(!enabled)('Phase 4 live x402 loop (secret-gated)', () => {
       x402PayeeAddress: payee as string,
       x402PriceUsdc: price as string,
       x402FacilitatorUrl: facilitatorUrl as string,
+      x402Network: process.env.X402_NETWORK ?? 'eip155:84532',
+      x402AssetAddress:
+        process.env.X402_ASSET_ADDRESS ?? '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+      x402AssetName: process.env.X402_ASSET_NAME ?? 'USDC',
+      x402AssetVersion: process.env.X402_ASSET_VERSION ?? '2',
     }
 
     const found = loadVectors().find((v) => v.file === 'onchain-valid-01.json')
@@ -94,7 +99,7 @@ describe.skipIf(!enabled)('Phase 4 live x402 loop (secret-gated)', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/verify',
-      headers: { 'x-payment': paymentHeader as string },
+      headers: { 'payment-signature': paymentHeader as string },
       payload: { credential, evidence },
     })
     expect(res.statusCode).toBe(200)

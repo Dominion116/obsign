@@ -34,8 +34,12 @@ const CONFIG: PlatformConfig = {
   issuerRegistryAddress: '0x' + '33'.repeat(20),
   policyRegistryAddress: '0x' + '44'.repeat(20),
   x402PayeeAddress: '0x' + '55'.repeat(20),
-  x402PriceUsdc: '0.01',
+  x402PriceUsdc: '10000',
   x402FacilitatorUrl: 'http://127.0.0.1:1',
+  x402Network: 'eip155:84532',
+  x402AssetAddress: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+  x402AssetName: 'USDC',
+  x402AssetVersion: '2',
 }
 
 // A facilitator that always accepts + settles — the on-chain economics are not
@@ -45,12 +49,12 @@ const okFacilitator: FacilitatorClient = {
   settle: async () => ({ success: true, txHash: '0x' + 'cd'.repeat(32) }),
 }
 
-/** Build a base64 X-PAYMENT header whose replay key is `sig`. */
+/** Build a base64 PAYMENT-SIGNATURE header (x402 v2) whose replay key is `sig`. */
 function paymentHeader(sig: string): string {
   const payment = {
-    x402Version: 1,
+    x402Version: 2,
     scheme: 'exact',
-    network: 'base-sepolia',
+    network: 'eip155:84532',
     payload: { signature: sig },
   }
   return Buffer.from(JSON.stringify(payment), 'utf8').toString('base64')
@@ -104,14 +108,16 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     expect(body.x402Version).toBe(1)
     expect(Array.isArray(body.accepts)).toBe(true)
     expect(body.accepts[0].payTo).toBe(CONFIG.x402PayeeAddress)
-    expect(body.accepts[0].maxAmountRequired).toBe('0.01')
+    expect(body.accepts[0].amount).toBe('10000')
+    expect(body.accepts[0].network).toBe('eip155:84532')
+    expect(body.accepts[0].asset).toBe(CONFIG.x402AssetAddress)
   })
 
   it('paid /verify returns a receipt whose receiptId equals the CLI/oracle', async () => {
     const res = await app.inject({
       method: 'POST',
       url: '/api/v1/verify',
-      headers: { 'x-payment': paymentHeader('0x' + '01'.repeat(65)) },
+      headers: { 'payment-signature': paymentHeader('0x' + '01'.repeat(65)) },
       payload: { credential, evidence },
     })
     expect(res.statusCode).toBe(200)
@@ -127,7 +133,7 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     const first = await app.inject({
       method: 'POST',
       url: '/api/v1/verify',
-      headers: { 'x-payment': header },
+      headers: { 'payment-signature': header },
       payload: { credential, evidence },
     })
     expect(first.statusCode).toBe(200)
@@ -135,7 +141,7 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     const replay = await app.inject({
       method: 'POST',
       url: '/api/v1/verify',
-      headers: { 'x-payment': header },
+      headers: { 'payment-signature': header },
       payload: { credential, evidence },
     })
     expect(replay.statusCode).toBe(402)
@@ -165,7 +171,7 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     const rest = await app.inject({
       method: 'POST',
       url: '/api/v1/verify',
-      headers: { 'x-payment': paymentHeader('0x' + '03'.repeat(65)) },
+      headers: { 'payment-signature': paymentHeader('0x' + '03'.repeat(65)) },
       payload: { credential, evidence },
     })
     expect(rest.statusCode).toBe(200)
@@ -174,7 +180,7 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     const mcp = await app.inject({
       method: 'POST',
       url: '/api/mcp',
-      headers: { 'x-payment': paymentHeader('0x' + '04'.repeat(65)) },
+      headers: { 'payment-signature': paymentHeader('0x' + '04'.repeat(65)) },
       payload: {
         jsonrpc: '2.0',
         id: 2,
