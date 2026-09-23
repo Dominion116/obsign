@@ -16,7 +16,7 @@ const API_ENDPOINTS = [
   { method: 'GET', path: '/api/v1/issuers/:address', access: 'Public', body: 'None' },
 ]
 
-const SDK_SNIPPET = `import { verify } from '@obsign/sdk'
+const SDK_SNIPPET = `import { verify } from '@dominionli/obsign-sdk'
 
 const receipt = await verify({ credential, evidence })
 

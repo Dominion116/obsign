@@ -1,11 +1,11 @@
-# @obsign/sdk
+# @dominionli/obsign-sdk
 
 Client SDK for [Obsign](https://github.com/Kilo-Org/kilocode) — turn a claim into a
 recomputable receipt. Verify credentials **offline** (no network, no trust in
 Obsign's servers) or against a running Obsign API over REST + x402.
 
 ```
-npm install @obsign/sdk
+npm install @dominionli/obsign-sdk
 ```
 
 ## Offline verification
@@ -16,7 +16,7 @@ pinned chain/artifact snapshot. The verdict and every hash come from the pure
 and any conforming third-party reimplementation.
 
 ```ts
-import { verifyOffline } from '@obsign/sdk'
+import { verifyOffline } from '@dominionli/obsign-sdk'
 
 const receipt = verifyOffline(credential, evidence, {
   now: '2026-10-01T00:00:00.000Z',
@@ -29,7 +29,7 @@ console.log(receipt.result, receipt.reasonCode, receipt.receiptId)
 ## API client (REST + x402)
 
 ```ts
-import { ObsignClient, X402PaymentRequiredError } from '@obsign/sdk'
+import { ObsignClient, X402PaymentRequiredError } from '@dominionli/obsign-sdk'
 
 const client = new ObsignClient({ baseUrl: 'https://api.obsign.dev' })
 
@@ -52,7 +52,7 @@ For onchain-event / revocation evidence, fetch a pinned snapshot (INV-6) and han
 the pure verifier a synchronous reader:
 
 ```ts
-import { createChainClient, createChainReader } from '@obsign/sdk'
+import { createChainClient, createChainReader } from '@dominionli/obsign-sdk'
 
 const client = createChainClient({ rpcUrl: process.env.BASE_SEPOLIA_RPC_URL! })
 const chain = await createChainReader({
