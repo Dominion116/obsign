@@ -1,6 +1,11 @@
 # Dependencies
 node_modules/
 
+# No committed lockfile: Render/Vercel/CI all install with `npm install` (not
+# `npm ci`). A committed root lockfile makes them reconcile to a broken/wrong
+# dependency tree, so keep it untracked.
+package-lock.json
+
 # Build outputs
 dist/
 build/
