@@ -11,8 +11,15 @@
 // tsup (noExternal), so the published package has no @obsign/* runtime dep.
 //
 // Usage:
-//   node scripts/publish-sdk.mjs            # build + publish
+//   node scripts/publish-sdk.mjs            # build + publish as the in-repo name
 //   node scripts/publish-sdk.mjs --dry-run  # build + inspect tarball, no publish
+//   node scripts/publish-sdk.mjs --name @you/obsign-sdk   # publish under another name
+//
+// The published NAME can be overridden with --name <pkg> (or the SDK_PUBLISH_NAME
+// env var) when you do not own the @obsign npm scope — publish under a scope you
+// control, e.g. your username scope @you/obsign-sdk. The in-repo workspace name
+// stays @obsign/sdk (renaming it would break every monorepo import); only the
+// published tarball's name changes, and the bundle is name-agnostic.
 //
 // RULE-1: builds/tests run in CI; publishing is the sanctioned local step
 // (npm login + npm publish need your account + 2FA), so this runs locally.
@@ -27,6 +34,15 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..')
 const sdkDir = join(repoRoot, 'packages', 'sdk')
 const dryRun = process.argv.includes('--dry-run')
 const npm = process.platform === 'win32'
+
+function argValue(flag) {
+  const i = process.argv.indexOf(flag)
+  return i !== -1 && i + 1 < process.argv.length ? process.argv[i + 1] : undefined
+}
+
+// Optional published-name override for maintainers who do not own the @obsign
+// npm scope. Falls back to the in-repo package name.
+const publishName = argValue('--name') ?? process.env.SDK_PUBLISH_NAME
 
 function run(args, cwd) {
   execFileSync('npm', args, { cwd, stdio: 'inherit', shell: npm })
@@ -46,7 +62,7 @@ for (const f of ['index.js', 'index.cjs', 'index.d.ts', 'index.d.cts']) {
 // 2. Assemble the published manifest from the source package.json.
 const src = JSON.parse(readFileSync(join(sdkDir, 'package.json'), 'utf8'))
 const manifest = {
-  name: src.name,
+  name: publishName ?? src.name,
   version: src.version,
   description: src.description,
   license: src.license,
