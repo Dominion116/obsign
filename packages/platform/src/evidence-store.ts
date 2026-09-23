@@ -17,7 +17,10 @@ export const GRIDFS_SCHEME = 'gridfs://'
 
 /** Thrown when an upload exceeds the configured byte cap (SEC-5). */
 export class EvidenceTooLargeError extends Error {
-  constructor(readonly bytes: number, readonly maxBytes: number) {
+  constructor(
+    readonly bytes: number,
+    readonly maxBytes: number,
+  ) {
     super(`Evidence artifact is ${bytes} bytes, exceeding the ${maxBytes}-byte cap`)
     this.name = 'EvidenceTooLargeError'
   }

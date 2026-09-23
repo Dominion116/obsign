@@ -25,8 +25,8 @@ services:
       - key: FRONTEND_ORIGIN
         sync: false
       - key: CHAIN_ID
-        value: "84532"
+        value: '84532'
       - key: EVIDENCE_MAX_BYTES
-        value: "5242880"
+        value: '5242880'
       - key: ANCHOR_MIN_CONFIRMATIONS
-        value: "12"
+        value: '12'

@@ -20,7 +20,9 @@ function nowIso(): string {
 }
 
 /** Drop keys whose value is `undefined` (keeps exactOptionalPropertyTypes happy). */
-function defined<T extends Record<string, unknown>>(obj: T): { [K in keyof T]?: Exclude<T[K], undefined> } {
+function defined<T extends Record<string, unknown>>(
+  obj: T,
+): { [K in keyof T]?: Exclude<T[K], undefined> } {
   const out: Record<string, unknown> = {}
   for (const [k, v] of Object.entries(obj)) {
     if (v !== undefined) out[k] = v
@@ -133,10 +135,7 @@ function credentialRepo(c: Collections): CredentialRepo {
       } as CredentialDoc)
     },
     async setStatus(credentialId, status) {
-      await c.credentials.updateOne(
-        { credentialId },
-        { $set: { status, updatedAt: nowIso() } },
-      )
+      await c.credentials.updateOne({ credentialId }, { $set: { status, updatedAt: nowIso() } })
     },
   }
 }

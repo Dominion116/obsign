@@ -23,7 +23,11 @@ describe.skipIf(SKIP_MONGO_TESTS)('LeaseQueue', () => {
   it('enqueue is idempotent on dedupeKey', async () => {
     queue = new LeaseQueue(collections(mongo.db).queue)
     const first = await queue.enqueue({ type: 'confirmAnchor', dedupeKey: 'k1', payload: { a: 1 } })
-    const second = await queue.enqueue({ type: 'confirmAnchor', dedupeKey: 'k1', payload: { a: 2 } })
+    const second = await queue.enqueue({
+      type: 'confirmAnchor',
+      dedupeKey: 'k1',
+      payload: { a: 2 },
+    })
     expect(first).toBe(true)
     expect(second).toBe(false)
     expect(await queue.depth('confirmAnchor')).toBe(1)
@@ -42,7 +46,12 @@ describe.skipIf(SKIP_MONGO_TESTS)('LeaseQueue', () => {
 
   it('does not lease jobs whose availableAt is in the future', async () => {
     queue = new LeaseQueue(collections(mongo.db).queue)
-    await queue.enqueue({ type: 'confirmAnchor', dedupeKey: 'later', payload: {}, availableAt: 5_000 })
+    await queue.enqueue({
+      type: 'confirmAnchor',
+      dedupeKey: 'later',
+      payload: {},
+      availableAt: 5_000,
+    })
     expect(await queue.lease('confirmAnchor', 1_000, 30_000, 5)).toHaveLength(0)
     expect(await queue.lease('confirmAnchor', 5_000, 30_000, 5)).toHaveLength(1)
   })

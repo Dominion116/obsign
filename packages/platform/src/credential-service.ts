@@ -76,9 +76,7 @@ export class CredentialService {
 
     const credentialId = typeof cred.credentialId === 'string' ? cred.credentialId : undefined
     if (!credentialId || !isHex32(credentialId)) {
-      throw new CredentialValidationError(
-        'credential.credentialId must be a 32-byte 0x hex string',
-      )
+      throw new CredentialValidationError('credential.credentialId must be a 32-byte 0x hex string')
     }
 
     // Full spec shape (§1.1) so every issued credential is later verifiable (INV-2).
@@ -131,7 +129,11 @@ export class CredentialService {
     await this.queue.enqueue({
       type: 'confirmAnchor',
       dedupeKey: `confirmAnchor:${doc.credentialId}`,
-      payload: { credentialId: doc.credentialId, receiptId: hashes.receiptId, txHash: anchorTxHash },
+      payload: {
+        credentialId: doc.credentialId,
+        receiptId: hashes.receiptId,
+        txHash: anchorTxHash,
+      },
     })
 
     await this.repos.audit.append({

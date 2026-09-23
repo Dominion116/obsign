@@ -48,7 +48,11 @@ describe.skipIf(SKIP)('worker handlers', () => {
 
   it('confirmAnchor upserts the anchors cache and flips status to anchored', async () => {
     await confirmAnchor(
-      { credentialId: '0x' + 'aa'.repeat(32), receiptId: '0x' + 'cc'.repeat(32), txHash: '0x' + 'dd'.repeat(32) },
+      {
+        credentialId: '0x' + 'aa'.repeat(32),
+        receiptId: '0x' + 'cc'.repeat(32),
+        txHash: '0x' + 'dd'.repeat(32),
+      },
       deps,
     )
     const anchor = await deps.repos.anchors.get('0x' + 'aa'.repeat(32))

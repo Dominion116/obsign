@@ -43,7 +43,10 @@ export async function confirmAnchor(
   deps: WorkerDeps,
 ): Promise<ConfirmAnchorResult> {
   const { credentialId, receiptId, txHash } = payload
-  const result = await deps.indexer.confirmAnchor(txHash as `0x${string}`, receiptId as `0x${string}`)
+  const result = await deps.indexer.confirmAnchor(
+    txHash as `0x${string}`,
+    receiptId as `0x${string}`,
+  )
   await deps.repos.anchors.upsert({
     credentialId,
     receiptId,

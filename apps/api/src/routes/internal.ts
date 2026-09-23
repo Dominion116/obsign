@@ -19,7 +19,10 @@ export function registerInternalRoutes(app: FastifyInstance, ctx: AppContext): v
   app.post<{ Querystring: DrainQuery }>('/internal/cron/drain', async (request, reply) => {
     if (!(await requireCronSecret(ctx, request, reply))) return
 
-    const limit = Math.min(Math.max(Number.parseInt(request.query.limit ?? '', 10) || DEFAULT_LIMIT, 1), 100)
+    const limit = Math.min(
+      Math.max(Number.parseInt(request.query.limit ?? '', 10) || DEFAULT_LIMIT, 1),
+      100,
+    )
     const type = request.query.type
 
     // reapExpired first so crash-orphaned leases rejoin the runnable set.

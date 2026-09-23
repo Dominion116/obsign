@@ -92,10 +92,7 @@ export async function ensureIndexes(db: Db): Promise<void> {
     c.queue.createIndex({ dedupeKey: 1 }, { unique: true }),
     c.queue.createIndex({ type: 1, status: 1, availableAt: 1 }),
     c.audit.createIndex({ at: 1 }),
-    c.siweNonces.createIndex(
-      { createdAt: 1 },
-      { expireAfterSeconds: SIWE_NONCE_TTL_SECONDS },
-    ),
+    c.siweNonces.createIndex({ createdAt: 1 }, { expireAfterSeconds: SIWE_NONCE_TTL_SECONDS }),
     c.siweNonces.createIndex({ nonce: 1 }, { unique: true }),
   ])
 }

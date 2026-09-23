@@ -81,16 +81,30 @@ describe.skipIf(SKIP_MONGO_TESTS)('CredentialService', () => {
     const { evidence, signature, credential } = await signedCredential('X')
     const bad = { ...credential, credentialId: '0xdead' }
     await expect(
-      svc.issue({ credential: bad, evidence, issuerSignature: signature, anchorTxHash: '0x' + 'aa'.repeat(32) }),
+      svc.issue({
+        credential: bad,
+        evidence,
+        issuerSignature: signature,
+        anchorTxHash: '0x' + 'aa'.repeat(32),
+      }),
     ).rejects.toBeInstanceOf(CredentialValidationError)
   })
 
   it('rejects a malformed credential shape (claim not an object)', async () => {
     const svc = makeService(mongo)
     const { evidence, signature, credential } = await signedCredential('X')
-    const bad = { ...credential, credentialId: ('0x' + 'cc'.repeat(32)) as Hex, claim: 'not-an-object' }
+    const bad = {
+      ...credential,
+      credentialId: ('0x' + 'cc'.repeat(32)) as Hex,
+      claim: 'not-an-object',
+    }
     await expect(
-      svc.issue({ credential: bad, evidence, issuerSignature: signature, anchorTxHash: '0x' + 'aa'.repeat(32) }),
+      svc.issue({
+        credential: bad,
+        evidence,
+        issuerSignature: signature,
+        anchorTxHash: '0x' + 'aa'.repeat(32),
+      }),
     ).rejects.toBeInstanceOf(CredentialValidationError)
   })
 
@@ -104,7 +118,12 @@ describe.skipIf(SKIP_MONGO_TESTS)('CredentialService', () => {
       issuer: '0x3333333333333333333333333333333333333333',
     }
     await expect(
-      svc.issue({ credential: bad, evidence, issuerSignature: signature, anchorTxHash: '0x' + 'aa'.repeat(32) }),
+      svc.issue({
+        credential: bad,
+        evidence,
+        issuerSignature: signature,
+        anchorTxHash: '0x' + 'aa'.repeat(32),
+      }),
     ).rejects.toBeInstanceOf(CredentialValidationError)
   })
 
@@ -115,15 +134,26 @@ describe.skipIf(SKIP_MONGO_TESTS)('CredentialService', () => {
     // Re-sign for the new credentialId.
     const { credentialHash } = computeHashes(withId, evidence)
     const sig = await account.signMessage({ message: { raw: credentialHash as Hex } })
-    await svc.issue({ credential: withId, evidence, issuerSignature: sig, anchorTxHash: '0x' + 'aa'.repeat(32) })
+    await svc.issue({
+      credential: withId,
+      evidence,
+      issuerSignature: sig,
+      anchorTxHash: '0x' + 'aa'.repeat(32),
+    })
 
     await expect(
-      svc.revoke(withId.credentialId, '0x9999999999999999999999999999999999999999', '0x' + 'bb'.repeat(32)),
+      svc.revoke(
+        withId.credentialId,
+        '0x9999999999999999999999999999999999999999',
+        '0x' + 'bb'.repeat(32),
+      ),
     ).rejects.toBeInstanceOf(CredentialValidationError)
 
     const res = await svc.revoke(withId.credentialId, ISSUER, '0x' + 'bb'.repeat(32))
     expect(res.credentialId).toBe(withId.credentialId)
-    const cred = await collections(mongo.db).credentials.findOne({ credentialId: withId.credentialId })
+    const cred = await collections(mongo.db).credentials.findOne({
+      credentialId: withId.credentialId,
+    })
     expect(cred?.status).toBe('revoked')
   })
 })

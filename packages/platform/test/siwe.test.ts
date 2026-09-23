@@ -56,14 +56,17 @@ describe.skipIf(SKIP_MONGO_TESTS)('SIWE', () => {
     const msg = svc.buildMessage({ address: '0x1111111111111111111111111111111111111111', nonce })
 
     // Valid signature from a different address — nonce is consumed, so it still fails.
-    await expect(
-      svc.verify({ message: msg, signature: fakeSig() }),
-    ).rejects.toBeInstanceOf(SiweVerificationError)
+    await expect(svc.verify({ message: msg, signature: fakeSig() })).rejects.toBeInstanceOf(
+      SiweVerificationError,
+    )
 
     // A second nonce — valid.
     const svc2 = makeService(mongo)
     const nonce2 = await svc2.issueNonce()
-    const msg2 = svc2.buildMessage({ address: '0x1111111111111111111111111111111111111111', nonce: nonce2 })
+    const msg2 = svc2.buildMessage({
+      address: '0x1111111111111111111111111111111111111111',
+      nonce: nonce2,
+    })
     await expect(svc2.verify({ message: msg2, signature: fakeSig() })).rejects.toBeInstanceOf(
       SiweVerificationError,
     )
@@ -71,9 +74,9 @@ describe.skipIf(SKIP_MONGO_TESTS)('SIWE', () => {
 
   it('verify rejects a malformed EIP-4361 message', async () => {
     const svc = makeService(mongo)
-    await expect(svc.verify({ message: 'not a siwe message', signature: fakeSig() })).rejects.toBeInstanceOf(
-      SiweVerificationError,
-    )
+    await expect(
+      svc.verify({ message: 'not a siwe message', signature: fakeSig() }),
+    ).rejects.toBeInstanceOf(SiweVerificationError)
   })
 
   it('mintSession and verifySession round-trip for a valid issuer', async () => {
@@ -105,10 +108,14 @@ describe.skipIf(SKIP_MONGO_TESTS)('SIWE', () => {
     const svc1 = makeService(mongo)
     const svc2 = makeService(mongo)
     const nonce = await svc1.issueNonce()
-    const consumed = await (svc1 as unknown as { opts: { nonces: { consume: (n: string) => Promise<boolean> } } }).opts.nonces.consume(nonce)
+    const consumed = await (
+      svc1 as unknown as { opts: { nonces: { consume: (n: string) => Promise<boolean> } } }
+    ).opts.nonces.consume(nonce)
     expect(consumed).toBe(true)
     // A fresh service with the same collection should see it as gone.
-    const consumed2 = await (svc2 as unknown as { opts: { nonces: { consume: (n: string) => Promise<boolean> } } }).opts.nonces.consume(nonce)
+    const consumed2 = await (
+      svc2 as unknown as { opts: { nonces: { consume: (n: string) => Promise<boolean> } } }
+    ).opts.nonces.consume(nonce)
     expect(consumed2).toBe(false)
   })
 })
