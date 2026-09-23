@@ -29,7 +29,8 @@
     "freeze:vectors": "vite-node spec/tools/freeze.ts",
     "receipt:digest": "vite-node spec/tools/receipt-digest.ts",
     "build:sdk": "npm run -w @obsign/sdk build",
-    "smoke:sdk": "node scripts/sdk-offline-smoke.mjs"
+    "smoke:sdk": "node scripts/sdk-offline-smoke.mjs",
+    "publish:sdk": "node scripts/publish-sdk.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",

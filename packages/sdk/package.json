@@ -11,17 +11,7 @@
     ".": "./src/index.ts"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      }
-    }
+    "access": "public"
   },
   "files": [
     "dist",
@@ -30,7 +20,7 @@
   "scripts": {
     "typecheck": "tsc -b",
     "build": "tsup",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "node -e \"console.error('Do not publish @obsign/sdk directly (its base manifest points at src for the monorepo). Run: npm run publish:sdk'); process.exit(1)\"",
     "test": "vitest run"
   },
   "dependencies": {
