@@ -13,10 +13,10 @@ import { ObsignPolicyRegistry } from "../src/ObsignPolicyRegistry.sol";
 ///
 ///         Deployment is idempotent via CREATE2 (D11 / FR-2.4): each contract is
 ///         deployed at a deterministic address derived from a fixed SALT and its
-///         init code, using the canonical CREATE2 factory. Re-running the deploy
-///         computes the same addresses and skips any contract that already has
-///         code onchain, so repeated runs spend no gas and never orphan a set.
-///         This makes deployments/84532.json stable across runs.
+///         init code, using Foundry's internal CREATE2 factory (forge-std/Base.sol).
+///         Re-running the deploy computes the same addresses and skips any contract
+///         that already has code onchain, so repeated runs spend no gas and never
+///         orphan a set. This makes deployments/84532.json stable across runs.
 ///
 ///         RULE-1: this runs in CI (the deploy-testnet workflow) or by a human —
 ///         never as a local build step. A dry run (no --broadcast) simulates and
@@ -31,18 +31,12 @@ import { ObsignPolicyRegistry } from "../src/ObsignPolicyRegistry.sol";
 ///         Requires env: DEPLOYER_PRIVATE_KEY (funded testnet key),
 ///         BASE_SEPOLIA_RPC_URL, BASESCAN_API_KEY.
 contract Deploy is Script {
-    /// @dev Canonical deterministic CREATE2 factory ("Nick's method"), which
-    ///      Foundry routes salted `new C{salt: ...}()` creations through. It is
-    ///      present at this address on Base Sepolia and virtually every EVM chain,
-    ///      so the computed addresses match what the broadcast actually deploys.
-    address internal constant CREATE2_FACTORY = 0x4e59b44847b379578588920cA78FbF26c0B4956C;
-
     /// @dev Fixed salt → deterministic, stable addresses across every run. Because
     ///      foundry.toml sets bytecode_hash = "none", each contract's init code is
     ///      reproducible, so the CREATE2 address changes only if the salt, the
     ///      source, or the compiler settings (solc version, optimizer, evm_version)
-    ///      change. Bump this constant only to intentionally deploy a fresh set at
-    ///      new addresses.
+    ///      change. Bump SALT only to intentionally deploy a fresh set at new
+    ///      addresses.
     bytes32 internal constant SALT = keccak256("obsign.contracts.v1");
 
     function run() external {
@@ -118,6 +112,7 @@ contract Deploy is Script {
     /// @dev CREATE2 address for `initCode` under the canonical factory and SALT:
     ///      keccak256(0xff ++ factory ++ salt ++ keccak256(initCode))[12:]. With no
     ///      constructor args, `initCode` is exactly the contract's creation code.
+    ///      CREATE2_FACTORY is inherited from forge-std/Base.sol (internal constant).
     function _computeAddress(bytes memory initCode) internal pure returns (address) {
         bytes32 hash =
             keccak256(abi.encodePacked(bytes1(0xff), CREATE2_FACTORY, SALT, keccak256(initCode)));
