@@ -80,10 +80,10 @@ export function loadConfig(env: Env = process.env): PlatformConfig {
 export function loadAddresses(env: Env = process.env): ObsignAddresses {
   const deployments = loadDeploymentsFile(env) as DeploymentsFile | undefined
   return resolveAddresses(deployments, {
-    anchor: env.ANCHOR_CONTRACT_ADDRESS,
-    revocation: env.REVOCATION_CONTRACT_ADDRESS,
-    issuerRegistry: env.ISSUER_REGISTRY_ADDRESS,
-    policyRegistry: env.POLICY_REGISTRY_ADDRESS,
+    anchor: env.ANCHOR_CONTRACT_ADDRESS as `0x${string}` | undefined,
+    revocation: env.REVOCATION_CONTRACT_ADDRESS as `0x${string}` | undefined,
+    issuerRegistry: env.ISSUER_REGISTRY_ADDRESS as `0x${string}` | undefined,
+    policyRegistry: env.POLICY_REGISTRY_ADDRESS as `0x${string}` | undefined,
   })
 }
 
