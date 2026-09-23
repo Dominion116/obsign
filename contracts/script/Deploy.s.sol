@@ -44,69 +44,37 @@ contract Deploy is Script {
         address deployer = vm.addr(pk);
 
         vm.startBroadcast(pk);
-        address anchor = _deployAnchor();
-        address revocation = _deployRevocation();
-        address issuerRegistry = _deployIssuerRegistry();
-        address policyRegistry = _deployPolicyRegistry();
+        address anchor = _deploy("ObsignAnchor", type(ObsignAnchor).creationCode);
+        address revocation = _deploy("ObsignRevocation", type(ObsignRevocation).creationCode);
+        address issuerRegistry =
+            _deploy("ObsignIssuerRegistry", type(ObsignIssuerRegistry).creationCode);
+        address policyRegistry =
+            _deploy("ObsignPolicyRegistry", type(ObsignPolicyRegistry).creationCode);
         vm.stopBroadcast();
 
         _writeDeployments(deployer, anchor, revocation, issuerRegistry, policyRegistry);
     }
 
-    // Per-contract deployers. Each computes its deterministic CREATE2 address from
-    // the contract's init code, then deploys with `new C{salt: SALT}()` only when no
-    // code exists there yet. Foundry rewrites the salted `new` to go through
-    // CREATE2_FACTORY, so the deployed address matches `_computeAddress` exactly.
-
-    function _deployAnchor() internal returns (address addr) {
-        addr = _computeAddress(type(ObsignAnchor).creationCode);
-        if (_needsDeploy("ObsignAnchor", addr)) {
-            require(
-                address(new ObsignAnchor{ salt: SALT }()) == addr, "ObsignAnchor: addr mismatch"
-            );
+    /// @dev Idempotently deploys `initCode` at its deterministic CREATE2 address.
+    ///      Skips (no tx, no gas) when code already exists there, so re-runs
+    ///      converge on the same set.
+    ///
+    ///      We deploy by calling CREATE2_FACTORY directly with `salt ++ initCode`
+    ///      rather than `new C{salt: ...}()`. Foundry only reroutes a salted `new`
+    ///      through the factory when broadcasting; in a dry run it CREATE2s from the
+    ///      script contract's own address, so the simulated address would not match
+    ///      the prediction. Calling the factory explicitly is identical in both
+    ///      dry-run and broadcast, keeping addresses stable and verifiable.
+    function _deploy(string memory label, bytes memory initCode) internal returns (address addr) {
+        addr = _computeAddress(initCode);
+        if (addr.code.length != 0) {
+            console2.log(string.concat(label, " exists:   "), addr);
+            return addr;
         }
-    }
-
-    function _deployRevocation() internal returns (address addr) {
-        addr = _computeAddress(type(ObsignRevocation).creationCode);
-        if (_needsDeploy("ObsignRevocation", addr)) {
-            require(
-                address(new ObsignRevocation{ salt: SALT }()) == addr,
-                "ObsignRevocation: addr mismatch"
-            );
-        }
-    }
-
-    function _deployIssuerRegistry() internal returns (address addr) {
-        addr = _computeAddress(type(ObsignIssuerRegistry).creationCode);
-        if (_needsDeploy("ObsignIssuerRegistry", addr)) {
-            require(
-                address(new ObsignIssuerRegistry{ salt: SALT }()) == addr,
-                "ObsignIssuerRegistry: addr mismatch"
-            );
-        }
-    }
-
-    function _deployPolicyRegistry() internal returns (address addr) {
-        addr = _computeAddress(type(ObsignPolicyRegistry).creationCode);
-        if (_needsDeploy("ObsignPolicyRegistry", addr)) {
-            require(
-                address(new ObsignPolicyRegistry{ salt: SALT }()) == addr,
-                "ObsignPolicyRegistry: addr mismatch"
-            );
-        }
-    }
-
-    /// @dev Logs whether `addr` will be deployed or reused, and returns true when a
-    ///      deploy is needed (no code present). This is the idempotency gate: an
-    ///      already-deployed contract is skipped, spending no gas.
-    function _needsDeploy(string memory label, address addr) internal view returns (bool) {
-        if (addr.code.length == 0) {
-            console2.log(string.concat(label, " deploying:"), addr);
-            return true;
-        }
-        console2.log(string.concat(label, " exists:   "), addr);
-        return false;
+        (bool ok,) = CREATE2_FACTORY.call(bytes.concat(SALT, initCode));
+        require(ok, string.concat(label, ": CREATE2 factory call failed"));
+        require(addr.code.length != 0, string.concat(label, ": no code at CREATE2 address"));
+        console2.log(string.concat(label, " deployed: "), addr);
     }
 
     /// @dev CREATE2 address for `initCode` under the canonical factory and SALT:
