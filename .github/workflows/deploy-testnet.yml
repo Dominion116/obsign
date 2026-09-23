@@ -54,6 +54,9 @@ jobs:
 
       - name: Deploy (broadcast)
         working-directory: contracts
+        # Idempotent CREATE2 deploy: re-runs recompute the same deterministic
+        # addresses and skip contracts already deployed onchain (no gas, no new
+        # addresses), so deployments/84532.json stays stable across runs.
         env:
           DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
           BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
