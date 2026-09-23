@@ -214,45 +214,269 @@
 
 /* Interactive issue form (Phase 3, self-custodial issuance). */
 .issue__form {
-  margin: var(--space-6, 2rem) 0;
-  padding: var(--space-5, 1.5rem);
-  border: var(--border-w-thick, 2px) solid var(--border, #111);
-  border-radius: var(--radius, 12px);
-  background: var(--color-paper, #fff);
+  margin: clamp(2rem, 5vw, 3.25rem) 0 0;
+  padding: clamp(1.35rem, 4vw, 2.35rem);
+  border: var(--border-w-thick) solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface-raised);
+  box-shadow: 10px 10px 0 0 var(--color-navy);
   display: grid;
-  gap: var(--space-4, 1rem);
-  max-width: 40rem;
+  gap: 1.5rem;
+  max-width: 52rem;
 }
+
+.issue__form-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.35rem;
+  border-bottom: 1px dashed var(--border-soft);
+}
+
+.issue__form-kicker,
+.issue__issuer-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
 .issue__form-title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: clamp(1.55rem, 3vw, 2rem);
+  color: var(--color-navy);
 }
-.issue__field {
+
+.issue__form-subtitle {
+  max-width: 52ch;
+  margin-top: 0.55rem;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.issue__connection {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--surface-sunken);
+  border: 1.5px solid var(--border-soft);
+  border-radius: var(--radius-chip);
+  padding: 0.48rem 0.65rem;
+}
+
+.issue__connection-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.issue__connection--ready {
+  color: #0c6b3c;
+  background: #d9f2e5;
+  border-color: #0c6b3c;
+}
+
+.issue__connection--ready .issue__connection-dot { background: #0c6b3c; }
+
+.issue__issuer {
   display: grid;
-  gap: 0.35rem;
-  font-weight: 600;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.8rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  color: var(--text-on-navy);
+  background: var(--color-navy);
+  border-radius: var(--radius-notch);
 }
+
+.issue__issuer-label { color: var(--accent); }
+
+.issue__issuer-value {
+  justify-self: end;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.issue__issuer-state {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  color: var(--text-muted-on-navy);
+}
+
+.issue__fields { display: grid; gap: 1rem; }
+
+.issue__field { display: grid; gap: 0.3rem; }
+
+.issue__field-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-navy);
+}
+
+.issue__field-label b {
+  display: grid;
+  width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  color: var(--color-navy);
+  background: var(--accent);
+  border-radius: 50%;
+  font-size: 0.64rem;
+}
+
+.issue__field-help {
+  margin-bottom: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .issue__field input {
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--border, #111);
-  border-radius: 8px;
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  color: var(--text-strong);
+  background: var(--surface-sunken);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--radius-notch);
   font: inherit;
+  transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
+
+.issue__field input::placeholder { color: var(--text-muted); }
+.issue__field input:hover { background: var(--accent-wash); }
+
+.issue__field input:focus {
+  outline: none;
+  background: var(--color-paper);
+  box-shadow: 3px 3px 0 0 var(--accent);
+  transform: translate(-1px, -1px);
+}
+
 .issue__hint {
-  margin: 0;
-  color: var(--color-muted, #666);
+  margin: -0.25rem 0 0;
+  padding-left: 0.85rem;
+  border-left: 3px solid var(--accent);
+  font-size: 0.84rem;
+  color: var(--text-muted);
 }
+
+.issue__form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed var(--border-soft);
+}
+
+.issue__form-note {
+  max-width: 48ch;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.issue__submit { flex: none; }
+
+.issue__submit:disabled {
+  cursor: not-allowed;
+  color: var(--text-muted);
+  background: var(--surface-sunken);
+  box-shadow: 3px 3px 0 0 var(--border-soft);
+  transform: none;
+}
+
 .issue__error {
   margin: 0;
-  color: #b00020;
+  padding: 0.8rem 0.95rem;
+  color: #a02a2a;
+  background: #fdeaea;
+  border: 1.5px solid #b34040;
+  border-radius: var(--radius-notch);
+  font-size: 0.86rem;
   word-break: break-word;
 }
+
 .issue__result {
   display: grid;
-  gap: 0.35rem;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.75rem;
+  align-items: center;
+  padding: 1rem;
+  background: #d9f2e5;
+  border: 1.5px solid #0c6b3c;
+  border-radius: var(--radius-notch);
+}
+
+.issue__result-mark {
+  display: grid;
+  grid-row: span 2;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  color: var(--color-paper);
+  background: #0c6b3c;
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.issue__result-title,
+.issue__result-detail { margin: 0; }
+
+.issue__result-title {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #0c6b3c;
+}
+
+.issue__result-detail { font-size: 0.8rem; color: #155c39; }
+.issue__result code { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: 0.76rem; }
+
+.issue__result a {
+  grid-column: 2;
+  width: fit-content;
+  margin-top: 0.25rem;
+  color: #0c6b3c;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .nav__wallet {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+@media (max-width: 540px) {
+  .issue__form-top,
+  .issue__form-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .issue__submit { width: 100%; }
+}
+
+@media (min-width: 680px) {
+  .issue__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
