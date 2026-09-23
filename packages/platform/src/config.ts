@@ -79,12 +79,15 @@ export function loadConfig(env: Env = process.env): PlatformConfig {
 /** Resolve live contract addresses from deployments/84532.json with env overrides. */
 export function loadAddresses(env: Env = process.env): ObsignAddresses {
   const deployments = loadDeploymentsFile(env) as DeploymentsFile | undefined
-  return resolveAddresses(deployments, {
-    anchor: env.ANCHOR_CONTRACT_ADDRESS as `0x${string}` | undefined,
-    revocation: env.REVOCATION_CONTRACT_ADDRESS as `0x${string}` | undefined,
-    issuerRegistry: env.ISSUER_REGISTRY_ADDRESS as `0x${string}` | undefined,
-    policyRegistry: env.POLICY_REGISTRY_ADDRESS as `0x${string}` | undefined,
-  })
+  const overrides: Partial<ObsignAddresses> = {}
+  if (env.ANCHOR_CONTRACT_ADDRESS) overrides.anchor = env.ANCHOR_CONTRACT_ADDRESS as `0x${string}`
+  if (env.REVOCATION_CONTRACT_ADDRESS)
+    overrides.revocation = env.REVOCATION_CONTRACT_ADDRESS as `0x${string}`
+  if (env.ISSUER_REGISTRY_ADDRESS)
+    overrides.issuerRegistry = env.ISSUER_REGISTRY_ADDRESS as `0x${string}`
+  if (env.POLICY_REGISTRY_ADDRESS)
+    overrides.policyRegistry = env.POLICY_REGISTRY_ADDRESS as `0x${string}`
+  return resolveAddresses(deployments, overrides)
 }
 
 /** Read contracts/deployments/84532.json (the committed source of truth). */
