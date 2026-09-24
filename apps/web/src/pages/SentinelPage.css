@@ -4,6 +4,10 @@
 .sentinel__lead { color: var(--text-muted); font-size: clamp(1rem, 1.5vw, 1.15rem); margin-top: 1.1rem; max-width: 62ch; }
 .sentinel__toolbar { align-items: center; background: var(--color-navy); border: var(--border-w-thick) solid var(--border); border-radius: var(--radius-card); box-shadow: 8px 8px 0 var(--accent); display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; margin-bottom: 2rem; padding: 1rem 1.2rem; }
 .sentinel__state { color: var(--text-on-navy); font-family: var(--font-display); font-size: .85rem; font-weight: 700; margin: 0; }
+.sentinel__state-dot { background: var(--text-muted-on-navy); border-radius: 50%; display: inline-block; height: .6rem; margin-right: .5rem; vertical-align: middle; width: .6rem; }
+.sentinel__state--live .sentinel__state-dot { background: #2fbf71; }
+.sentinel__state--demo .sentinel__state-dot { background: #b34040; }
+.sentinel__state--unpaid .sentinel__state-dot, .sentinel__state--error .sentinel__state-dot { background: var(--accent); }
 .sentinel__state--demo { color: var(--accent); }
 .sentinel__state--unpaid, .sentinel__state--error { color: var(--accent); }
 .sentinel__feed { list-style: none; margin: 0; max-width: 850px; padding: 0; }

@@ -37,7 +37,18 @@ export default function SentinelPage() {
             <p className="sentinel__lead">Sentinel records the goal, tools, payment, verification result, policy hash, and final action so an agent decision can be inspected end to end.</p>
           </div>
           <div className="sentinel__toolbar">
-            <p className={`sentinel__state sentinel__state--${status}`} aria-live="polite">{status === 'demo' ? 'Demo trace — live endpoint unavailable' : status === 'unpaid' ? 'Payment required before live trace' : status === 'live' ? 'Live stream connected' : status === 'error' ? 'Trace unavailable' : 'Connecting to trace stream…'}</p>
+            <p className={`sentinel__state sentinel__state--${status}`} aria-live="polite">
+              <span className="sentinel__state-dot" aria-hidden="true" />
+              {status === 'demo'
+                ? 'Demo trace — live endpoint unavailable'
+                : status === 'unpaid'
+                  ? 'Payment required before live trace'
+                  : status === 'live'
+                    ? 'Live stream connected'
+                    : status === 'error'
+                      ? 'Trace unavailable'
+                      : 'Connecting to trace stream…'}
+            </p>
             <button className="btn btn--primary" type="button" onClick={restart}>Replay trace</button>
           </div>
           <ol className="sentinel__feed" aria-busy={loading} aria-live="polite" aria-label="Sentinel decision trace">
