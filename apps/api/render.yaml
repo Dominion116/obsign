@@ -32,6 +32,11 @@ services:
         value: '5242880'
       - key: ANCHOR_MIN_CONFIRMATIONS
         value: '12'
+      # Drain the confirm/revocation queue in-process every N ms when no external
+      # cron hits /internal/cron/drain. Keeps anchors moving pending → anchored on
+      # a single free instance. Set to '' to disable and rely on an external cron.
+      - key: SELF_DRAIN_MS
+        value: '30000'
       # x402 payment gate (Phase 4, x402 v2). Set per-environment in the Render
       # dashboard. Empty payee/asset keep the service booting but make
       # /api/v1/verify unusable (the 402 challenge advertises no payTo).
