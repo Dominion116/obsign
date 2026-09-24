@@ -451,10 +451,17 @@
 .issue__result-detail { font-size: 0.8rem; color: #155c39; }
 .issue__result code { font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: 0.76rem; }
 
-.issue__result a {
+.issue__result-actions {
   grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+.issue__result a:not(.btn) {
   width: fit-content;
-  margin-top: 0.25rem;
   color: #0c6b3c;
   font-size: 0.8rem;
   font-weight: 700;

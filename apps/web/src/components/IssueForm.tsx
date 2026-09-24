@@ -7,6 +7,7 @@ import { useAccount, useSignMessage } from 'wagmi'
 import { buildCredential, issueCredential, type SignMessage } from '../lib/issuance'
 import { getSessionToken } from '../lib/backend'
 import { explorerTxUrl } from '../lib/api'
+import { Link } from '../lib/router'
 
 type Status =
   | { kind: 'idle' }
@@ -123,16 +124,23 @@ export default function IssueForm() {
       )}
       {status.kind === 'done' && (
         <div className="issue__result" role="status">
-          <span className="issue__result-mark" aria-hidden="true">✓</span>
+          <span className="issue__result-mark" aria-hidden="true">
+            ✓
+          </span>
           <div>
             <p className="issue__result-title">Credential anchored</p>
             <p className="issue__result-detail">
               Receipt <code>{status.receiptId.slice(0, 18)}…</code>
             </p>
           </div>
-          <a href={explorerTxUrl(status.anchorTx)} target="_blank" rel="noreferrer">
-            View anchor transaction
-          </a>
+          <div className="issue__result-actions">
+            <Link className="btn btn--primary" to={`/app/receipt/${encodeURIComponent(status.receiptId)}`}>
+              View receipt
+            </Link>
+            <a href={explorerTxUrl(status.anchorTx)} target="_blank" rel="noreferrer">
+              View anchor transaction
+            </a>
+          </div>
         </div>
       )}
     </form>

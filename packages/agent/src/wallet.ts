@@ -58,11 +58,28 @@ export interface AgentWalletOptions {
 }
 
 /**
+ * Normalize a configured private key: trim stray whitespace/newlines (common when
+ * pasting into a CI secret) and add the `0x` prefix if omitted. Throws a clear
+ * error when it is not a 32-byte hex key, instead of viem's opaque message.
+ */
+function normalizePrivateKey(raw: string): Hex {
+  const trimmed = raw.trim()
+  const hex = trimmed.startsWith('0x') ? trimmed : `0x${trimmed}`
+  if (!/^0x[0-9a-fA-F]{64}$/.test(hex)) {
+    throw new Error(
+      'AGENT_WALLET_KEY must be a 32-byte hex private key (0x + 64 hex chars). ' +
+        'Check for a missing 0x prefix, a trailing newline, or a mnemonic pasted by mistake.',
+    )
+  }
+  return hex as Hex
+}
+
+/**
  * Build the agent wallet from a testnet key. Throws only on a malformed key so a
  * misconfigured live run fails fast; simulation mode never constructs this.
  */
 export function createAgentWallet(opts: AgentWalletOptions): AgentWallet {
-  const account = privateKeyToAccount(opts.privateKey as Hex)
+  const account = privateKeyToAccount(normalizePrivateKey(opts.privateKey))
   const transport = http(opts.rpcUrl)
   const wallet = createWalletClient({ account, chain: baseSepolia, transport })
   const publicClient = createPublicClient({ chain: baseSepolia, transport })

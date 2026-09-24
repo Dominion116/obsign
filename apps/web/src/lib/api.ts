@@ -49,6 +49,23 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return (await res.json()) as T
 }
 
+/**
+ * Base URL of the deployed Obsign API (same convention as backend.ts). Read
+ * endpoints must target this explicitly, because the web app (Vercel) and the API
+ * (Render) are different origins — a relative path would 404 on the web origin.
+ */
+const API_BASE = ((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '').replace(
+  /\/+$/,
+  '',
+)
+
+/** GET a public read endpoint from the real API base. */
+async function getJson<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`)
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+  return (await res.json()) as T
+}
+
 /* ------------------------------------------------------------------ */
 /* Domain types                                                        */
 /* ------------------------------------------------------------------ */
@@ -211,7 +228,7 @@ export async function verifyCredential(
 
 export async function fetchCredentials(): Promise<Credential[]> {
   try {
-    return await request<Credential[]>(ENDPOINTS.credentials)
+    return await getJson<Credential[]>(ENDPOINTS.credentials)
   } catch {
     return DEMO_CREDENTIALS
   }
@@ -219,7 +236,7 @@ export async function fetchCredentials(): Promise<Credential[]> {
 
 export async function fetchReceipt(receiptId: string): Promise<Receipt> {
   try {
-    return await request<Receipt>(ENDPOINTS.receipt(receiptId))
+    return await getJson<Receipt>(ENDPOINTS.receipt(receiptId))
   } catch {
     return demoReceipt(receiptId)
   }
@@ -227,7 +244,7 @@ export async function fetchReceipt(receiptId: string): Promise<Receipt> {
 
 export async function fetchStatus(): Promise<Service[]> {
   try {
-    return await request<Service[]>(ENDPOINTS.health)
+    return await getJson<Service[]>(ENDPOINTS.health)
   } catch {
     return DEMO_SERVICES
   }
