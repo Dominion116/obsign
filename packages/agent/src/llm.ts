@@ -129,10 +129,7 @@ export class GroqProvider implements LlmProvider {
 }
 
 /** Pick a provider from config: Groq when a key is present, else the stub. */
-export function createLlmProvider(config: {
-  groqApiKey?: string
-  groqModel: string
-}): LlmProvider {
+export function createLlmProvider(config: { groqApiKey?: string; groqModel: string }): LlmProvider {
   if (config.groqApiKey) {
     return new GroqProvider({ apiKey: config.groqApiKey, model: config.groqModel })
   }

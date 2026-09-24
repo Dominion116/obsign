@@ -104,7 +104,7 @@ export function createAgentWallet(opts: AgentWalletOptions): AgentWallet {
     },
 
     async buildPaymentHeader(requirements: PaymentRequirements) {
-      const nonce = (`0x${randomBytes(32).toString('hex')}`) as Hex
+      const nonce = `0x${randomBytes(32).toString('hex')}` as Hex
       const timeout = requirements.maxTimeoutSeconds ?? 60
       const validAfter = 0n
       const validBefore = BigInt(Math.floor(Date.now() / 1000) + timeout)

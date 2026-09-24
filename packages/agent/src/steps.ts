@@ -4,13 +4,7 @@
 
 /** The phase of the agent loop a step belongs to. Mirrors the web `SentinelStep`. */
 export type SentinelStepKind =
-  | 'goal'
-  | 'plan'
-  | 'tool'
-  | 'payment'
-  | 'verdict'
-  | 'policy'
-  | 'action'
+  'goal' | 'plan' | 'tool' | 'payment' | 'verdict' | 'policy' | 'action'
 
 /** One observable step of an autonomous vetting run. */
 export interface SentinelStep {

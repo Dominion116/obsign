@@ -102,7 +102,11 @@ export async function* runVetting(
   )
 
   // 2. Plan (LLM, advisory).
-  const plan = await deps.llm.plan({ subject: input.subject, claim: input.claim, policy: deps.policy })
+  const plan = await deps.llm.plan({
+    subject: input.subject,
+    claim: input.claim,
+    policy: deps.policy,
+  })
   yield await record(makeStep('plan', `Plan prepared (${deps.llm.name})`, plan))
 
   // 3. Perceive: load the subject's credential + evidence.
@@ -118,7 +122,12 @@ export async function* runVetting(
         { policyHash },
       ),
     )
-    return finish({ decision: 'deny', reasonCode: 'SUBJECT_UNAVAILABLE', satisfied: false, policyHash })
+    return finish({
+      decision: 'deny',
+      reasonCode: 'SUBJECT_UNAVAILABLE',
+      satisfied: false,
+      policyHash,
+    })
   }
   yield await record(
     makeStep('tool', 'Tool call: credential.read', 'Loaded the subject credential and evidence.'),
@@ -153,7 +162,12 @@ export async function* runVetting(
         policyHash,
       }),
     )
-    return finish({ decision: 'deny', reasonCode: 'PAYMENT_REQUIRED', satisfied: false, policyHash })
+    return finish({
+      decision: 'deny',
+      reasonCode: 'PAYMENT_REQUIRED',
+      satisfied: false,
+      policyHash,
+    })
   }
 
   if (verifyResult.paid) {

@@ -76,7 +76,10 @@ describe('evaluatePolicy', () => {
   })
 
   it('denies a mismatched claim type', () => {
-    const cred = { ...DEMO_CREDENTIAL, claim: { type: 'role', context: 'obsign-hackathon-2026', details: {} } }
+    const cred = {
+      ...DEMO_CREDENTIAL,
+      claim: { type: 'role', context: 'obsign-hackathon-2026', details: {} },
+    }
     const result = evaluatePolicy(receipt(), cred, DEMO_EVIDENCE, DEMO_POLICY)
     expect(result.satisfied).toBe(false)
     expect(result.failedConditions).toContain('claim-type')

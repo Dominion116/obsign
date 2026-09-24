@@ -36,7 +36,9 @@ if (!rpcUrl || !walletKey || !registry) {
 const sdkEntry = join(repoRoot, 'packages', 'sdk', 'dist', 'index.js')
 const { canonicalBytes, keccak256Hex, policyRegistryAbi } = await import(
   pathToFileURL(sdkEntry).href
-).catch((err) => fail(`could not import built SDK at ${sdkEntry} (run npm run build:sdk): ${err.message}`))
+).catch((err) =>
+  fail(`could not import built SDK at ${sdkEntry} (run npm run build:sdk): ${err.message}`),
+)
 
 const { createWalletClient, createPublicClient, http } = await import('viem')
 const { privateKeyToAccount } = await import('viem/accounts')

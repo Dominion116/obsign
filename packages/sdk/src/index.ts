@@ -41,11 +41,4 @@ export {
 // so SDK consumers (and policy tooling) can compute the same JCS keccak256 hashes
 // the protocol anchors — e.g. policyHash = keccak256Hex(canonicalBytes(policy)) —
 // without depending on @obsign/core directly.
-export {
-  canonicalize,
-  canonicalBytes,
-  keccak256,
-  keccak256Hex,
-  utf8,
-  type Hex,
-} from '@obsign/core'
+export { canonicalize, canonicalBytes, keccak256, keccak256Hex, utf8, type Hex } from '@obsign/core'

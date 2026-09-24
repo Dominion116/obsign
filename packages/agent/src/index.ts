@@ -1,12 +1,7 @@
 // @obsign/agent — the Obsign Sentinel autonomous vetting agent (Phase 6).
 
 export { type SentinelStep, type SentinelStepKind, makeStep } from './steps.js'
-export {
-  type Policy,
-  type PolicyEvaluation,
-  computePolicyHash,
-  evaluatePolicy,
-} from './policy.js'
+export { type Policy, type PolicyEvaluation, computePolicyHash, evaluatePolicy } from './policy.js'
 export {
   type LlmProvider,
   type PlanRequest,
