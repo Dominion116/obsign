@@ -6,7 +6,7 @@ const TRUST = [
   'AI-agent ready through MCP',
   'Built for humans too',
   'Deterministic receipts',
-  'x402 payments on Base',
+  'x402 payments on Base Sepolia',
 ]
 
 export default function Hero() {

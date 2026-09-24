@@ -26,7 +26,7 @@ export default function CTA() {
           </div>
           <div className="cta__price">
             <span className="cta__price-label">Price per verification</span>
-            <span className="cta__price-amount">$0.05</span>
+            <span className="cta__price-amount">$0.01</span>
             <span className="cta__price-note">Paid in USDC on Base at pilot pricing</span>
           </div>
         </div>
