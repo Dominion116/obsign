@@ -30,7 +30,17 @@ export function registerReadRoutes(app: FastifyInstance, ctx: AppContext): void 
     async (request, reply) => {
       const receipt = await ctx.repos.receipts.get(request.params.receiptId)
       if (!receipt) return reply.code(404).send({ error: 'receipt not found' })
-      return receipt
+      // Attach on-chain anchor metadata (if any) so the receipt view can link the tx.
+      const anchorDoc = await ctx.repos.anchors.get(receipt.credentialId)
+      const anchor =
+        anchorDoc && anchorDoc.txHash
+          ? {
+              chainId: ctx.config.chainId,
+              txHash: anchorDoc.txHash,
+              blockNumber: anchorDoc.blockNumber ?? 0,
+            }
+          : undefined
+      return { ...receipt, ...(anchor ? { anchor } : {}) }
     },
   )
 

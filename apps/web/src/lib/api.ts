@@ -91,8 +91,9 @@ export interface Receipt {
   subject: string
   verifiedAt: string
   verifier: string
-  anchor: { chainId: number; txHash: string; blockNumber: number }
-  paid: boolean
+  /** Present only once the credential is anchored on-chain. */
+  anchor?: { chainId: number; txHash: string; blockNumber: number }
+  paid?: boolean
 }
 
 export type ServiceStatus = 'operational' | 'degraded' | 'down'

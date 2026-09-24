@@ -64,17 +64,23 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
                 <Row label="subject" value={data.subject} mono />
                 <Row label="verifiedAt" value={data.verifiedAt} />
                 <Row label="verifier" value={data.verifier} />
-                <Row
-                  label="anchor"
-                  value={`Base Sepolia (${data.anchor.chainId}) · block ${data.anchor.blockNumber}`}
-                />
-                <Row
-                  label="anchor tx"
-                  value={short(data.anchor.txHash)}
-                  href={explorerTxUrl(data.anchor.txHash)}
-                  mono
-                />
-                <Row label="paid" value={String(data.paid)} />
+                {data.anchor ? (
+                  <>
+                    <Row
+                      label="anchor"
+                      value={`Base Sepolia (${data.anchor.chainId}) · block ${data.anchor.blockNumber}`}
+                    />
+                    <Row
+                      label="anchor tx"
+                      value={short(data.anchor.txHash)}
+                      href={explorerTxUrl(data.anchor.txHash)}
+                      mono
+                    />
+                  </>
+                ) : (
+                  <Row label="anchor" value="Not yet anchored" />
+                )}
+                {typeof data.paid === 'boolean' && <Row label="paid" value={String(data.paid)} />}
               </dl>
             </div>
           )}
@@ -90,10 +96,10 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
           </div>
 
           <p className="receipt__note">
-            This is a demonstration receipt that was recomputed offline directly from the
-            published specification. Any independent party who starts from the same inputs
-            will arrive at this exact receipt identifier, byte for byte, which is what lets
-            the result stand on its own without depending on our systems.
+            This receipt is a cached derivation of the published specification. Any independent
+            party who starts from the same credential and evidence will arrive at this exact
+            receipt identifier, byte for byte, which is what lets the result stand on its own
+            without depending on our systems.
           </p>
         </div>
       </section>
