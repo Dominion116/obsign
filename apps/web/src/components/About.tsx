@@ -10,18 +10,29 @@ export default function About() {
           <div className="about__content">
             <p className="eyebrow about__eyebrow">About Obsign</p>
             <h2 id="about-title" className="about__title">
-              Infrastructure for proof that <span className="script-accent">holds up.</span>
+              Proof infrastructure for decisions that need to{' '}
+              <span className="script-accent">hold up.</span>
             </h2>
             <p className="about__lead">
-              Obsign is verifiable-credential infrastructure for claims that need to travel
-              beyond the system that created them. It turns a claim and its evidence into a
-              deterministic receipt that people, applications, and agents can recompute.
+              Obsign gives AI agents and humans a dependable way to check a claim before acting on
+              it. It turns a credential and its supporting evidence into a deterministic receipt, so
+              the result can be verified again by another agent, another application, a team member,
+              or an independent auditor.
             </p>
             <p className="about__body">
-              Anchors on Base provide a public timestamp, while the API, SDK, and MCP make
-              verification available wherever a decision is made. Sentinel is Obsign’s
-              emerging vetting layer: it can inspect published rules and evidence without
-              becoming the authority on whether a claim is true.
+              AI agents can use Obsign through MCP, the API, or the SDK to verify credentials, read
+              receipts, inspect issuers, and, when they have explicit approval, record credentials
+              with self-signed and onchain-anchored proof. Humans can use the same tools through the
+              web app to issue, verify, share, and audit credentials without relying on a private
+              database or a black-box decision.
+            </p>
+            <p className="about__body">
+              Sentinel is Obsign’s autonomous vetting agent. It receives a goal, inspects available
+              evidence, calls verification tools, handles approved payment steps, evaluates a policy,
+              and records an auditable trace of the final grant or denial. The public trace runs in a
+              safe simulation that produces a real deterministic verdict, while live runs pay over
+              x402 and anchor a signed report on Base behind an explicit secret and a funded agent
+              wallet.
             </p>
             <Link className="btn btn--primary about__action" to="/app/docs#what-is-obsign">
               Read more

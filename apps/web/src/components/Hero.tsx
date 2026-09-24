@@ -3,10 +3,10 @@ import VerifyWidget from './VerifyWidget'
 import './Hero.css'
 
 const TRUST = [
-  'Anchored on Base',
-  'Pays over x402',
-  'Native MCP support',
-  'Fully open specification',
+  'AI-agent ready through MCP',
+  'Built for humans too',
+  'Deterministic receipts',
+  'x402 payments on Base',
 ]
 
 export default function Hero() {
@@ -19,12 +19,14 @@ export default function Hero() {
 
       <div className="hero__inner container">
         <div className="hero__copy">
-          <p className="eyebrow hero__eyebrow">Proof you can reproduce yourself</p>
+          <p className="eyebrow hero__eyebrow">Verification infrastructure for AI agents and humans</p>
           <h1 className="hero__title">
-            Credentials anyone <span className="script-accent">can recompute.</span>
+            Give every decision proof it can stand on.{' '}
+            <span className="script-accent">For agents and people alike.</span>
           </h1>
           <p className="hero__sub">
-            Turn everyday claims into receipts anyone can independently verify.
+            Obsign helps AI agents and humans verify credentials, inspect evidence, and produce
+            receipts that anyone can independently recompute before making an important decision.
           </p>
           <div className="hero__ctas">
             <Link className="btn btn--primary" to="/app/verify">

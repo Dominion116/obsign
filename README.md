@@ -1,19 +1,27 @@
 # Obsign
 
-Verifiable credentials with recomputable receipts.
+Verification infrastructure for AI agents and humans.
 
-Obsign turns a claim like "I was there" or "this artifact is genuine" into a machine-checkable receipt that any person, app, or AI agent can verify independently. The verdict never depends on trusting our servers. Given the same credential and evidence, any third party can recompute the receipt ID byte for byte, offline, using nothing but the published spec and public chain state.
+Obsign helps AI agents and humans verify claims before they act. It turns a claim like "I was there" or "this artifact is genuine" into a deterministic receipt that another agent, another application, a human reviewer, or an auditor can independently recompute. A result never depends on trusting an Obsign server or an AI-generated explanation. Given the same credential and evidence, independent verifiers reach the same receipt identifier, verdict, and reason code, byte for byte, offline, using nothing but the published spec and public chain state.
 
-This repository is a monorepo. It currently ships a production quality landing page and defines the full product, from the pure verification core to the onchain anchor contracts, spread across build phases.
+This repository is a monorepo, and most of the product is already live in it. It ships the pure verification core and CLI, the onchain anchor, revocation, issuer, and policy contracts on Base Sepolia, a self-custodial issuance platform (Fastify API plus worker), a paid verification API with x402 and MCP, a public SDK, a React landing page and issuer console, and a working Sentinel autonomous vetting agent.
 
 ---
 
 ## Table of contents
 
 - [What Obsign does](#what-obsign-does)
+- [What AI agents and humans can do](#what-ai-agents-and-humans-can-do)
+- [Integration paths](#integration-paths)
+- [AI-agent usage guide](#ai-agent-usage-guide)
+- [Human usage guide](#human-usage-guide)
+- [Issuance and signing authority](#issuance-and-signing-authority)
+- [x402 payments](#x402-payments)
+- [Sentinel](#sentinel)
 - [Repository layout](#repository-layout)
 - [Architecture](#architecture)
 - [The receipt](#the-receipt)
+- [Trust model and safety boundaries](#trust-model-and-safety-boundaries)
 - [Design system](#design-system)
 - [Getting started](#getting-started)
 - [Usage guide](#usage-guide)
@@ -41,19 +49,123 @@ Obsign offers a third option. A credential is only valid when its evidence actua
 
 The validity verdict and the receipt ID are computed by a deterministic engine. Time and chain state are injected, never read from a hidden clock or a live "latest" block. Payments, when used, happen over x402 and never influence the verdict. The result is the same whether you call the paid API, the free CLI, or a third party reimplementation.
 
+## What AI agents and humans can do
+
+Obsign is built so that both AI agents and humans can rely on the same receipts.
+
+### AI agents can
+
+- Verify credentials through MCP, REST, the SDK, or offline recomputation.
+- Inspect deterministic results and reason codes before acting.
+- Complete approved x402 payments for hosted verification.
+- Retrieve receipts and issuer information.
+- Prepare approved issuance workflows without holding an uncontrolled issuer key.
+- Use a receipt as evidence in an access, workflow, rewards, governance, or review policy.
+
+### Humans can
+
+- Issue self-signed and onchain-anchored credentials through the web workflow.
+- Verify a credential and understand the exact reason it passed or failed.
+- Share receipts with other people, organizations, and auditors.
+- Inspect evidence for attendance, membership, roles, documents, artifacts, and onchain activity.
+- Recompute a receipt independently through the SDK or CLI.
+
+## Integration paths
+
+Each audience has a natural entry point, and all of them return the same deterministic receipt.
+
+| Path | Best for | What it provides |
+| --- | --- | --- |
+| MCP (`POST /api/mcp`) | AI agents | Tool calls for verify, issue, receipt lookup, and issuer lookup |
+| REST API (`POST /api/v1/verify`) | Products and agent backends | Hosted verification and records |
+| `@obsign/sdk` | Applications, AI agents, and independent verifiers | Typed client and offline verification |
+| `@obsign/cli` (`obsign verify`) | Developers and auditors | Independent command-line recomputation |
+| Web app | Humans and operators | Guided issuance and verification |
+
+## AI-agent usage guide
+
+AI agents talk to Obsign over MCP or the REST API. The MCP endpoint (`POST /api/mcp`) exposes four tools:
+
+- `obsign_verify` - verify a credential and evidence and return a recomputable receipt (x402-gated).
+- `obsign_issue` - persist a self-signed credential and enqueue anchoring (requires an issuer signature and anchor transaction hash).
+- `obsign_get_receipt` - fetch a cached receipt by `receiptId`.
+- `obsign_get_issuer` - fetch a known issuer by address.
+
+The standard verification flow for an agent is:
+
+1. Receive a credential and its evidence.
+2. Call `obsign_verify` through MCP, or use the REST API or SDK.
+3. If hosted verification returns a 402 challenge, complete an approved payment and retry with the payment proof.
+4. Read `result`, `reasonCode`, `receiptId`, `credentialHash`, and `evidenceHash`.
+5. Apply the calling agent's policy. For example, grant access only when `result` is `valid` and `reasonCode` is `OK`.
+6. Keep the receipt as an explanation and audit record.
+
+Typical agent scenarios:
+
+- A workspace agent verifies a training credential before inviting a member.
+- A document-review agent validates an artifact hash before summarizing a report.
+- A treasury or governance agent verifies an onchain event before continuing a permitted workflow.
+
+## Human usage guide
+
+Humans use the web app for a guided workflow:
+
+1. Connect an issuer wallet when issuing a credential.
+2. Create a credential and attach evidence.
+3. Sign and anchor through the issuer-controlled wallet flow.
+4. Share the credential and evidence with a verifier.
+5. Verify through the web app and inspect the receipt and reason code.
+6. Share the receipt with a team, partner, auditor, or recipient.
+
+The same pattern covers event attendance, membership and roles, document authenticity, and onchain actions.
+
+## Issuance and signing authority
+
+Obsign is self-custodial for issuers. An AI agent may prepare a credential or orchestrate an approved workflow, but it must use an explicitly authorized wallet or signing service. Obsign never implies that an AI agent may silently access an issuer private key, and no issuer key material reaches the server (INV-7).
+
+Issuance inputs are:
+
+- The credential.
+- The evidence.
+- The issuer signature over the credential hash.
+- The onchain anchor transaction hash.
+
+Revocation creates a deterministic future verification result rather than silently deleting history.
+
+## x402 payments
+
+Hosted verification is protected by x402. An unpaid request receives a 402 payment challenge. The caller submits an approved payment proof and retries the request. Once the proof settles, the hosted service returns the deterministic receipt. Each proof is single-use, so a settled payment cannot be replayed.
+
+The payment is sent to the wallet configured as the Obsign service payee through `X402_PAYEE_ADDRESS`, and the price comes from `X402_PRICE_USDC`. It is not sent to Sentinel. Payment affects access to the hosted endpoint, never the validity, hashes, or receipt identifier (INV-3).
+
+## Sentinel
+
+Sentinel is Obsign's autonomous vetting agent (`packages/agent`, `@obsign/agent`). It runs a perceive, plan, pay over x402, verify, evaluate policy, and act loop, and records an auditable trace of every step. The verdict and the grant or deny decision are always derived from the deterministic core and the policy evaluator. The LLM only proposes and explains, so it stays outside the validity path (INV-5).
+
+Two run modes exist today:
+
+- **Simulation** is the default for the public trace endpoint (`GET /api/v1/sentinel/stream`). It produces a real deterministic verdict from the offline core, but moves no funds and broadcasts no transaction, so it is safe to expose without authentication. When the endpoint is unreachable, the web page falls back to a clearly labeled scripted demo trace.
+- **Live** runs use a funded testnet wallet to pay over x402 and to anchor a signed vetting report on Base. Live runs are gated behind `SENTINEL_RUN_SECRET` and require a fully configured agent wallet (`AGENT_WALLET_KEY`, an RPC URL, and the policy registry and anchor addresses).
+
+When Sentinel pays, the recipient is still the configured Obsign service payee, not Sentinel itself. The payment model is disclosed before any real payment is made. There is no separate daily spending cap beyond the per-verification price advertised in each 402 challenge, so live deployments should fund the agent wallet accordingly.
+
 ## Repository layout
 
 ```
 obsign/
-├── spec/                 # normative receipt + canonicalization spec
+├── spec/                 # normative receipt + canonicalization spec, reason codes
 │   └── vectors/          # golden vectors (credential, evidence, expected receiptId)
 ├── packages/
 │   ├── core/             # pure verifier, no network, no DB, no clock (INV-1)
-│   └── sdk/              # typed client + offline verifier, published to npm
+│   ├── sdk/              # typed client + offline verifier, published to npm
+│   ├── platform/         # domain + infra: Mongo cache/queue, SIWE, evidence store, indexer
+│   └── agent/            # Sentinel autonomous vetting agent: loop, wallet, x402, policy, LLM
 ├── apps/
-│   ├── web/              # React + Vite landing page (live in this repo today)
-│   └── worker/           # bounded job functions drained by cron
-├── contracts/            # Foundry project: anchor, revocation, issuer registry
+│   ├── web/              # React + Vite landing page, issuer console, Sentinel trace UI
+│   ├── api/              # Fastify service: REST, SIWE, verify, MCP, sentinel, cron drain
+│   └── worker/           # bounded confirm/index job functions drained by cron
+├── contracts/            # Foundry project: anchor, revocation, issuer registry, policy registry
+├── policies/             # versioned published vetting rules for Sentinel (JCS-hashed)
 ├── cli/                  # standalone `obsign verify` for independent recomputation
 └── ci/                   # shared CI configuration and checks
 ```
@@ -66,11 +178,13 @@ The system is split between a pure, deterministic core and the network-facing la
 
 ```mermaid
 flowchart TB
-    subgraph Clients["Clients"]
+    subgraph Clients["AI agents and humans"]
         AGENT["AI agents (MCP)"]
         APP["Apps (SDK)"]
+        HUMAN["Humans (web app)"]
         CLI["obsign CLI (offline)"]
         AUDITOR["External auditor"]
+        SENTINEL["Sentinel vetting agent"]
     end
 
     subgraph API["React + Vite web app on Vercel"]
@@ -105,6 +219,8 @@ flowchart TB
     X402 --> Core
     CLI --> Core
     AUDITOR --> Core
+    HUMAN --> UI
+    SENTINEL --> MCP
 
     Core --> RECEIPT
     Core --> DB
@@ -160,6 +276,16 @@ Canonicalization follows RFC 8785 (JCS), so JSON key order does not matter and t
 
 Every verification returns one of a fixed set of machine-readable reason codes (for example `OK`, `QUORUM_THRESHOLD_NOT_MET`, `EVENT_NOT_FOUND`, `REVOKED`). A bare boolean is never enough.
 
+## Trust model and safety boundaries
+
+- The deterministic verifier decides credential validity.
+- Evidence rules and reason codes are machine-checkable.
+- An AI model may explain a result or follow a policy, but it does not decide cryptographic validity (INV-5).
+- Payments never change a receipt identifier or a verdict (INV-3).
+- Issuer private keys stay outside Obsign's database (INV-7).
+- Chain reads are pinned to a specific block rather than an unpinned latest value (INV-6).
+- The database cache improves access speed but is not the source of truth for recomputation (INV-4).
+
 ## Design system
 
 The web app follows an organic neo-brutalist SaaS visual language: asymmetric cutout sections, notched and irregularly rounded cards, layered bento composition, crisp borders, and controlled gradients against a clean structure.
@@ -212,7 +338,7 @@ cd apps/web
 npm install
 ```
 
-This installs the React, Vite, and TypeScript toolchain for the web app. The other workspaces (`packages/core`, `packages/sdk`, `apps/worker`, `cli`, `contracts`) are scaffolded in the monorepo and are wired up by their own phases, which are listed under [Roadmap](#roadmap).
+This installs the React, Vite, and TypeScript toolchain for the web app. The other workspaces (`packages/core`, `packages/sdk`, `packages/platform`, `packages/agent`, `apps/api`, `apps/worker`, `cli`, `contracts`) are implemented in the monorepo and each has its own scripts and tests, as summarized under [Roadmap](#roadmap).
 
 ### Run the landing page
 
@@ -302,17 +428,17 @@ The web app package (`apps/web/package.json`) exposes:
 
 ## Roadmap
 
-The product is being built in phases, each gated by its own acceptance criteria. The landing page described here is already live in the repository; the remaining phases build out the deterministic core, the onchain layer, the issuance platform, and the paid verification surface.
+The product is being built in phases, each gated by its own acceptance criteria. Most of the product is already implemented in this repository. The verification core, CLI, onchain layer, issuance platform, paid verification API with x402 and MCP, web app, and Sentinel agent are in place; the remaining work is production hardening and a mainnet launch.
 
 | Phase | Focus | Current status |
 | --- | --- | --- |
-| 0 | Foundations and spec: monorepo, canonicalization spec, golden vectors, CI | Scaffolded |
-| 1 | Deterministic core and CLI: pure verifier, three evidence modules, `obsign verify` | Scaffolded |
+| 0 | Foundations and spec: monorepo, canonicalization spec, golden vectors, CI | Implemented |
+| 1 | Deterministic core and CLI: pure verifier, three evidence modules, `obsign verify` | Implemented |
 | 2 | Onchain layer: anchor, revocation, issuer registry (+ policy registry) contracts on Base Sepolia, SDK ChainReader | Implemented (deploy runs in CI) |
 | 3 | Issuance and multi-issuer platform: self-custodial issuers (SIWE), durable queue, evidence store, confirm/index worker, Fastify API on Render | Implemented (deploy runs on Render/CI) |
-| 4 | Verification API, x402, and MCP: paid verify endpoint, MCP tools, SDK publish | Not started |
-| 5 | Web app and landing page | Landing page + issuer console implemented |
-| 6 | Hardening and mainnet launch: KMS migration, audit, mainnet deploy | Not started |
+| 4 | Verification API, x402, and MCP: paid verify endpoint, MCP tools, SDK publish | Implemented (`apps/api`: verify, x402 gate, MCP tools) |
+| 5 | Web app and landing page | Landing page + issuer console + Sentinel trace UI implemented |
+| 6 | Sentinel agent and mainnet launch: autonomous vetting agent, KMS migration, audit, mainnet deploy | Sentinel agent implemented (live path gated by secret); mainnet hardening in progress |
 
 ### Phase 3 — self-custodial issuance platform
 

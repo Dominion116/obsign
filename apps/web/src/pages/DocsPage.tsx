@@ -34,9 +34,9 @@ export default function DocsPage() {
       <section className="docs__main section">
         <div className="container">
           <div className="docs__hero">
-          <p className="eyebrow docs__eyebrow">Obsign documentation</p>
-          <h1 className="docs__hero-title">Proof that can be <span className="script-accent">checked.</span></h1>
-          <p className="docs__hero-lead">Obsign turns a real-world claim into a verifiable receipt. It gives people, applications, and autonomous agents a shared way to check what happened without relying on Obsign to be the final authority.</p>
+          <p className="eyebrow docs__eyebrow">For AI agents, humans, applications, and auditors</p>
+          <h1 className="docs__hero-title">Proof that every decision maker can <span className="script-accent">check.</span></h1>
+          <p className="docs__hero-lead">Obsign gives AI agents and humans a shared way to verify claims, inspect evidence, pay for hosted checks when needed, and return receipts that remain independently auditable long after a decision has been made.</p>
           </div>
         </div>
 
@@ -44,11 +44,18 @@ export default function DocsPage() {
           <details className="docs__nav" aria-label="On this page" open>
             <summary className="docs__nav-title">On this page</summary>
             <ul>
-              <li><a href="#what-is-obsign">What is Obsign?</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#receipt">The receipt</a></li><li><a href="#modules">Evidence modules</a></li><li><a href="#issuers">For issuers</a></li><li><a href="#api">API and integrations</a></li><li><a href="#trust">Trust model</a></li>
+              <li><a href="#agents-humans">For AI agents and humans</a></li><li><a href="#what-is-obsign">What is Obsign?</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#receipt">The receipt</a></li><li><a href="#modules">Evidence modules</a></li><li><a href="#issuers">For issuers</a></li><li><a href="#api">API, MCP, and x402</a></li><li><a href="#sentinel">Sentinel</a></li><li><a href="#usage">How agents and humans use Obsign</a></li><li><a href="#trust">Trust model</a></li>
             </ul>
           </details>
 
           <div className="docs__content">
+            <section id="agents-humans" className="docs__section">
+              <p className="docs__kicker">Agents first. Humans included.</p><h2 className="docs__section-title">Obsign for AI agents and humans</h2>
+              <p className="docs__section-lead">Obsign is built for AI agents and humans who need to make decisions based on claims that can be checked. A claim might be that someone attended an event, a document is authentic, a wallet completed an onchain action, or several independent parties approved the same statement.</p>
+              <p className="docs__body-copy">Instead of asking a decision maker to trust a screenshot, a badge, a private database, or an AI-generated explanation, Obsign combines a credential with machine-checkable evidence and produces a deterministic receipt.</p>
+              <p className="docs__body-copy">AI agents can use that receipt before granting access, approving a workflow, releasing a benefit, or continuing an automated process. Humans can use the same receipt to verify a claim, understand why it passed or failed, and share evidence with an auditor or another organization.</p>
+            </section>
+
             <section id="what-is-obsign" className="docs__section">
               <p className="docs__kicker">Start here</p><h2 className="docs__section-title">What Obsign is</h2>
               <p className="docs__section-lead">Obsign is a multi-issuer credential platform for claims that need to hold up outside the system that created them. An issuer can say that someone attended an event, that an artifact is genuine, or that a chain event occurred. Obsign packages that claim with evidence a machine can check.</p>
@@ -80,13 +87,50 @@ receiptId      = keccak256(concat(credentialHash, evidenceHash))`}</pre>
             </section>
 
             <section id="issuers" className="docs__section">
-              <p className="docs__kicker">For issuers</p><h2 className="docs__section-title">Issue credentials with a verifiable trail</h2><p className="docs__section-lead">Obsign supports multiple issuers from day one. Issuers are registered onchain, credentials can be revoked when needed, and verification is charged per use instead of through a subscription.</p><Link className="docs__action" to="/app/issue">Open the issuer workspace</Link>
+              <p className="docs__kicker">For issuers</p><h2 className="docs__section-title">Issue credentials with a verifiable trail</h2><p className="docs__section-lead">Obsign supports multiple issuers from day one. Issuers are registered onchain, credentials can be revoked when needed, and verification is charged per use instead of through a subscription.</p>
+              <p className="docs__body-copy">AI agents can prepare credential workflows, but a user-controlled wallet or an explicitly approved signing service must authorize issuance. An agent never silently controls an issuer private key. Revocation creates a deterministic future verification result instead of silently deleting history.</p>
+              <Link className="docs__action" to="/app/issue">Open the issuer workspace</Link>
             </section>
 
             <section id="api" className="docs__section">
               <p className="docs__kicker">Build with Obsign</p><h2 className="docs__section-title">API, MCP, and SDK</h2><p className="docs__section-lead">Use the API for application workflows, MCP for agent workflows, or the SDK for typed and offline verification. Verification requests use x402 when payment is required, so software can pay per call without account setup.</p>
               <div className="docs__table-wrap"><table className="docs__table"><caption className="sr-only">Obsign HTTP API endpoints</caption><thead><tr><th>Method</th><th>Path</th><th>Access</th><th>Body</th></tr></thead><tbody>{API_ENDPOINTS.map((endpoint) => <tr key={endpoint.method + endpoint.path}><td><code>{endpoint.method}</code></td><td><code>{endpoint.path}</code></td><td>{endpoint.access}</td><td><code>{endpoint.body}</code></td></tr>)}</tbody></table></div>
               <h3 className="docs__sub-title">SDK example</h3><pre className="docs__code-block">{SDK_SNIPPET}</pre>
+              <h3 className="docs__sub-title">MCP tools for AI agents</h3>
+              <p className="docs__body-copy">The MCP endpoint (<code>POST /api/mcp</code>) exposes four tools: <code>obsign_verify</code> to verify a credential and evidence and return a recomputable receipt, <code>obsign_issue</code> to persist a self-signed credential and enqueue anchoring, <code>obsign_get_receipt</code> to fetch a cached receipt by id, and <code>obsign_get_issuer</code> to fetch a known issuer by address.</p>
+              <h3 className="docs__sub-title">x402 payment flow</h3>
+              <p className="docs__body-copy">Hosted verification follows an x402 flow: request, 402 challenge, approved payment, retry with proof, deterministic receipt. Payment grants access to hosted verification and never changes the validity result or the receipt identifier. Each proof is single-use, and the payment is sent to the configured Obsign service payee, not to any agent.</p>
+            </section>
+
+            <section id="sentinel" className="docs__section">
+              <p className="docs__kicker">Sentinel and the trust model</p><h2 className="docs__section-title">An auditable vetting agent</h2>
+              <p className="docs__section-lead">Sentinel is Obsign’s autonomous vetting agent. It makes agent-assisted decisions auditable by recording the goal, plan, tool calls, payment status, verification receipt, policy evaluation, and final grant or denial.</p>
+              <p className="docs__body-copy">The public Sentinel trace runs in a safe simulation that produces a real deterministic verdict from the offline core, but moves no funds and broadcasts no transaction. Live runs use an explicitly funded and approved agent wallet to pay for permitted hosted verification and to anchor a signed report on Base. They are gated behind a run secret and a fully configured wallet, and the payment recipient remains the configured Obsign service payee, not Sentinel itself.</p>
+              <p className="docs__body-copy">Obsign keeps a firm trust boundary. An AI model can explain a result or follow a policy, but it does not determine cryptographic validity. Validity comes from the deterministic verifier and its evidence rules.</p>
+            </section>
+
+            <section id="usage" className="docs__section">
+              <p className="docs__kicker">In practice</p><h2 className="docs__section-title">How AI agents and humans use Obsign</h2>
+              <p className="docs__section-lead">Both audiences rely on the same receipts, from different entry points.</p>
+              <h3 className="docs__sub-title">AI agents can use Obsign to</h3>
+              <ul className="docs__trust-list">
+                <li>Verify credentials before granting access or releasing a benefit.</li>
+                <li>Check artifact hashes before using a document or dataset in a workflow.</li>
+                <li>Verify onchain actions before continuing an automated process.</li>
+                <li>Inspect expiry and revocation status before relying on a credential.</li>
+                <li>Retrieve a reason code and explain a policy decision to a human.</li>
+                <li>Complete approved x402 payments for hosted verification.</li>
+                <li>Prepare credential issuance requests when granted explicit signing authority.</li>
+              </ul>
+              <h3 className="docs__sub-title">Humans can use Obsign to</h3>
+              <ul className="docs__trust-list">
+                <li>Issue credentials for attendance, membership, roles, artifacts, and onchain events.</li>
+                <li>Verify credentials before approving access, benefits, records, or documents.</li>
+                <li>Share receipts with teams, partners, auditors, customers, or other organizations.</li>
+                <li>Understand why a credential passed or failed through its reason code.</li>
+                <li>Confirm that a credential is active, valid, and not revoked.</li>
+                <li>Independently verify a claim without trusting the issuer’s private database.</li>
+              </ul>
             </section>
 
             <section id="trust" className="docs__section">
