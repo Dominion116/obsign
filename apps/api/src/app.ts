@@ -43,7 +43,12 @@ export async function buildApp(
   const app = Fastify({ logger: true, bodyLimit: config.evidenceMaxBytes + 1_048_576 })
   const ctx = buildContext(db, config)
 
-  await app.register(cors, { origin: config.frontendOrigin, credentials: true })
+  await app.register(cors, {
+    origin: config.frontendOrigin,
+    credentials: true,
+    // Expose the x402 headers so a browser payer can read the settlement tx.
+    exposedHeaders: ['PAYMENT-RESPONSE', 'PAYMENT-REQUIRED'],
+  })
   await app.register(multipart, { limits: { fileSize: config.evidenceMaxBytes } })
 
   // Some schedulers (e.g. cron-job.org) POST to /internal/cron/drain with a

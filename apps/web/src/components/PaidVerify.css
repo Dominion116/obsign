@@ -1,0 +1,122 @@
+.paidverify {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--color-paper);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-notch);
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.paidverify__title {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.paidverify__lead {
+  margin: 0 0 1.1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.paidverify__lead code,
+.paidverify__rows code {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.82em;
+}
+
+.paidverify__form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+}
+
+.paidverify__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 20rem;
+}
+
+.paidverify__label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.paidverify__field input {
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+  font-size: 0.85rem;
+  border: 1.5px solid var(--color-ink);
+  border-radius: var(--radius-notch);
+  min-height: 44px;
+}
+
+.paidverify__status {
+  margin: 0.9rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.paidverify__error {
+  margin: 0.9rem 0 0;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.85rem;
+  color: #7a1f1f;
+  background: #f7dede;
+  border-left: 3px solid #b34040;
+  border-radius: var(--radius-notch);
+}
+
+.paidverify__result {
+  margin-top: 1.1rem;
+  padding: 1rem;
+  background: #d9f2e5;
+  border: 1.5px solid #0c6b3c;
+  border-radius: var(--radius-notch);
+}
+
+.paidverify__result-title {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: #0c6b3c;
+}
+
+.paidverify__rows {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 1rem;
+  margin: 0 0 0.9rem;
+  font-size: 0.85rem;
+}
+
+.paidverify__rows dt {
+  font-weight: 700;
+  color: #155c39;
+}
+
+.paidverify__rows dd {
+  margin: 0;
+}
+
+.paidverify__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.paidverify__actions a {
+  color: #0c6b3c;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

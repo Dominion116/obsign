@@ -1,4 +1,5 @@
 import VerifyWidget from '../components/VerifyWidget'
+import PaidVerify from '../components/PaidVerify'
 import './VerifyPage.css'
 
 const WHY = [
@@ -55,6 +56,8 @@ export default function VerifyPage() {
               </ul>
             </div>
           </div>
+
+          <PaidVerify />
         </div>
       </section>
     </main>
