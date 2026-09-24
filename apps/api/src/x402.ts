@@ -1,4 +1,5 @@
-// x402 payment gate (Phase 4, FR-4.2..FR-4.4), x402 protocol **v2**. This is pure
+// x402 payment gate (Phase 4, FR-4.2..FR-4.4), x402 protocol **v1** (Base Sepolia
+// name-based flow — see X402_VERSION). This is pure
 // middleware: it decides whether a request has paid, and NOTHING here touches the
 // credential, the evidence, the verdict, or any hash (INV-3). Payment is an
 // economic gate in front of the pure verifier, never a validity input.
@@ -27,8 +28,11 @@
 import { bytesToHex, canonicalBytes, keccak256 } from '@obsign/core'
 import type { PaymentProofStore } from '@obsign/platform'
 
-/** The x402 protocol version this service speaks. */
-export const X402_VERSION = 2
+/** The x402 protocol version this service speaks. The public facilitator only
+ * registers `scheme: exact` on `base-sepolia` under x402Version 1 (v2 expects
+ * CAIP-2 network ids that the reference client does not emit), so v1 is the
+ * interoperable choice for the Base Sepolia name-based flow. */
+export const X402_VERSION = 1
 
 /**
  * A single payment option advertised in a 402 challenge — an x402
