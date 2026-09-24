@@ -236,6 +236,11 @@ function StatusView(props: {
             temporary network problem rather than anything wrong with your credential. Your
             input is still in place, so you can run it again without retyping anything.
           </p>
+          {errorMsg && (
+            <p className="widget__state-meta">
+              Details: <code className="widget__code">{errorMsg}</code>
+            </p>
+          )}
           <button className="btn btn--secondary" type="button" onClick={onRetry}>
             Try the verification again
           </button>
