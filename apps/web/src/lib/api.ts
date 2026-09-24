@@ -174,13 +174,19 @@ export function explorerTxUrl(txHash: string): string {
 /* Verification                                                        */
 /* ------------------------------------------------------------------ */
 
+/** Where a verdict came from — used to caveat offline-only checks in the UI. */
+export type VerifySource = 'live' | 'offline'
+
 export type VerifyOutcome =
-  | { kind: 'valid'; receipt: DemoReceipt }
+  | { kind: 'valid'; receipt: DemoReceipt; source: VerifySource }
   | { kind: 'unpaid' }
 
 /**
  * Verify a credential + evidence set. Prefers the live API; on network error
  * falls back to local recomputation of the bundled sample vector.
+ *
+ * The `source` flag lets the UI disclose that the offline fallback cannot
+ * confirm revocation or on-chain evidence (those need a live chain read).
  */
 export async function verifyCredential(
   credential: Record<string, unknown> = SAMPLE.credential,
@@ -191,11 +197,11 @@ export async function verifyCredential(
       method: 'POST',
       json: { credential, evidence },
     })
-    return { kind: 'valid', receipt }
+    return { kind: 'valid', receipt, source: 'live' }
   } catch (err) {
     if (err instanceof PaymentRequiredError) return { kind: 'unpaid' }
     // Network/offline — recompute deterministically from the sample.
-    return { kind: 'valid', receipt: recomputeDemo(credential, evidence) }
+    return { kind: 'valid', receipt: recomputeDemo(credential, evidence), source: 'offline' }
   }
 }
 

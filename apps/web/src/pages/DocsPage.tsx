@@ -85,7 +85,7 @@ receiptId      = keccak256(concat(credentialHash, evidenceHash))`}</pre>
 
             <section id="api" className="docs__section">
               <p className="docs__kicker">Build with Obsign</p><h2 className="docs__section-title">API, MCP, and SDK</h2><p className="docs__section-lead">Use the API for application workflows, MCP for agent workflows, or the SDK for typed and offline verification. Verification requests use x402 when payment is required, so software can pay per call without account setup.</p>
-              <div className="docs__table-wrap"><table className="docs__table"><thead><tr><th>Method</th><th>Path</th><th>Access</th><th>Body</th></tr></thead><tbody>{API_ENDPOINTS.map((endpoint) => <tr key={endpoint.method + endpoint.path}><td><code>{endpoint.method}</code></td><td><code>{endpoint.path}</code></td><td>{endpoint.access}</td><td><code>{endpoint.body}</code></td></tr>)}</tbody></table></div>
+              <div className="docs__table-wrap"><table className="docs__table"><caption className="sr-only">Obsign HTTP API endpoints</caption><thead><tr><th>Method</th><th>Path</th><th>Access</th><th>Body</th></tr></thead><tbody>{API_ENDPOINTS.map((endpoint) => <tr key={endpoint.method + endpoint.path}><td><code>{endpoint.method}</code></td><td><code>{endpoint.path}</code></td><td>{endpoint.access}</td><td><code>{endpoint.body}</code></td></tr>)}</tbody></table></div>
               <h3 className="docs__sub-title">SDK example</h3><pre className="docs__code-block">{SDK_SNIPPET}</pre>
             </section>
 

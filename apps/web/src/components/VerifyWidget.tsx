@@ -1,15 +1,33 @@
 import { useEffect, useState } from 'react'
 import { SAMPLE, type DemoReceipt } from '../lib/sample'
-import { verifyCredential } from '../lib/api'
-import { Link } from '../lib/router'
+import { verifyCredential, type VerifySource } from '../lib/api'
+import { Link, navigate } from '../lib/router'
 import './VerifyWidget.css'
 
 type Status = 'idle' | 'validating' | 'valid' | 'invalid' | 'error' | 'unpaid'
+
+/** Parse pasted text into a { credential, evidence } pair, or null if it is not JSON. */
+function parseInput(raw: string): { credential: Record<string, unknown>; evidence: Record<string, unknown> } | null {
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>
+    if (!parsed || typeof parsed !== 'object') return null
+    if (parsed.credential && typeof parsed.credential === 'object') {
+      return {
+        credential: parsed.credential as Record<string, unknown>,
+        evidence: (parsed.evidence as Record<string, unknown>) ?? SAMPLE.evidence,
+      }
+    }
+    return { credential: parsed, evidence: SAMPLE.evidence }
+  } catch {
+    return null
+  }
+}
 
 export default function VerifyWidget() {
   const [status, setStatus] = useState<Status>('idle')
   const [value, setValue] = useState('')
   const [receipt, setReceipt] = useState<DemoReceipt | null>(null)
+  const [source, setSource] = useState<VerifySource | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
@@ -23,24 +41,34 @@ export default function VerifyWidget() {
   }, [])
 
   const runVerify = async (input: string) => {
-    if (!input.trim()) {
+    const trimmed = input.trim()
+    if (!trimmed) {
       setStatus('idle')
+      return
+    }
+
+    // A bare identifier (not JSON) is treated as a receiptId → open its receipt.
+    const parsed = parseInput(trimmed)
+    if (!parsed) {
+      navigate(`/app/receipt/${encodeURIComponent(trimmed)}`)
       return
     }
 
     setStatus('validating')
     setErrorMsg('')
     setReceipt(null)
+    setSource(null)
 
     try {
       // Centralized client prefers the live API and falls back to local
-      // recomputation of the bundled sample when offline.
-      const outcome = await verifyCredential(SAMPLE.credential, SAMPLE.evidence)
+      // recomputation when offline; `source` tells us which path answered.
+      const outcome = await verifyCredential(parsed.credential, parsed.evidence)
       if (outcome.kind === 'unpaid') {
         setStatus('unpaid')
         return
       }
       setReceipt(outcome.receipt)
+      setSource(outcome.source)
       setStatus(outcome.receipt.result === 'valid' ? 'valid' : 'invalid')
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Unexpected error')
@@ -71,7 +99,7 @@ export default function VerifyWidget() {
           <textarea
             id="widget-input"
             className="widget__input"
-            placeholder="Paste a receipt ID or a full credential in JSON."
+            placeholder="Paste a receipt ID, or a credential (or {credential, evidence}) as JSON."
             rows={4}
             value={value}
             onChange={(e) => setValue(e.target.value)}
@@ -90,6 +118,7 @@ export default function VerifyWidget() {
         <StatusView
           status={status}
           receipt={receipt}
+          source={source}
           errorMsg={errorMsg}
           onRetry={onRetry}
           onIdle={() => setStatus('idle')}
@@ -103,11 +132,20 @@ export default function VerifyWidget() {
 function StatusView(props: {
   status: Status
   receipt: DemoReceipt | null
+  source: VerifySource | null
   errorMsg: string
   onRetry: () => void
   onIdle: () => void
 }) {
-  const { status, receipt, errorMsg, onRetry, onIdle } = props
+  const { status, receipt, source, errorMsg, onRetry, onIdle } = props
+
+  const offlineNote =
+    source === 'offline' ? (
+      <p className="widget__state-hint widget__offline-note">
+        Offline fallback — hashes and structural checks are recomputed locally, but revocation
+        and on-chain evidence cannot be confirmed without a live chain read.
+      </p>
+    ) : null
 
   switch (status) {
     case 'idle':
@@ -155,6 +193,7 @@ function StatusView(props: {
               View full receipt →
             </Link>
           )}
+          {offlineNote}
         </div>
       )
     case 'invalid':
@@ -164,10 +203,11 @@ function StatusView(props: {
           <p className="widget__state-title">This credential did not pass verification</p>
           <p className="widget__state-meta">
             The core returned the reason code{' '}
-            <code className="widget__code">{errorMsg || 'QUORUM_THRESHOLD_NOT_MET'}</code>,
+            <code className="widget__code">{receipt?.reasonCode ?? 'INVALID'}</code>,
             which tells you precisely which rule the evidence failed to meet rather than
             leaving you with a bare rejection.
           </p>
+          {offlineNote}
         </div>
       )
     case 'unpaid':

@@ -56,6 +56,16 @@
   cursor: pointer;
 }
 
+.widget__offline-note {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--accent-wash);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-notch);
+  color: var(--text-strong);
+  font-size: 0.82rem;
+}
+
 .widget__panel {
   border-top: 1px dashed var(--border-soft);
   padding-top: 1rem;

@@ -40,7 +40,7 @@ export default function IssuePage() {
               <article key={c.title} className="issue__check">
                 <span className="issue__check-icon" aria-hidden="true" />
                 <div>
-                  <h3 className="issue__check-title">{c.title}</h3>
+                  <h2 className="issue__check-title">{c.title}</h2>
                   <p className="issue__check-body">{c.body}</p>
                 </div>
               </article>

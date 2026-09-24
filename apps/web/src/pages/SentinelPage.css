@@ -18,5 +18,7 @@
 .sentinel__step--payment .sentinel__step-title, .sentinel__step--policy .sentinel__step-title { color: var(--text-on-navy); }
 .sentinel__code { display: block; font-size: .78rem; margin-top: .55rem; overflow-wrap: anywhere; }
 .sentinel__tx { color: var(--accent); display: inline-block; font-size: .82rem; font-weight: 700; margin-top: .7rem; text-decoration: underline; text-underline-offset: 3px; }
+.sentinel__tx--demo { color: var(--text-muted-on-navy); text-decoration: none; font-style: italic; }
+.sentinel__step--action .sentinel__tx--demo { color: var(--text-muted); }
 .sentinel__payment-note { background: var(--accent-wash); border-left: 4px solid var(--accent); border-radius: var(--radius-notch); color: var(--text-strong); padding: 1rem; }
 @media (max-width: 480px) { .sentinel__toolbar .btn { width: 100%; } .sentinel__step { padding: 1rem; } }

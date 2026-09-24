@@ -3,7 +3,7 @@ import { explorerTxUrl } from '../lib/api'
 import { useEventStream, type SentinelStep } from '../lib/useEventStream'
 import './SentinelPage.css'
 
-function Step({ step }: { step: SentinelStep }) {
+function Step({ step, isDemo }: { step: SentinelStep; isDemo: boolean }) {
   return (
     <li className={`sentinel__step sentinel__step--${step.kind}`}>
       <div className="sentinel__step-mark" aria-hidden="true">{step.kind === 'action' ? '✓' : '•'}</div>
@@ -12,7 +12,12 @@ function Step({ step }: { step: SentinelStep }) {
         <p>{step.detail}</p>
         {step.reasonCode && <code className="sentinel__code">reasonCode: {step.reasonCode}</code>}
         {step.policyHash && <code className="sentinel__code">policy hash: {step.policyHash}</code>}
-        {step.txHash && <a className="sentinel__tx" href={explorerTxUrl(step.txHash)} target="_blank" rel="noreferrer noopener">View BaseScan transaction ↗</a>}
+        {step.txHash &&
+          (isDemo ? (
+            <span className="sentinel__tx sentinel__tx--demo">Demo transaction — not on-chain</span>
+          ) : (
+            <a className="sentinel__tx" href={explorerTxUrl(step.txHash)} target="_blank" rel="noreferrer noopener">View BaseScan transaction ↗</a>
+          ))}
       </div>
     </li>
   )
@@ -21,6 +26,7 @@ function Step({ step }: { step: SentinelStep }) {
 export default function SentinelPage() {
   const { steps, status, restart } = useEventStream()
   const loading = status === 'connecting'
+  const isDemo = status === 'demo'
   return (
     <main className="sentinel">
       <section className="sentinel__main section">
@@ -36,7 +42,7 @@ export default function SentinelPage() {
           </div>
           <ol className="sentinel__feed" aria-busy={loading} aria-live="polite" aria-label="Sentinel decision trace">
             {loading && Array.from({ length: 4 }).map((_, index) => <li className="sentinel__step sentinel__step--loading" key={index}><Skeleton variant="circle" width="1.2rem" height="1.2rem" /><div className="sentinel__step-copy"><Skeleton width="35%" height="1rem" /><Skeleton width="80%" height="0.85rem" /></div></li>)}
-            {steps.map((step) => <Step key={step.id} step={step} />)}
+            {steps.map((step) => <Step key={step.id} step={step} isDemo={isDemo} />)}
             {status === 'unpaid' && <li className="sentinel__payment-note">The live agent requested an x402 payment. No mocked payment is presented as a real transaction.</li>}
           </ol>
         </div>

@@ -51,7 +51,7 @@ export default function IssueForm() {
   }
 
   return (
-    <form className="issue__form" onSubmit={(e) => void onSubmit(e)}>
+    <form className="issue__form" onSubmit={(e) => void onSubmit(e)} aria-busy={status.kind === 'working'}>
       <div className="issue__form-top">
         <div>
           <p className="issue__form-kicker">Credential draft</p>
@@ -77,22 +77,24 @@ export default function IssueForm() {
       <div className="issue__fields">
         <label className="issue__field">
           <span className="issue__field-label"><b>01</b> Subject</span>
-          <span className="issue__field-help">Who should receive this credential?</span>
+          <span className="issue__field-help" id="issue-subject-help">Who should receive this credential?</span>
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder="0x… or a subject identifier"
+            aria-describedby="issue-subject-help"
             required
           />
         </label>
 
         <label className="issue__field">
           <span className="issue__field-label"><b>02</b> Claim</span>
-          <span className="issue__field-help">State the fact this credential proves.</span>
+          <span className="issue__field-help" id="issue-claim-help">State the fact this credential proves.</span>
           <input
             value={claim}
             onChange={(e) => setClaim(e.target.value)}
             placeholder="e.g. Attendance — Obsign 2026"
+            aria-describedby="issue-claim-help"
             required
           />
         </label>

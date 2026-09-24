@@ -72,7 +72,7 @@ export default function CredentialsPage() {
             </Link>
           </div>
 
-          <div className="creds__stats">
+          <div className="creds__stats" aria-live="polite" aria-busy={loading}>
             <div className="creds__stat">
               <span className="creds__stat-num">
                 {loading ? <Skeleton width="2ch" height="1.4rem" /> : total}
@@ -95,6 +95,7 @@ export default function CredentialsPage() {
 
           <div className="creds__table-wrap">
             <table className="creds__table">
+              <caption className="sr-only">Credentials you have issued, with status and actions</caption>
               <thead>
                 <tr>
                   <th>Credential</th>
