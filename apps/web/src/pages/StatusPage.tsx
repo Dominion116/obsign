@@ -52,7 +52,7 @@ export default function StatusPage() {
             </div>
           </div>
 
-          <ul className="status__list" aria-busy={loading}>
+          <ul className="status__list" aria-busy={loading} aria-live="polite">
             {loading
               ? Array.from({ length: SKELETON_ROWS }).map((_, i) => (
                   <li key={`sk-${i}`} className="status__service">

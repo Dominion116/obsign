@@ -41,7 +41,7 @@ export default function VerifyWidget() {
         return
       }
       setReceipt(outcome.receipt)
-      setStatus('valid')
+      setStatus(outcome.receipt.result === 'valid' ? 'valid' : 'invalid')
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Unexpected error')
       setStatus('error')
@@ -62,7 +62,7 @@ export default function VerifyWidget() {
   const onRetry = () => setStatus('idle')
 
   return (
-    <div className="widget" role="region" aria-label="Verify a credential">
+    <div className="widget" role="region" aria-label="Verify a credential" aria-busy={status === 'validating'}>
       <form className="widget__form" onSubmit={onVerify}>
         <label className="widget__label" htmlFor="widget-input">
           <span className="eyebrow widget__eyebrow">Verify something right now</span>

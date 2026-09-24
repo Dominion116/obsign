@@ -1,0 +1,22 @@
+.sentinel__main { background: var(--color-paper); }
+.sentinel__head { margin-bottom: clamp(2rem, 5vw, 3rem); }
+.sentinel__title { color: var(--color-navy); font-size: clamp(2.2rem, 6vw, 3.6rem); margin-top: .75rem; max-width: 18ch; }
+.sentinel__lead { color: var(--text-muted); font-size: clamp(1rem, 1.5vw, 1.15rem); margin-top: 1.1rem; max-width: 62ch; }
+.sentinel__toolbar { align-items: center; background: var(--color-navy); border: var(--border-w-thick) solid var(--border); border-radius: var(--radius-card); box-shadow: 8px 8px 0 var(--accent); display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; margin-bottom: 2rem; padding: 1rem 1.2rem; }
+.sentinel__state { color: var(--text-on-navy); font-family: var(--font-display); font-size: .85rem; font-weight: 700; margin: 0; }
+.sentinel__state--demo { color: var(--accent); }
+.sentinel__state--unpaid, .sentinel__state--error { color: var(--accent); }
+.sentinel__feed { list-style: none; margin: 0; max-width: 850px; padding: 0; }
+.sentinel__step { align-items: flex-start; background: var(--surface-sunken); border: var(--border-w) solid var(--border); border-radius: var(--radius-notch); display: flex; gap: 1rem; margin-bottom: 1rem; padding: 1.1rem 1.2rem; }
+.sentinel__step--action { background: var(--accent-wash); border-width: var(--border-w-thick); }
+.sentinel__step--payment, .sentinel__step--policy { background: var(--color-navy); color: var(--text-on-navy); }
+.sentinel__step-mark { align-items: center; background: var(--accent); border-radius: 50%; color: var(--color-ink); display: flex; flex: none; font-weight: 800; height: 1.5rem; justify-content: center; margin-top: .15rem; width: 1.5rem; }
+.sentinel__step-copy { min-width: 0; }
+.sentinel__step-copy p { color: var(--text-muted); font-size: .9rem; margin-top: .25rem; }
+.sentinel__step--payment p, .sentinel__step--policy p { color: var(--text-muted-on-navy); }
+.sentinel__step-title { color: var(--color-navy); font-size: 1.02rem; }
+.sentinel__step--payment .sentinel__step-title, .sentinel__step--policy .sentinel__step-title { color: var(--text-on-navy); }
+.sentinel__code { display: block; font-size: .78rem; margin-top: .55rem; overflow-wrap: anywhere; }
+.sentinel__tx { color: var(--accent); display: inline-block; font-size: .82rem; font-weight: 700; margin-top: .7rem; text-decoration: underline; text-underline-offset: 3px; }
+.sentinel__payment-note { background: var(--accent-wash); border-left: 4px solid var(--accent); border-radius: var(--radius-notch); color: var(--text-strong); padding: 1rem; }
+@media (max-width: 480px) { .sentinel__toolbar .btn { width: 100%; } .sentinel__step { padding: 1rem; } }

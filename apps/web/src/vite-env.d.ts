@@ -8,6 +8,7 @@ interface ImportMetaEnv {
   readonly VITE_REVOCATION_ADDRESS?: string
   readonly VITE_ISSUER_REGISTRY_ADDRESS?: string
   readonly VITE_POLICY_REGISTRY_ADDRESS?: string
+  readonly VITE_SENTINEL_STREAM_URL?: string
 }
 
 interface ImportMeta {

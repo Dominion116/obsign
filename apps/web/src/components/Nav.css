@@ -181,6 +181,10 @@
   pointer-events: auto;
 }
 
+.nav__sheet[hidden] {
+  display: none;
+}
+
 .nav__sheet-links {
   display: flex;
   flex-direction: column;

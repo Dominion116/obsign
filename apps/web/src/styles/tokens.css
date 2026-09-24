@@ -28,7 +28,8 @@
   /* --- Accent tints (derived) --- */
   --accent-soft: #ffe4b3;
   --accent-wash: #fff6e6;
-  --accent-strong: #e08a00;
+  /* Dark enough for AA text contrast on the paper surface. */
+  --accent-strong: #9a5a00;
 
   /* --- Brand script --- */
   --font-display: 'Montserrat', system-ui, -apple-system, sans-serif;

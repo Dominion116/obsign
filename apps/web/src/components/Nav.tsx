@@ -115,6 +115,7 @@ export default function Nav({ brandTo, links, cta, right, mobileAction }: NavPro
         id="nav-sheet"
         className={`nav__sheet ${open ? 'nav__sheet--open' : ''}`}
         aria-hidden={!open}
+        hidden={!open}
       >
         <nav className="nav__sheet-links" aria-label="Mobile">
           {links.map((l) => (

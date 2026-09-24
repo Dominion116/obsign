@@ -9,13 +9,17 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
   const { data, loading } = useAsyncData<Receipt>(() => fetchReceipt(receiptId), [receiptId])
 
   const short = (h: string) => `${h.slice(0, 12)}…${h.slice(-8)}`
-  const permalink = `${window.location.origin}/receipt/${encodeURIComponent(receiptId)}`
+  const permalink = `${window.location.origin}/app/receipt/${encodeURIComponent(receiptId)}`
   const copy = (text: string) => () => void navigator.clipboard.writeText(text)
 
   return (
     <main className="receipt">
-      <section className="receipt__page">
+      <section className="receipt__page section">
         <div className="container">
+          <div className="receipt__headings">
+            <p className="eyebrow">Verification receipt</p>
+            <h1 className="receipt__title">Proof you can <span className="script-accent">recompute.</span></h1>
+          </div>
           {loading || !data ? (
             <div className="receipt__card receipt__card--valid" aria-busy="true" role="status" aria-label="Loading receipt">
               <div className="receipt__head">
@@ -78,7 +82,7 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
           <div className="receipt__share">
             <p className="receipt__share-title">Share this receipt with others</p>
             <div className="receipt__share-row">
-              <input className="receipt__share-input" readOnly value={permalink} />
+              <input className="receipt__share-input" aria-label="Receipt share link" readOnly value={permalink} />
               <button className="btn btn--primary" type="button" onClick={copy(permalink)}>
                 Copy link
               </button>

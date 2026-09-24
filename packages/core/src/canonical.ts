@@ -1,7 +1,7 @@
 // RFC 8785 (JSON Canonicalization Scheme, JCS) serialization.
 //
 // This is the single source of truth for canonicalization (spec/receipt.md §2);
-// it retires the ad-hoc canonicalizer in apps/web/src/lib/sample.ts.
+// it is also consumed by the web app through @obsign/core.
 //
 // The output is locale- and platform-independent:
 //   - object members are sorted by key in UTF-16 code-unit order,

@@ -1,77 +1,56 @@
-import { concatBytes, keccak256Hex, utf8Bytes } from '../lib/keccak'
+import { sha256Hex, utf8, type Receipt } from '@obsign/core'
+import { verifyOffline } from '@obsign/sdk'
 
-// Bundled known-good sample used by the "Try a sample" action. When the real
-// verification API is reachable, the widget calls POST /api/v1/verify instead.
-// This local path mirrors the normative receipt construction (see spec/receipt.md):
-//   credentialHash = keccak256(utf8(JCS(credential)))
-//   evidenceHash   = keccak256(utf8(JCS(evidence)))
-//   receiptId      = keccak256(concat(credentialHash, evidenceHash))
-
+/** A deterministic vector used when the live verification API is unavailable. */
 export interface SampleVector {
   label: string
   credential: Record<string, unknown>
   evidence: Record<string, unknown>
 }
 
+const credential = {
+  v: 1,
+  credentialId: '0x' + '01'.repeat(32),
+  issuer: '0x1111111111111111111111111111111111111111',
+  subject: '0x2222222222222222222222222222222222222222',
+  claim: { type: 'attendance', context: 'obsign-hackathon-2026', details: {} },
+  evidenceRefs: ['0x' + 'aa'.repeat(32)],
+  issuedAt: '2026-09-13T00:00:00.000Z',
+  validFrom: '2026-09-13T00:00:00.000Z',
+  validUntil: '2027-09-13T00:00:00.000Z',
+  nonce: '0x' + '0a'.repeat(16),
+}
+
+const artifactUri = 'https://example.invalid/obsign-hackathon-2026.txt'
+const artifactText = 'Obsign Hackathon 2026 attendance record'
+
 export const SAMPLE: SampleVector = {
   label: 'Obsign Hackathon 2026 — Attendance',
-  credential: {
-    v: 1,
-    credentialId: '0xcred00000000000000000000000001',
-    issuer: '0x1111111111111111111111111111111111111111',
-    subject: '0x2222222222222222222222222222222222222222',
-    claim: { type: 'attendance', context: 'obsign-hackathon-2026', details: {} },
-    evidenceRefs: ['0xevd00000000000000000000000000001'],
-    issuedAt: '2026-09-13T00:00:00.000Z',
-    validFrom: '2026-09-13T00:00:00.000Z',
-    validUntil: '2027-09-13T00:00:00.000Z',
-    nonce: '0x0000000000000000000000000000000a',
-  },
+  credential,
   evidence: {
     v: 1,
-    kind: 'quorum',
-    credentialHash: '0x',
-    threshold: 2,
-    messageHash: '0x',
-    signers: [],
+    kind: 'artifact-hash',
+    algo: 'sha256',
+    uri: artifactUri,
+    mime: 'text/plain',
+    bytes: artifactText.length,
+    hash: sha256Hex(utf8(artifactText)),
   },
 }
 
-// Deterministic JCS-like canonical string for the demo (sorted keys).
-function canonicalize(obj: unknown): string {
-  if (obj === null || typeof obj !== 'object') {
-    if (typeof obj === 'string') return JSON.stringify(obj)
-    if (typeof obj === 'number') return Number.isInteger(obj) ? String(obj) : String(obj)
-    return JSON.stringify(obj)
-  }
-  if (Array.isArray(obj)) {
-    return '[' + obj.map(canonicalize).join(',') + ']'
-  }
-  const entries = Object.entries(obj as Record<string, unknown>)
-    .filter(([, v]) => v !== undefined)
-    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-  return '{' + entries.map(([k, v]) => `${JSON.stringify(k)}:${canonicalize(v)}`).join(',') + '}'
+export type DemoReceipt = Receipt
+
+/**
+ * The SDK owns verification. Fixed offline inputs keep the fallback
+ * deterministic while invalid, expired, or revoked data returns a real code.
+ */
+export function recomputeDemo(credentialInput: Record<string, unknown>, evidence: Record<string, unknown>): DemoReceipt {
+  return verifyOffline(credentialInput, evidence, {
+    now: '2026-09-21T00:00:00.000Z',
+    artifacts: { [artifactUri]: { utf8: artifactText } },
+    chain: { revoked: [] },
+  })
 }
 
-export interface DemoReceipt {
-  receiptId: `0x${string}`
-  credentialHash: `0x${string}`
-  evidenceHash: `0x${string}`
-  result: 'valid'
-  reasonCode: 'OK'
-  verifier: string
-}
-
-export function recomputeDemo(credential: Record<string, unknown>, evidence: Record<string, unknown>): DemoReceipt {
-  const credentialHash = keccak256Hex(utf8Bytes(canonicalize(credential)))
-  const evidenceHash = keccak256Hex(utf8Bytes(canonicalize(evidence)))
-  const receiptId = keccak256Hex(concatBytes(utf8Bytes(credentialHash), utf8Bytes(evidenceHash)))
-  return {
-    receiptId,
-    credentialHash,
-    evidenceHash,
-    result: 'valid',
-    reasonCode: 'OK',
-    verifier: 'obsign-core/1.0.0',
-  }
-}
+/** Exposed for UI/vector consumers without duplicating hash logic. */
+export { computeHashes } from '@obsign/core'

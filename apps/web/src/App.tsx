@@ -15,6 +15,7 @@ import StatusPage from './pages/StatusPage'
 import CredentialsPage from './pages/CredentialsPage'
 import ReceiptPage from './pages/ReceiptPage'
 import NotFoundPage from './pages/NotFoundPage'
+import SentinelPage from './pages/SentinelPage'
 import { useLocation } from './lib/router'
 
 const TITLES: Record<string, string> = {
@@ -24,6 +25,7 @@ const TITLES: Record<string, string> = {
   '/app/docs': 'Documentation · Obsign',
   '/app/status': 'System status · Obsign',
   '/app/credentials': 'Issuer dashboard · Obsign',
+  '/app/sentinel': 'Sentinel trace · Obsign',
 }
 
 interface Resolved {
@@ -36,6 +38,17 @@ interface Resolved {
 export function resolvePage(path: string): Resolved {
   if (path === '/') return { page: <Hero />, title: TITLES['/'], surface: 'landing' }
 
+  // Keep /app as canonical while accepting the public PRD/bookmark paths.
+  const aliases: Record<string, string> = {
+    '/verify': '/app/verify',
+    '/issue': '/app/issue',
+    '/docs': '/app/docs',
+    '/status': '/app/status',
+    '/credentials': '/app/credentials',
+    '/sentinel': '/app/sentinel',
+  }
+  if (aliases[path]) return resolvePage(aliases[path])
+
   // Functional application surfaces live under /app.
   if (path === '/app' || path === '/app/verify')
     return { page: <VerifyPage />, title: TITLES['/app/verify'], surface: 'app' }
@@ -47,6 +60,8 @@ export function resolvePage(path: string): Resolved {
     return { page: <StatusPage />, title: TITLES['/app/status'], surface: 'app' }
   if (path === '/app/credentials')
     return { page: <CredentialsPage />, title: TITLES['/app/credentials'], surface: 'app' }
+  if (path === '/app/sentinel')
+    return { page: <SentinelPage />, title: TITLES['/app/sentinel'], surface: 'app' }
 
   const receipt = path.match(/^\/app\/receipt\/(.+)$/)
   if (receipt) {

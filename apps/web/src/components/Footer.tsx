@@ -8,6 +8,7 @@ const COLUMNS = [
       { label: 'Verify', href: '/app/verify' },
       { label: 'Issue', href: '/app/issue' },
       { label: 'Credentials', href: '/app/credentials' },
+      { label: 'Sentinel', href: '/app/sentinel' },
       { label: 'Docs', href: '/app/docs' },
       { label: 'Status', href: '/app/status' },
     ],

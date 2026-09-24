@@ -16,7 +16,7 @@ const API_ENDPOINTS = [
   { method: 'GET', path: '/api/v1/issuers/:address', access: 'Public', body: 'None' },
 ]
 
-const SDK_SNIPPET = `import { verifyOffline, ObsignClient } from '@dominionli/obsign-sdk'
+const SDK_SNIPPET = `import { verifyOffline, ObsignClient } from '@obsign/sdk'
 
 // Recompute a receipt locally — no network, no trust in Obsign's servers.
 const offline = verifyOffline(credential, evidence, {
