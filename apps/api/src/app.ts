@@ -20,6 +20,7 @@ import { registerHealthRoutes } from './routes/health.js'
 import { registerInternalRoutes } from './routes/internal.js'
 import { registerVerifyRoutes } from './routes/verify.js'
 import { registerMcpRoutes } from './routes/mcp.js'
+import { registerSentinelRoutes } from './routes/sentinel.js'
 import { X402Gate, createHttpFacilitator, type FacilitatorClient } from './x402.js'
 import { defaultVerifyDeps, type VerifyDeps } from './verify-service.js'
 
@@ -66,6 +67,7 @@ export async function buildApp(
   registerInternalRoutes(app, ctx)
   registerVerifyRoutes(app, ctx, gate, verifyDeps)
   registerMcpRoutes(app, ctx, gate, verifyDeps)
+  registerSentinelRoutes(app, ctx)
 
   return { app, ctx }
 }

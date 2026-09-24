@@ -10,6 +10,7 @@
     { "path": "../../packages/core" },
     { "path": "../../packages/sdk" },
     { "path": "../../packages/platform" },
+    { "path": "../../packages/agent" },
     { "path": "../../spec" },
     { "path": "../worker" }
   ],

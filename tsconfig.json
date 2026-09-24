@@ -5,6 +5,7 @@
     { "path": "./packages/core" },
     { "path": "./packages/sdk" },
     { "path": "./packages/platform" },
+    { "path": "./packages/agent" },
     { "path": "./apps/api" },
     { "path": "./apps/worker" },
     { "path": "./cli" }

@@ -1,0 +1,6 @@
+{
+  "note": "policyHash and tx are produced by scripts/anchor-policy.mjs (run in ops/CI, never in a local build — see RULE-1 in .kilo/plans). Each entry records the JCS keccak256 policy hash and its ObsignPolicyRegistry.registerPolicy transaction on Base Sepolia.",
+  "chainId": 84532,
+  "policyRegistry": "0xdf8387709cCfeFE5CE61Af1b1F70A76a4cDBf920",
+  "policies": []
+}

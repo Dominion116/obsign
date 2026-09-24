@@ -1,0 +1,11 @@
+{
+  "id": "attendance-hackathon-2026",
+  "version": 1,
+  "claimType": "attendance",
+  "context": "obsign-hackathon-2026",
+  "requiredEvidenceKind": "artifact-hash",
+  "requiredIssuer": "0x1111111111111111111111111111111111111111",
+  "mustBeAnchored": false,
+  "mustNotBeRevoked": true,
+  "validityRequired": true
+}

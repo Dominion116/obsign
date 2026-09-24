@@ -3,8 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Obsign Sentinel vetting agent (Phase 6). Placeholder package so the declared npm workspace resolves; implemented in a later phase.",
+  "description": "Obsign Sentinel — an autonomous vetting agent (Phase 6). Runs a perceive → plan → pay (x402) → verify → evaluate-policy → act loop and takes a consequential on-chain action. The LLM proposes/explains only; the verdict and policy decision are deterministic (INV-5).",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
-    "typecheck": "node -e \"process.exit(0)\""
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@obsign/core": "0.1.0",
+    "@obsign/sdk": "0.1.0",
+    "viem": "^2.21.0"
   }
 }
