@@ -5,7 +5,7 @@
 # RULE-1: builds/deploys run in Render/CI, never locally.
 services:
   - type: web
-    name: obsign-api
+    name: obsign
     runtime: node
     plan: free
     # Build the whole workspace so @obsign/{core,sdk,platform,worker} compile,
