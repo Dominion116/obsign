@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { useAccount } from 'wagmi'
 import { Link } from '../lib/router'
 import { useAsyncData } from '../lib/useAsyncData'
-import { fetchCredentials, type Credential } from '../lib/api'
+import { fetchCredentialsByIssuer, type Credential } from '../lib/api'
 import { revokeCredentialOnChain } from '../lib/issuance'
 import Skeleton from '../components/Skeleton'
 import './CredentialsPage.css'
@@ -15,7 +16,11 @@ const STATUS_LABEL: Record<Credential['status'], string> = {
 const SKELETON_ROWS = 4
 
 export default function CredentialsPage() {
-  const { data, loading, setData } = useAsyncData<Credential[]>(fetchCredentials)
+  const { address, isConnected } = useAccount()
+  const { data, loading, setData } = useAsyncData<Credential[]>(
+    () => fetchCredentialsByIssuer(address ?? ''),
+    [address],
+  )
   const [revoking, setRevoking] = useState<Record<string, boolean>>({})
 
   const credentials = data ?? []
@@ -108,17 +113,33 @@ export default function CredentialsPage() {
                 </tr>
               </thead>
               <tbody aria-busy={loading}>
-                {loading
-                  ? Array.from({ length: SKELETON_ROWS }).map((_, i) => (
-                      <tr key={`sk-${i}`} className="creds__row--skeleton">
-                        {Array.from({ length: 7 }).map((__, j) => (
-                          <td key={j}>
-                            <Skeleton width={j === 1 ? '80%' : '60%'} height="0.9rem" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  : credentials.map((c) => (
+                {loading ? (
+                  Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+                    <tr key={`sk-${i}`} className="creds__row--skeleton">
+                      {Array.from({ length: 7 }).map((__, j) => (
+                        <td key={j}>
+                          <Skeleton width={j === 1 ? '80%' : '60%'} height="0.9rem" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : !isConnected ? (
+                  <tr>
+                    <td className="creds__empty" colSpan={7}>
+                      Connect your wallet to see the credentials you have issued.
+                    </td>
+                  </tr>
+                ) : credentials.length === 0 ? (
+                  <tr>
+                    <td className="creds__empty" colSpan={7}>
+                      No credentials issued from this wallet yet.{' '}
+                      <Link className="creds__link" to="/app/issue">
+                        Issue one →
+                      </Link>
+                    </td>
+                  </tr>
+                ) : (
+                  credentials.map((c) => (
                       <tr key={c.id}>
                         <td>
                           <code className="creds__id">{c.id.slice(0, 18)}…</code>
@@ -160,16 +181,17 @@ export default function CredentialsPage() {
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="creds__note">
             <p className="creds__note-body">
-              The records shown here fall back to a local demonstration when the API is
-              unreachable. Issuer keys never reach this dashboard or the server: issuers are
-              self-custodial and sign in with their own wallet (SIWE), and every anchor and
+              This dashboard lists the live credentials issued by your connected wallet, read
+              from the Obsign API. Issuer keys never reach this dashboard or the server: issuers
+              are self-custodial and sign in with their own wallet (SIWE), and every anchor and
               revoke transaction is submitted directly from that wallet. Because no issuer key
               material exists server-side, invariant INV-7 holds by construction.
             </p>

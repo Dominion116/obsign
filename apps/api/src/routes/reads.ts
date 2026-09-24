@@ -34,6 +34,30 @@ export function registerReadRoutes(app: FastifyInstance, ctx: AppContext): void 
     },
   )
 
+  app.get<{ Params: { address: string } }>(
+    '/api/v1/issuers/:address/credentials',
+    async (request) => {
+      const docs = await ctx.repos.credentials.listByIssuer(request.params.address)
+      return docs.map((doc) => {
+        const claim = (doc.credential?.claim ?? {}) as { type?: string; context?: string }
+        const claimLabel =
+          claim.type && claim.context
+            ? `${claim.type} — ${claim.context}`
+            : (claim.type ?? claim.context ?? 'credential')
+        const issuedAt =
+          typeof doc.credential?.issuedAt === 'string' ? doc.credential.issuedAt : doc.createdAt
+        return {
+          id: doc.credentialId,
+          claim: claimLabel,
+          issuer: doc.issuer,
+          status: doc.status,
+          anchorTx: doc.anchorTxHash ?? '—',
+          issuedAt,
+        }
+      })
+    },
+  )
+
   app.get<{ Params: { address: string } }>('/api/v1/issuers/:address', async (request, reply) => {
     const issuer = await ctx.repos.issuers.get(request.params.address)
     if (!issuer) return reply.code(404).send({ error: 'issuer not found' })

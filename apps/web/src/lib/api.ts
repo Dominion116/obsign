@@ -107,41 +107,6 @@ export interface Service {
 /* Local fallback data (demo / offline)                                */
 /* ------------------------------------------------------------------ */
 
-const DEMO_CREDENTIALS: Credential[] = [
-  {
-    id: '0xcred00000000000000000000000001',
-    claim: 'Attendance — Obsign Hackathon 2026',
-    issuer: '0x1111…1111',
-    status: 'anchored',
-    anchorTx: '0xabcd…',
-    issuedAt: '2026-09-13T00:00:00.000Z',
-  },
-  {
-    id: '0xcred00000000000000000000000002',
-    claim: 'Role — Workshop Facilitator',
-    issuer: '0x1111…1111',
-    status: 'anchored',
-    anchorTx: '0xef01…',
-    issuedAt: '2026-09-14T00:00:00.000Z',
-  },
-  {
-    id: '0xcred00000000000000000000000003',
-    claim: 'Membership — Base Builders',
-    issuer: '0x1111…1111',
-    status: 'pending',
-    anchorTx: '—',
-    issuedAt: '2026-09-20T00:00:00.000Z',
-  },
-  {
-    id: '0xcred00000000000000000000000004',
-    claim: 'Attendance — Migrated Event',
-    issuer: '0x1111…1111',
-    status: 'revoked',
-    anchorTx: '0x2345…',
-    issuedAt: '2026-09-01T00:00:00.000Z',
-  },
-]
-
 const DEMO_SERVICES: Service[] = [
   {
     name: 'Verification API',
@@ -226,11 +191,17 @@ export async function verifyCredential(
 /* Resource loaders (with offline fallback)                            */
 /* ------------------------------------------------------------------ */
 
-export async function fetchCredentials(): Promise<Credential[]> {
+/**
+ * List the credentials issued by a given wallet address (live only — no demo
+ * fallback). Returns an empty array when the address has none or the API is
+ * unreachable, so the dashboard shows a real empty state rather than mock rows.
+ */
+export async function fetchCredentialsByIssuer(address: string): Promise<Credential[]> {
+  if (!address) return []
   try {
-    return await getJson<Credential[]>(ENDPOINTS.credentials)
+    return await getJson<Credential[]>(`/api/v1/issuers/${encodeURIComponent(address)}/credentials`)
   } catch {
-    return DEMO_CREDENTIALS
+    return []
   }
 }
 
