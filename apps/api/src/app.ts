@@ -46,6 +46,16 @@ export async function buildApp(
   await app.register(cors, { origin: config.frontendOrigin, credentials: true })
   await app.register(multipart, { limits: { fileSize: config.evidenceMaxBytes } })
 
+  // Some schedulers (e.g. cron-job.org) POST to /internal/cron/drain with a
+  // urlencoded content-type and no meaningful body, which Fastify's default
+  // parsers reject with 415. These internal routes need no body, so accept
+  // urlencoded as an empty object instead of failing the cron.
+  app.addContentTypeParser(
+    'application/x-www-form-urlencoded',
+    { parseAs: 'string' },
+    (_req, _body, done) => done(null, {}),
+  )
+
   const facilitator = overrides.facilitator ?? createHttpFacilitator(config.x402FacilitatorUrl)
   const gate = new X402Gate({
     payeeAddress: config.x402PayeeAddress,
