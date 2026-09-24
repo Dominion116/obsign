@@ -58,17 +58,21 @@ export interface AgentWalletOptions {
 }
 
 /**
- * Normalize a configured private key: trim stray whitespace/newlines (common when
- * pasting into a CI secret) and add the `0x` prefix if omitted. Throws a clear
- * error when it is not a 32-byte hex key, instead of viem's opaque message.
+ * Normalize a configured private key: trim stray whitespace/newlines and quotes
+ * (common when pasting into a CI secret), accept `0X`, and add the `0x` prefix if
+ * omitted. Throws a clear, non-leaking error (reports only the hex-char count)
+ * when it is not a 32-byte hex key, instead of viem's opaque message.
  */
 function normalizePrivateKey(raw: string): Hex {
-  const trimmed = raw.trim()
-  const hex = trimmed.startsWith('0x') ? trimmed : `0x${trimmed}`
+  let key = raw.trim().replace(/^['"]|['"]$/g, '')
+  if (key.startsWith('0X')) key = `0x${key.slice(2)}`
+  const hex = key.startsWith('0x') ? key : `0x${key}`
   if (!/^0x[0-9a-fA-F]{64}$/.test(hex)) {
+    const bare = hex.startsWith('0x') ? hex.slice(2) : hex
     throw new Error(
-      'AGENT_WALLET_KEY must be a 32-byte hex private key (0x + 64 hex chars). ' +
-        'Check for a missing 0x prefix, a trailing newline, or a mnemonic pasted by mistake.',
+      `AGENT_WALLET_KEY is not a 32-byte hex private key (got ${bare.length} chars after 0x; ` +
+        'expected exactly 64 hex chars). Provide the raw private key, not a seed phrase, and ' +
+        'remove any quotes, spaces, or trailing newline.',
     )
   }
   return hex as Hex
