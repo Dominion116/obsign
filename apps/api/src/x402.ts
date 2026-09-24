@@ -9,14 +9,17 @@
 //   3. Valid but proof already used  → 402 (single-use replay guard, FR-4.4).
 //   4. Valid + fresh + settled       → paid; the route runs the verifier.
 //
-// Wire format (x402 v2, verified against docs.x402.org):
+// Wire format (x402, validated against the reference `x402-fetch` client + the
+// public facilitator):
 //   - request header  PAYMENT-SIGNATURE  (base64 PaymentPayload); we also accept
 //     the v1 X-PAYMENT header for backward compatibility.
 //   - 402 response header PAYMENT-REQUIRED  (base64 of the accepts array).
 //   - 200 response header PAYMENT-RESPONSE  (base64 of the settlement response).
-//   - CAIP-2 network ids (eip155:84532), amount in the asset's atomic units, and
-//     the exact-EVM `extra` = { assetTransferMethod, name, version } that the
-//     facilitator needs to reconstruct the EIP-3009 signature.
+//   - Each `accepts` item is an x402 PaymentRequirements: `network` is the x402
+//     network NAME (base-sepolia, mapped from the configured CAIP-2 id), the price
+//     is `maxAmountRequired` in atomic units, `resource` is an absolute URL, and
+//     `extra` = { name, version } is the asset's EIP-712 domain used to build the
+//     EIP-3009 authorization.
 //
 // The facilitator (verify/settle) is injected so the live Base Sepolia path is
 // exercised only in secret-gated integration tests; unit tests stub it.
@@ -27,22 +30,42 @@ import type { PaymentProofStore } from '@obsign/platform'
 /** The x402 protocol version this service speaks. */
 export const X402_VERSION = 2
 
-/** A single payment option advertised in a 402 challenge (x402 v2 `accepts` item). */
+/**
+ * A single payment option advertised in a 402 challenge — an x402
+ * `PaymentRequirements`. Field names/shape match the x402 schema the reference
+ * client (`x402-fetch`) and the public facilitator validate against: `network`
+ * is the x402 network NAME (not CAIP-2), the price is `maxAmountRequired`, and
+ * `resource` is an absolute URL.
+ */
 export interface X402PaymentRequirements {
   scheme: string
-  /** CAIP-2 network id, e.g. eip155:84532. */
+  /** x402 network name, e.g. "base-sepolia" (NOT the CAIP-2 id). */
   network: string
-  /** Amount in the asset's atomic units (USDC 6dp: "10000" = 0.01). */
-  amount: string
+  /** Price in the asset's atomic units (USDC 6dp: "10000" = 0.01). */
+  maxAmountRequired: string
   /** ERC-20 asset contract address. */
   asset: string
   payTo: string
   maxTimeoutSeconds: number
+  /** Absolute URL of the paid resource (x402 requires a URL, not a path). */
   resource: string
   description: string
   mimeType: string
-  /** Exact-scheme EVM domain hints: { assetTransferMethod, name, version }. */
+  /** Exact-scheme EVM EIP-712 domain of the asset: { name, version }. */
   extra: Record<string, unknown>
+}
+
+/**
+ * Map a configured network id to the canonical x402 network NAME the reference
+ * client and facilitator expect. Accepts a CAIP-2 id (eip155:84532) or an
+ * already-canonical name (base-sepolia), so config may use either form.
+ */
+const X402_NETWORK_NAMES: Record<string, string> = {
+  'eip155:84532': 'base-sepolia',
+  'eip155:8453': 'base',
+}
+export function toX402Network(network: string): string {
+  return X402_NETWORK_NAMES[network] ?? network
 }
 
 /** A decoded payment header payload (opaque to us; the facilitator interprets it). */
@@ -182,12 +205,12 @@ export function deriveProofId(payment: X402Payment): string {
 export class X402Gate {
   constructor(private readonly opts: X402GateOptions) {}
 
-  /** Build the payment requirements advertised for a resource (x402 v2). */
+  /** Build the payment requirements advertised for a resource (x402). */
   requirements(resource: string): X402PaymentRequirements {
     return {
       scheme: 'exact',
-      network: this.opts.network,
-      amount: this.opts.amount,
+      network: toX402Network(this.opts.network),
+      maxAmountRequired: this.opts.amount,
       asset: this.opts.asset,
       payTo: this.opts.payeeAddress,
       maxTimeoutSeconds: 60,
@@ -195,7 +218,6 @@ export class X402Gate {
       description: 'Obsign credential verification',
       mimeType: 'application/json',
       extra: {
-        assetTransferMethod: 'eip3009',
         name: this.opts.assetName,
         version: this.opts.assetVersion,
       },
@@ -245,7 +267,7 @@ export class X402Gate {
     const fresh = await this.opts.proofs.consume({
       proofId,
       resource,
-      amount: requirements.amount,
+      amount: requirements.maxAmountRequired,
       ...(verified.payer !== undefined ? { payer: verified.payer } : {}),
     })
     if (!fresh) {
@@ -307,7 +329,7 @@ export function createHttpFacilitator(baseUrl: string, fetchImpl?: FetchLike): F
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        x402Version: X402_VERSION,
+        x402Version: payment.x402Version ?? X402_VERSION,
         paymentPayload: payment,
         paymentRequirements: requirements,
       }),

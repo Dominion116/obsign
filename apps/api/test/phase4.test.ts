@@ -54,7 +54,7 @@ function paymentHeader(sig: string): string {
   const payment = {
     x402Version: 2,
     scheme: 'exact',
-    network: 'eip155:84532',
+    network: 'base-sepolia',
     payload: { signature: sig },
   }
   return Buffer.from(JSON.stringify(payment), 'utf8').toString('base64')
@@ -108,8 +108,8 @@ describe.skipIf(SKIP)('Phase 4 — x402 verify + MCP', () => {
     expect(body.x402Version).toBe(2)
     expect(Array.isArray(body.accepts)).toBe(true)
     expect(body.accepts[0].payTo).toBe(CONFIG.x402PayeeAddress)
-    expect(body.accepts[0].amount).toBe('10000')
-    expect(body.accepts[0].network).toBe('eip155:84532')
+    expect(body.accepts[0].maxAmountRequired).toBe('10000')
+    expect(body.accepts[0].network).toBe('base-sepolia')
     expect(body.accepts[0].asset).toBe(CONFIG.x402AssetAddress)
   })
 

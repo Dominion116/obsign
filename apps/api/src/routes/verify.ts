@@ -49,7 +49,10 @@ export function registerVerifyRoutes(
       return reply.code(400).send({ error: 'credential is required' })
     }
 
-    const outcome = await gate.settle(request.headers, VERIFY_RESOURCE)
+    // x402 requires the advertised `resource` to be an absolute URL, so build it
+    // from the request host (Render terminates TLS, so the public scheme is https).
+    const host = (request.headers.host as string | undefined) ?? 'localhost'
+    const outcome = await gate.settle(request.headers, `https://${host}${VERIFY_RESOURCE}`)
     if (!outcome.paid) {
       // x402 v2: advertise the requirements in the PAYMENT-REQUIRED header too.
       reply.header('PAYMENT-REQUIRED', outcome.challengeHeader)

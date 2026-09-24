@@ -107,8 +107,10 @@ export function registerMcpRoutes(
           return err('credential is required')
         }
         // x402 gate (FR-4.7): identical to REST. Unpaid → the challenge as an
-        // error result carrying the payment requirements.
-        const outcome = await gate.settle(request.headers, VERIFY_RESOURCE)
+        // error result carrying the payment requirements. The advertised
+        // `resource` must be an absolute URL (x402 schema).
+        const host = (request.headers.host as string | undefined) ?? 'localhost'
+        const outcome = await gate.settle(request.headers, `https://${host}${VERIFY_RESOURCE}`)
         if (!outcome.paid) {
           return err('payment required', { x402: outcome.challenge })
         }
