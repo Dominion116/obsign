@@ -1,0 +1,62 @@
+name: Sentinel live vetting run (Base Sepolia)
+
+# End-to-end test of the autonomous vetting loop: the Sentinel agent pays for a
+# verification via x402, verifies against the deterministic core, evaluates the
+# anchored policy, and anchors a signed vetting report on-chain — a real spend +
+# on-chain write. Manual dispatch only (it moves testnet funds and writes to the
+# chain, so it must not run on every push).
+#
+# RULE-1: all execution in CI. Required repo secrets:
+#   AGENT_WALLET_KEY     — funded Base Sepolia key (testnet only; never mainnet value)
+#   BASE_SEPOLIA_RPC_URL — Base Sepolia RPC endpoint
+#   AGENT_API_BASE_URL   — a deployed, x402-configured Obsign API origin
+# Optional: GROQ_API_KEY (advisory planner; the decision is identical without it).
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: sentinel-live-vetting-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vetting-loop:
+    name: pay → verify → evaluate → anchor (live)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Guard — required secrets present
+        id: guard
+        env:
+          KEY: ${{ secrets.AGENT_WALLET_KEY }}
+          RPC: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          API: ${{ secrets.AGENT_API_BASE_URL }}
+        run: |
+          if [ -z "$KEY" ] || [ -z "$RPC" ] || [ -z "$API" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Missing secrets; skipping the live vetting run."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.guard.outputs.run == 'true'
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        if: steps.guard.outputs.run == 'true'
+        run: npm install
+
+      - name: Live vetting integration test
+        if: steps.guard.outputs.run == 'true'
+        env:
+          AGENT_WALLET_KEY: ${{ secrets.AGENT_WALLET_KEY }}
+          BASE_SEPOLIA_RPC_URL: ${{ secrets.BASE_SEPOLIA_RPC_URL }}
+          AGENT_API_BASE_URL: ${{ secrets.AGENT_API_BASE_URL }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          # Public deployed addresses (contracts/deployments/84532.json).
+          POLICY_REGISTRY_ADDRESS: '0xdf8387709cCfeFE5CE61Af1b1F70A76a4cDBf920'
+          ANCHOR_CONTRACT_ADDRESS: '0xAA5F020e5c0228612e92A21854510154790d273B'
+        run: npx vitest run packages/agent/test/vetting-live.testnet.test.ts
