@@ -3,5 +3,6 @@
   "framework": null,
   "installCommand": "npm install",
   "buildCommand": "npm run build --workspace @obsign/web",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
