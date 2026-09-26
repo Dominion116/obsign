@@ -111,7 +111,7 @@ export class GroqProvider implements LlmProvider {
       'You are Obsign Sentinel, an autonomous vetting agent. Reply with one concise ' +
         'sentence describing your plan. You never decide validity; the deterministic core does.',
       `Subject: ${req.subject}\nClaim: ${req.claim}\nPolicy: ${req.policy.id} v${req.policy.version} ` +
-        `(requires ${req.policy.requiredEvidenceKind} evidence).`,
+        `(requires ${req.policy.requiredEvidenceKind ?? 'no specific'} evidence).`,
       fallback,
     )
   }

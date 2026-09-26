@@ -63,6 +63,7 @@ export function registerReadRoutes(app: FastifyInstance, ctx: AppContext): void 
           status: doc.status,
           anchorTx: doc.anchorTxHash ?? '—',
           issuedAt,
+          receiptId: doc.receiptId,
         }
       })
     },

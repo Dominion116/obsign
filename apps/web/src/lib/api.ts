@@ -76,6 +76,8 @@ export interface Credential {
   status: CredentialStatus
   anchorTx: string
   issuedAt: string
+  /** The credential's verification receipt id (used to link to the receipt view). */
+  receiptId?: string
 }
 
 export interface Receipt {
@@ -136,11 +138,25 @@ export async function fetchCredentialsByIssuer(address: string): Promise<Credent
 }
 
 /**
- * Fetch a verification receipt by id (live only — no demo fallback). Throws on a
- * miss/unreachable API so the receipt page shows a real not-found/error state.
+ * Fetch a verification receipt (live only — no demo fallback). The id is normally
+ * a receiptId, but older links use a credentialId; if the receipt lookup misses,
+ * we resolve the credential's receiptId and retry. Throws when neither resolves,
+ * so the receipt page shows a real not-found/error state.
  */
-export async function fetchReceipt(receiptId: string): Promise<Receipt> {
-  return getJson<Receipt>(ENDPOINTS.receipt(receiptId))
+export async function fetchReceipt(idOrCredentialId: string): Promise<Receipt> {
+  try {
+    return await getJson<Receipt>(ENDPOINTS.receipt(idOrCredentialId))
+  } catch (err) {
+    try {
+      const cred = await getJson<{ receiptId?: string }>(ENDPOINTS.credential(idOrCredentialId))
+      if (cred.receiptId && cred.receiptId !== idOrCredentialId) {
+        return await getJson<Receipt>(ENDPOINTS.receipt(cred.receiptId))
+      }
+    } catch {
+      // fall through and surface the original receipt error
+    }
+    throw err
+  }
 }
 
 /** Human labels for the health-check keys the API reports. */

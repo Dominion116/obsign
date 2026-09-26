@@ -9,7 +9,8 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
   const { data, loading, error } = useAsyncData<Receipt>(() => fetchReceipt(receiptId), [receiptId])
 
   const short = (h: string) => `${h.slice(0, 12)}…${h.slice(-8)}`
-  const permalink = `${window.location.origin}/app/receipt/${encodeURIComponent(receiptId)}`
+  const canonicalId = data?.receiptId ?? receiptId
+  const permalink = `${window.location.origin}/app/receipt/${encodeURIComponent(canonicalId)}`
   const copy = (text: string) => () => void navigator.clipboard.writeText(text)
 
   return (

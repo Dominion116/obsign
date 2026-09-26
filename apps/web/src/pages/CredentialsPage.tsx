@@ -165,7 +165,10 @@ export default function CredentialsPage() {
                         </td>
                         <td>
                           <div className="creds__actions">
-                            <Link className="creds__link" to={`/app/receipt/${c.id}`}>
+                            <Link
+                              className="creds__link"
+                              to={`/app/receipt/${encodeURIComponent(c.receiptId ?? c.id)}`}
+                            >
                               View
                             </Link>
                             {c.status !== 'revoked' && (

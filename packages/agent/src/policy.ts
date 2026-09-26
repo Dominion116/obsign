@@ -26,8 +26,9 @@ export interface Policy {
   claimType: string
   /** Credential claim.context this policy governs. */
   context: string
-  /** The single evidence module the credential must use. */
-  requiredEvidenceKind: EvidenceKind
+  /** The single evidence module the credential must use. Omit to not govern an
+   *  evidence module (e.g. a claim that carries no evidence). */
+  requiredEvidenceKind?: EvidenceKind
   /** Required issuer address (checked case-insensitively). */
   requiredIssuer?: string
   /** Minimum quorum threshold, when requiredEvidenceKind === 'quorum'. */
@@ -110,15 +111,22 @@ export function evaluatePolicy(
     )
   }
 
-  // 5. Evidence module must be the required kind.
-  const kind = ev ? classifyEvidenceKind(ev) : { unknownKind: true as const }
-  const kindOk = 'kind' in kind && kind.kind === policy.requiredEvidenceKind
-  check(`evidence-kind:${policy.requiredEvidenceKind}`, kindOk)
+  // 5. Evidence module must be the required kind — only when the policy governs
+  //    one. A policy with no requiredEvidenceKind does not constrain evidence
+  //    (e.g. a claim that legitimately carries no evidence module).
+  if (policy.requiredEvidenceKind) {
+    const kind = ev ? classifyEvidenceKind(ev) : { unknownKind: true as const }
+    const kindOk = 'kind' in kind && kind.kind === policy.requiredEvidenceKind
+    check(`evidence-kind:${policy.requiredEvidenceKind}`, kindOk)
 
-  // 6. Quorum threshold floor, when applicable.
-  if (policy.requiredEvidenceKind === 'quorum' && typeof policy.minQuorumThreshold === 'number') {
-    const threshold = ev && typeof ev.threshold === 'number' ? ev.threshold : 0
-    check(`quorum-threshold>=${policy.minQuorumThreshold}`, threshold >= policy.minQuorumThreshold)
+    // 6. Quorum threshold floor, when applicable.
+    if (policy.requiredEvidenceKind === 'quorum' && typeof policy.minQuorumThreshold === 'number') {
+      const threshold = ev && typeof ev.threshold === 'number' ? ev.threshold : 0
+      check(
+        `quorum-threshold>=${policy.minQuorumThreshold}`,
+        threshold >= policy.minQuorumThreshold,
+      )
+    }
   }
 
   // 7. Anchoring (needs the receipt's anchor metadata from the live API).

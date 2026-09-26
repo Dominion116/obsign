@@ -48,6 +48,9 @@ function claimLabel(credential: unknown): string {
   return claim.type ?? claim.context ?? 'credential'
 }
 
+/** Evidence kinds the deterministic core recognizes (spec §1.2). */
+const KNOWN_EVIDENCE_KINDS = ['quorum', 'onchain-event', 'artifact-hash']
+
 /**
  * Build a per-credential vetting policy from the credential under test, so the
  * structural checks (claim type/context, issuer, evidence kind) match the real
@@ -62,20 +65,26 @@ function policyForCredential(credential: unknown, evidence: unknown): Policy {
     cred.claim && typeof cred.claim === 'object'
       ? (cred.claim as { type?: string; context?: string })
       : {}
+  // Mirror the evaluator's evidence extraction: first item of an array, else the
+  // value itself. Only require an evidence kind when the credential actually
+  // carries a recognized one — otherwise leave it unconstrained so a valid,
+  // evidence-free credential is not spuriously denied on evidence-kind.
   const first = Array.isArray(evidence) ? evidence[0] : evidence
-  const evKind =
-    first && typeof first === 'object' && typeof (first as { kind?: unknown }).kind === 'string'
-      ? (first as { kind: string }).kind
-      : 'artifact-hash'
+  const rawKind =
+    first && typeof first === 'object' ? (first as { kind?: unknown }).kind : undefined
+  const evidenceKind =
+    typeof rawKind === 'string' && KNOWN_EVIDENCE_KINDS.includes(rawKind) ? rawKind : undefined
   return {
     id: `credential:${claim.type ?? 'generic'}:${claim.context ?? 'default'}`,
     version: 1,
     claimType: claim.type ?? '',
     context: claim.context ?? '',
-    requiredEvidenceKind: evKind as Policy['requiredEvidenceKind'],
     mustBeAnchored: false,
     mustNotBeRevoked: true,
     validityRequired: true,
+    ...(evidenceKind
+      ? { requiredEvidenceKind: evidenceKind as NonNullable<Policy['requiredEvidenceKind']> }
+      : {}),
     ...(typeof cred.issuer === 'string' ? { requiredIssuer: cred.issuer } : {}),
   }
 }
