@@ -2,7 +2,7 @@
   "name": "obsign",
   "version": "0.1.0",
   "private": true,
-  "description": "Obsign — verifiable credentials with recomputable receipts, plus the Obsign Sentinel vetting agent.",
+  "description": "Obsign \u2014 verifiable credentials with recomputable receipts, plus the Obsign Sentinel vetting agent.",
   "type": "module",
   "engines": {
     "node": ">=18"
@@ -28,7 +28,7 @@
     "check:key-leak": "node scripts/check-key-leak.mjs",
     "freeze:vectors": "vite-node spec/tools/freeze.ts",
     "receipt:digest": "vite-node spec/tools/receipt-digest.ts",
-    "build:sdk": "npm run -w @obsign/sdk build",
+    "build:sdk": "node init && npm run -w @obsign/sdk build",
     "smoke:sdk": "node scripts/sdk-offline-smoke.mjs",
     "publish:sdk": "node scripts/publish-sdk.mjs"
   },

@@ -144,8 +144,10 @@ Sentinel is Obsign's autonomous vetting agent (`packages/agent`, `@obsign/agent`
 
 Two run modes exist today:
 
-- **Simulation** is the default for the public trace endpoint (`GET /api/v1/sentinel/stream`). It produces a real deterministic verdict from the offline core, but moves no funds and broadcasts no transaction, so it is safe to expose without authentication. When the endpoint is unreachable, the web page falls back to a clearly labeled scripted demo trace.
-- **Live** runs use a funded testnet wallet to pay over x402 and to anchor a signed vetting report on Base. Live runs are gated behind `SENTINEL_RUN_SECRET` and require a fully configured agent wallet (`AGENT_WALLET_KEY`, an RPC URL, and the policy registry and anchor addresses).
+- **Live** runs vet a real, stored credential end to end: the agent pays over x402, verifies through the deterministic core, evaluates the policy, and anchors a signed vetting report on Base. In the web console a live run is gated behind wallet sign-in (SIWE): a signed-in user picks one of their issued credentials and starts the trace. Server or cron callers may instead present `SENTINEL_RUN_SECRET`. Either way a live run requires a fully configured agent wallet (`AGENT_WALLET_KEY`, an RPC URL, and the policy registry and anchor addresses), and an optional `SENTINEL_ADMIN_ADDRESSES` allowlist can restrict which signed-in addresses may trigger one.
+- **Simulation** produces a real deterministic verdict from the offline core but moves no funds and broadcasts no transaction. It is the backend default whenever a run is not explicitly `mode=live`, which keeps it available to server callers for testing.
+
+The Sentinel stream endpoint is `GET /api/v1/sentinel/stream` (add `?mode=live` for a live run). If the endpoint is unreachable or misconfigured, the web page shows an explicit error, unpaid, or sign-in state. It never presents a mocked trace as a real one.
 
 When Sentinel pays, the recipient is still the configured Obsign service payee, not Sentinel itself. The payment model is disclosed before any real payment is made. There is no separate daily spending cap beyond the per-verification price advertised in each 402 challenge, so live deployments should fund the agent wallet accordingly.
 
@@ -187,7 +189,7 @@ flowchart TB
         SENTINEL["Sentinel vetting agent"]
     end
 
-    subgraph API["React + Vite web app on Vercel"]
+    subgraph API["Web app (Vercel) + Fastify API (Render)"]
         UI["Landing page + VerifyWidget"]
         REST["REST API (POST /api/v1/verify)"]
         MCP["MCP endpoint (/api/mcp)"]
@@ -333,12 +335,11 @@ No Tailwind, CSS-in-JS, or component library is used as the primary styling syst
 git clone <your-fork-or-origin> obsign
 cd obsign
 
-# The landing page lives in the web app workspace.
-cd apps/web
+# Install every workspace from the repo root (npm workspaces).
 npm install
 ```
 
-This installs the React, Vite, and TypeScript toolchain for the web app. The other workspaces (`packages/core`, `packages/sdk`, `packages/platform`, `packages/agent`, `apps/api`, `apps/worker`, `cli`, `contracts`) are implemented in the monorepo and each has its own scripts and tests, as summarized under [Roadmap](#roadmap).
+This installs the toolchain and links the workspace packages (`packages/core`, `packages/sdk`, `packages/platform`, `packages/agent`, `apps/web`, `apps/api`, `apps/worker`, `cli`, `contracts`). Each workspace has its own scripts and tests, as summarized under [Roadmap](#roadmap).
 
 ### Run the landing page
 
@@ -363,24 +364,26 @@ npm run preview
 
 ### The landing page
 
-The page is organized as four sections plus navigation and footer:
+The page is organized as a sequence of sections plus navigation and footer:
 
 | Section | What it shows |
 | --- | --- |
 | Hero | Your one line of proof, the live verify widget, and the trust row |
+| About | What Obsign is and how agents and humans use it |
 | How it works | The Issue, Anchor, Verify flow and the receipt mini-diagram |
 | Verifier modules | Quorum, Onchain event, and Artifact hash |
 | Pricing | Flat price per verification and the final call to action |
+| FAQ | Common questions about trust, privacy, cost, and supported chains |
 
 ### The live verify widget
 
-On the hero you will find a working widget that mirrors the real verification flow. It has six states: idle, validating, valid, invalid, error, and unpaid.
+On the hero you will find a working widget that mirrors the real, paid verification flow. It has five states: idle, working, valid, invalid, and error.
 
-- Paste a receipt ID or credential JSON to begin.
-- Click **Try a sample** to load a bundled known-good vector and verify it.
-- After a successful check, the recomputation panel shows `credentialHash`, `evidenceHash`, and `receiptId` so you can see exactly how the ID is derived.
+- Paste the `credentialId` of a credential that has been issued.
+- Connect your wallet and pay the small x402 fee. Your wallet signs a gasless EIP-3009 USDC authorization on Base Sepolia, which the facilitator settles.
+- After a successful check, the recomputation panel shows `credentialHash`, `evidenceHash`, and `receiptId` so you can see exactly how the ID is derived, and you can open the full receipt or the payment transaction.
 
-The widget prefers the real API (`POST /api/v1/verify`) when it is reachable, and falls back to a local, offline recomputation otherwise. That offline path uses the same construction described in [The receipt](#the-receipt), implemented in `apps/web/src/lib/keccak.ts` with a dependency-free Keccak-256. This keeps the demo accurate and self-contained even before the backend service is deployed.
+The widget calls the real x402-gated API (`POST /api/v1/verify`) and shows only live results. There is no offline or mocked fallback inside the web app. Independent, offline recomputation is available through the published SDK (`verifyOffline`) and the `obsign` CLI, using the same construction described in [The receipt](#the-receipt).
 
 ### Verification flow, step by step
 
@@ -438,7 +441,7 @@ The product is being built in phases, each gated by its own acceptance criteria.
 | 3 | Issuance and multi-issuer platform: self-custodial issuers (SIWE), durable queue, evidence store, confirm/index worker, Fastify API on Render | Implemented (deploy runs on Render/CI) |
 | 4 | Verification API, x402, and MCP: paid verify endpoint, MCP tools, SDK publish | Implemented (`apps/api`: verify, x402 gate, MCP tools) |
 | 5 | Web app and landing page | Landing page + issuer console + Sentinel trace UI implemented |
-| 6 | Sentinel agent and mainnet launch: autonomous vetting agent, KMS migration, audit, mainnet deploy | Sentinel agent implemented (live path gated by secret); mainnet hardening in progress |
+| 6 | Sentinel agent and mainnet launch: autonomous vetting agent, KMS migration, audit, mainnet deploy | Sentinel agent implemented (live path gated by wallet sign-in or run secret); mainnet hardening in progress |
 
 ### Phase 3 — self-custodial issuance platform
 
