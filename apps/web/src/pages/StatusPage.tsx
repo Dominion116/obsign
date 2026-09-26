@@ -27,11 +27,11 @@ export default function StatusPage() {
               A live look at <span className="script-accent">every service.</span>
             </h1>
             <p className="status__lead">
-              This page reports the current health of the pieces you rely on, including the
-              verification API, the MCP endpoint that automated agents connect through, the
-              deterministic core that produces every verdict, and the Base Sepolia anchor
-              that timestamps receipts. Each service is listed below with a short note on
-              exactly what is being measured.
+              This page reports live readings straight from the verification API&apos;s health
+              endpoint: whether its database is reachable, whether the Base Sepolia RPC connection
+              it uses to read and anchor on-chain is responding, and how deep the confirmation
+              queue that finalizes anchors currently is. Each service is listed below with a short
+              note on exactly what is being measured.
             </p>
           </div>
 

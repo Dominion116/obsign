@@ -29,9 +29,10 @@ export default function About() {
             <p className="about__body">
               Sentinel is Obsign’s autonomous vetting agent. It receives a goal, inspects available
               evidence, calls verification tools, handles approved payment steps, evaluates a policy,
-              and records an auditable trace of the final grant or denial. The public trace runs in a
-              safe simulation that produces a real deterministic verdict, while live runs pay over
-              x402 and anchor a signed report on Base behind an explicit secret and a funded agent
+              and records an auditable trace of the final grant or denial. In the web console a
+              signed-in user picks a credential and the agent runs it live: it pays over x402,
+              verifies through the deterministic core, evaluates the policy, and anchors a signed
+              report on Base. Live runs are gated behind wallet sign-in and require a funded agent
               wallet.
             </p>
             <Link className="btn btn--primary about__action" to="/app/docs#what-is-obsign">

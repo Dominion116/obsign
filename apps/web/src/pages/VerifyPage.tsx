@@ -27,11 +27,11 @@ export default function VerifyPage() {
               Check any credential, <span className="script-accent">from anywhere.</span>
             </h1>
             <p className="verify__lead">
-              Paste a credential or its supporting evidence into the tool below and Obsign
-              will return an independent receipt that you can recompute yourself at any
-              time. You do not need an account and you do not need to trust our servers,
-              because the outcome rests entirely on the published specification, the public
-              chain, and the exact inputs you provide.
+              Paste the credentialId of a credential that has already been issued, connect your
+              wallet to settle the small x402 fee, and Obsign returns an independent receipt you
+              can recompute yourself at any time. You do not need an account, and you never have to
+              trust our servers, because the outcome rests entirely on the published specification,
+              the public chain, and the exact inputs behind that credential.
             </p>
           </div>
 

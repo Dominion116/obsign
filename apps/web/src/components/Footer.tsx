@@ -14,21 +14,8 @@ const COLUMNS = [
     ],
   },
   {
-    title: 'Developers',
-    links: [
-      { label: 'GitHub', href: '#' },
-      { label: 'npm', href: '#' },
-      { label: 'MCP', href: '/app/docs#mcp' },
-      { label: 'Contract', href: '/app/docs' },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      { label: 'About', href: '#' },
-      { label: 'Privacy', href: '#' },
-      { label: 'Terms', href: '#' },
-    ],
+    title: 'Legal',
+    links: [{ label: 'Privacy', href: '#' }],
   },
 ]
 
