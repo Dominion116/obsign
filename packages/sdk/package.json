@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "type": "module",
-  "description": "Obsign SDK — offline receipt verification, a REST/x402 API client, and a viem-based pinned chain reader (INV-6). @obsign/core is bundled so the published package verifies offline with no workspace dependency.",
+  "description": "Obsign SDK \u2014 offline receipt verification, a REST/x402 API client, and a viem-based pinned chain reader (INV-6). @obsign/core is bundled so the published package verifies offline with no workspace dependency.",
   "license": "MIT",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "typecheck": "tsc -b",
-    "build": "tsup",
+    "build": "node init && tsup",
     "prepublishOnly": "node -e \"console.error('Do not publish @obsign/sdk directly (its base manifest points at src for the monorepo). Run: npm run publish:sdk'); process.exit(1)\"",
     "test": "vitest run"
   },

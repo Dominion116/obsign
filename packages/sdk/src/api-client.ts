@@ -20,7 +20,7 @@ export type FetchLike = (
 ) => Promise<{ ok: boolean; status: number; text(): Promise<string> }>
 
 export interface ObsignClientOptions {
-  /** Base URL of the Obsign API, e.g. https://api.obsign.dev */
+  /** Base URL of the Obsign API, e.g. https://obsign.onrender.com */
   baseUrl: string
   /** Optional fetch implementation; defaults to the global fetch. */
   fetch?: FetchLike
