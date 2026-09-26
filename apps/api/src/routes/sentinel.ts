@@ -43,8 +43,7 @@ interface StreamQuery {
 
 /** Human-readable claim label from a stored credential's claim block. */
 function claimLabel(credential: unknown): string {
-  const claim =
-    (credential as { claim?: { type?: string; context?: string } } | null)?.claim ?? {}
+  const claim = (credential as { claim?: { type?: string; context?: string } } | null)?.claim ?? {}
   if (claim.type && claim.context) return `${claim.type} — ${claim.context}`
   return claim.type ?? claim.context ?? 'credential'
 }
@@ -95,7 +94,10 @@ export function registerSentinelRoutes(app: FastifyInstance, ctx: AppContext): v
       if (!hasValidSecret) {
         const address = await requireSession(ctx, request, reply)
         if (!address) return // requireSession already sent a 401
-        if (LIVE_ADMIN_ADDRESSES.length > 0 && !LIVE_ADMIN_ADDRESSES.includes(address.toLowerCase())) {
+        if (
+          LIVE_ADMIN_ADDRESSES.length > 0 &&
+          !LIVE_ADMIN_ADDRESSES.includes(address.toLowerCase())
+        ) {
           return reply
             .code(403)
             .send({ error: 'this address is not permitted to trigger live sentinel runs' })
