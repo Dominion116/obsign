@@ -27,7 +27,7 @@ export interface AgentConfig {
 
 type Env = Record<string, string | undefined>
 
-const DEFAULT_MODEL = 'llama-3.3-70b-versatile'
+const DEFAULT_MODEL = 'openai/gpt-oss-20b'
 const DEFAULT_CHAIN_ID = 84532
 
 function strOr(env: Env, key: string, fallback: string): string {

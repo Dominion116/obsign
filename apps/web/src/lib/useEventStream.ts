@@ -15,7 +15,20 @@ export interface SentinelStep {
 export interface EventStreamState {
   steps: SentinelStep[]
   status: 'idle' | 'connecting' | 'live' | 'unpaid' | 'unauthorized' | 'error'
+  /** Server-provided reason for the current error/unauthorized state, when available. */
+  detail?: string
   restart: () => void
+}
+
+/** Read a JSON `{ error }` body from a non-OK response, if present. */
+async function readErrorDetail(response: Response): Promise<string | undefined> {
+  try {
+    const body = (await response.clone().json()) as { error?: unknown }
+    if (body && typeof body.error === 'string') return body.error
+  } catch {
+    // non-JSON body — no detail to surface
+  }
+  return undefined
 }
 
 export interface UseEventStreamOptions {
@@ -51,12 +64,14 @@ export function useEventStream(options: UseEventStreamOptions = {}): EventStream
   const [attempt, setAttempt] = useState(0)
   const [steps, setSteps] = useState<SentinelStep[]>([])
   const [status, setStatus] = useState<EventStreamState['status']>('idle')
+  const [detail, setDetail] = useState<string | undefined>(undefined)
   const restart = useCallback(() => setAttempt((value) => value + 1), [])
 
   useEffect(() => {
     if (!enabled) {
       setSteps([])
       setStatus('idle')
+      setDetail(undefined)
       return
     }
 
@@ -65,6 +80,7 @@ export function useEventStream(options: UseEventStreamOptions = {}): EventStream
 
     const connect = async () => {
       setSteps([])
+      setDetail(undefined)
       setStatus('connecting')
       try {
         const params = new URLSearchParams()
@@ -81,10 +97,15 @@ export function useEventStream(options: UseEventStreamOptions = {}): EventStream
         const response = await fetch(target, { headers, signal: controller.signal })
         if (response.status === 402) throw new PaymentRequiredError()
         if (response.status === 401 || response.status === 403) {
+          setDetail(await readErrorDetail(response))
           setStatus('unauthorized')
           return
         }
-        if (!response.ok || !response.body) throw new Error(`Stream unavailable: ${response.status}`)
+        if (!response.ok || !response.body) {
+          setDetail(await readErrorDetail(response))
+          setStatus('error')
+          return
+        }
         setStatus('live')
         const reader = response.body.getReader()
         const decoder = new TextDecoder()
@@ -114,5 +135,5 @@ export function useEventStream(options: UseEventStreamOptions = {}): EventStream
     }
   }, [attempt, baseUrl, live, credentialId, enabled])
 
-  return { steps, status, restart }
+  return { steps, status, detail, restart }
 }

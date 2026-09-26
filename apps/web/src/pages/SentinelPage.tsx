@@ -49,7 +49,7 @@ export default function SentinelPage() {
   }, [credentials, selectedId])
 
   const [started, setStarted] = useState(false)
-  const { steps, status, restart } = useEventStream({
+  const { steps, status, detail, restart } = useEventStream({
     live: true,
     enabled: started && hasSession,
     credentialId: selectedId || undefined,
@@ -141,9 +141,9 @@ export default function SentinelPage() {
           <ol className="sentinel__feed" aria-busy={loading} aria-live="polite" aria-label="Sentinel decision trace">
             {loading && Array.from({ length: 4 }).map((_, index) => <li className="sentinel__step sentinel__step--loading" key={index}><Skeleton variant="circle" width="1.2rem" height="1.2rem" /><div className="sentinel__step-copy"><Skeleton width="35%" height="1rem" /><Skeleton width="80%" height="0.85rem" /></div></li>)}
             {steps.map((step) => <Step key={step.id} step={step} />)}
-            {status === 'unpaid' && <li className="sentinel__payment-note">The live agent requested an x402 payment that could not be settled. No mocked payment is presented as a real transaction.</li>}
-            {status === 'unauthorized' && <li className="sentinel__payment-note">Your session is missing or expired. Sign in again (top-right) to run a live trace.</li>}
-            {status === 'error' && <li className="sentinel__payment-note">The live trace endpoint is unavailable right now. Check that the API is reachable and the agent wallet is configured, then try again.</li>}
+            {status === 'unpaid' && <li className="sentinel__payment-note">{detail ?? 'The live agent requested an x402 payment that could not be settled. No mocked payment is presented as a real transaction.'}</li>}
+            {status === 'unauthorized' && <li className="sentinel__payment-note">{detail ?? 'Your session is missing or expired. Sign in again (top-right) to run a live trace.'}</li>}
+            {status === 'error' && <li className="sentinel__payment-note">{detail ? `Live run rejected: ${detail}` : 'The live trace endpoint is unavailable right now. Check that the API is reachable and the agent wallet is configured, then try again.'}</li>}
           </ol>
         </div>
       </section>
