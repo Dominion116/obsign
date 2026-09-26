@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { PaymentRequiredError } from './api'
+import { API_BASE, PaymentRequiredError } from './api'
+import { getSessionToken } from './backend'
 
 export interface SentinelStep {
   id: string
@@ -11,21 +12,21 @@ export interface SentinelStep {
   policyHash?: string
 }
 
-const MOCK_STEPS: SentinelStep[] = [
-  { id: 'goal', kind: 'goal', title: 'Goal received', detail: 'Verify an attendance credential before granting workspace access.' },
-  { id: 'plan', kind: 'plan', title: 'Plan prepared', detail: 'Validate inputs, pay for the verification request, evaluate policy, then decide.' },
-  { id: 'credential', kind: 'tool', title: 'Tool call: credential.read', detail: 'Loaded credential and artifact-hash evidence from the submitted record.' },
-  { id: 'payment', kind: 'payment', title: 'x402 payment settled', detail: 'Verification request payment recorded on Base Sepolia.', txHash: '0x' + '12'.repeat(32) },
-  { id: 'verify', kind: 'tool', title: 'Tool call: obsign.verify', detail: 'Recomputed credential and evidence hashes against pinned inputs.' },
-  { id: 'verdict', kind: 'verdict', title: 'Verdict: valid', detail: 'The evidence satisfies the declared artifact-hash rule.', reasonCode: 'OK' },
-  { id: 'policy', kind: 'policy', title: 'Policy evaluated', detail: 'Access policy allows a valid, paid verification result.', policyHash: '0x' + 'ab'.repeat(32), txHash: '0x' + '34'.repeat(32) },
-  { id: 'action', kind: 'action', title: 'Final action: grant', detail: 'Workspace access granted. This is a scripted demo trace, not a live agent decision.' },
-]
-
 export interface EventStreamState {
   steps: SentinelStep[]
-  status: 'connecting' | 'live' | 'demo' | 'unpaid' | 'error'
+  status: 'idle' | 'connecting' | 'live' | 'unpaid' | 'unauthorized' | 'error'
   restart: () => void
+}
+
+export interface UseEventStreamOptions {
+  /** Request a full on-chain live run (mode=live) authorized by the SIWE session. */
+  live?: boolean
+  /** Vet a specific stored credential (live integration) instead of the demo subject. */
+  credentialId?: string
+  /** Gate the connection; when false the hook stays idle and does nothing. */
+  enabled?: boolean
+  /** Override the stream URL (defaults to the API origin + sentinel stream path). */
+  url?: string
 }
 
 function asStep(value: unknown): SentinelStep | null {
@@ -35,29 +36,54 @@ function asStep(value: unknown): SentinelStep | null {
   return item as SentinelStep
 }
 
-/** Connect to the future SSE endpoint, falling back to a clearly-labelled mock trace. */
-export function useEventStream(url = import.meta.env.VITE_SENTINEL_STREAM_URL ?? '/api/v1/sentinel/stream'): EventStreamState {
+/**
+ * Connect to the real Sentinel SSE endpoint on the API origin and stream steps.
+ * No mock fallback: an unavailable endpoint surfaces an explicit error/unpaid/
+ * unauthorized state instead of a fabricated demo trace.
+ */
+export function useEventStream(options: UseEventStreamOptions = {}): EventStreamState {
+  const { live = false, enabled = true, credentialId } = options
+  const baseUrl =
+    options.url ??
+    import.meta.env.VITE_SENTINEL_STREAM_URL ??
+    `${API_BASE}/api/v1/sentinel/stream`
+
   const [attempt, setAttempt] = useState(0)
   const [steps, setSteps] = useState<SentinelStep[]>([])
-  const [status, setStatus] = useState<EventStreamState['status']>('connecting')
+  const [status, setStatus] = useState<EventStreamState['status']>('idle')
   const restart = useCallback(() => setAttempt((value) => value + 1), [])
 
   useEffect(() => {
-    const controller = new AbortController()
-    let timers: number[] = []
-    const append = (step: SentinelStep) => setSteps((current) => [...current, step])
-    const playMock = () => {
-      setStatus('demo')
-      MOCK_STEPS.forEach((step, index) => {
-        timers.push(window.setTimeout(() => append(step), index * 550))
-      })
+    if (!enabled) {
+      setSteps([])
+      setStatus('idle')
+      return
     }
+
+    const controller = new AbortController()
+    const append = (step: SentinelStep) => setSteps((current) => [...current, step])
+
     const connect = async () => {
       setSteps([])
       setStatus('connecting')
       try {
-        const response = await fetch(url, { headers: { Accept: 'text/event-stream' }, signal: controller.signal })
+        const params = new URLSearchParams()
+        if (live) params.set('mode', 'live')
+        if (live && credentialId) params.set('credentialId', credentialId)
+        const qs = params.toString()
+        const target = qs ? `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}${qs}` : baseUrl
+        const headers: Record<string, string> = { Accept: 'text/event-stream' }
+        if (live) {
+          const token = getSessionToken()
+          if (token) headers.Authorization = `Bearer ${token}`
+        }
+
+        const response = await fetch(target, { headers, signal: controller.signal })
         if (response.status === 402) throw new PaymentRequiredError()
+        if (response.status === 401 || response.status === 403) {
+          setStatus('unauthorized')
+          return
+        }
         if (!response.ok || !response.body) throw new Error(`Stream unavailable: ${response.status}`)
         setStatus('live')
         const reader = response.body.getReader()
@@ -79,15 +105,14 @@ export function useEventStream(url = import.meta.env.VITE_SENTINEL_STREAM_URL ??
       } catch (error) {
         if (controller.signal.aborted) return
         if (error instanceof PaymentRequiredError) setStatus('unpaid')
-        else playMock()
+        else setStatus('error')
       }
     }
     void connect()
     return () => {
       controller.abort()
-      timers.forEach(window.clearTimeout)
     }
-  }, [attempt, url])
+  }, [attempt, baseUrl, live, credentialId, enabled])
 
   return { steps, status, restart }
 }

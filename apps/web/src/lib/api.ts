@@ -1,12 +1,9 @@
-import { SAMPLE, recomputeDemo, type DemoReceipt } from './sample'
-
 /**
  * Centralized API surface for the Obsign web app.
  *
- * Every call prefers the live REST API and falls back to deterministic,
- * locally-recomputed demo data when the network or backend is unavailable.
- * This mirrors invariant INV-2: receipts are recomputable offline, so the UI
- * stays functional against the published spec even with no server.
+ * All reads target the live REST API at VITE_API_BASE_URL. There is no demo /
+ * offline fabrication: a failed read throws (or returns an empty list) so the
+ * UI shows a real error/empty state instead of fake data.
  */
 
 /** Versioned REST endpoints. Kept in one place so paths never drift. */
@@ -54,7 +51,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
  * endpoints must target this explicitly, because the web app (Vercel) and the API
  * (Render) are different origins — a relative path would 404 on the web origin.
  */
-const API_BASE = ((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '').replace(
+export const API_BASE = ((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '').replace(
   /\/+$/,
   '',
 )
@@ -104,49 +101,16 @@ export interface Service {
   detail: string
 }
 
-/* ------------------------------------------------------------------ */
-/* Local fallback data (demo / offline)                                */
-/* ------------------------------------------------------------------ */
-
-const DEMO_SERVICES: Service[] = [
-  {
-    name: 'Verification API',
-    status: 'operational',
-    detail: 'The POST /api/v1/verify endpoint is accepting requests and returning receipts within its normal response time.',
-  },
-  {
-    name: 'MCP endpoint',
-    status: 'operational',
-    detail: 'The tools exposed at /api/mcp are reachable, so connected agents can issue and verify credentials without interruption.',
-  },
-  {
-    name: 'Core verifier',
-    status: 'operational',
-    detail: 'The deterministic engine that computes every verdict is healthy and producing consistent results.',
-  },
-  {
-    name: 'Base Sepolia',
-    status: 'operational',
-    detail: 'Anchor reads from the Base Sepolia network are completing at the latency we expect.',
-  },
-]
-
-function demoReceipt(receiptId: string): Receipt {
-  const id = receiptId || '0x0000000000000000000000000000000000000000000000000000'
-  return {
-    receiptId: id,
-    credentialHash: '0x' + 'a1'.repeat(32),
-    evidenceHash: '0x' + 'b2'.repeat(32),
-    result: 'valid',
-    reasonCode: 'OK',
-    issuer: '0x1111111111111111111111111111111111111111',
-    subject: '0x2222222222222222222222222222222222222222',
-    verifiedAt: '2026-09-21T00:00:00.000Z',
-    verifier: 'obsign-core/1.0.0',
-    anchor: { chainId: 84532, txHash: '0x' + 'cd'.repeat(20), blockNumber: 12345678 },
-    paid: false,
-  }
+/** Shape returned by GET /api/v1/health (apps/api/src/routes/health.ts). */
+export interface HealthResponse {
+  status: 'operational' | 'degraded'
+  queueDepth: number
+  checks: Record<string, { status: 'operational' | 'down'; detail?: string }>
 }
+
+/* ------------------------------------------------------------------ */
+/* Explorer helpers                                                    */
+/* ------------------------------------------------------------------ */
 
 /** Base Sepolia block explorer link for a transaction hash. */
 export function explorerTxUrl(txHash: string): string {
@@ -154,42 +118,7 @@ export function explorerTxUrl(txHash: string): string {
 }
 
 /* ------------------------------------------------------------------ */
-/* Verification                                                        */
-/* ------------------------------------------------------------------ */
-
-/** Where a verdict came from — used to caveat offline-only checks in the UI. */
-export type VerifySource = 'live' | 'offline'
-
-export type VerifyOutcome =
-  | { kind: 'valid'; receipt: DemoReceipt; source: VerifySource }
-  | { kind: 'unpaid' }
-
-/**
- * Verify a credential + evidence set. Prefers the live API; on network error
- * falls back to local recomputation of the bundled sample vector.
- *
- * The `source` flag lets the UI disclose that the offline fallback cannot
- * confirm revocation or on-chain evidence (those need a live chain read).
- */
-export async function verifyCredential(
-  credential: Record<string, unknown> = SAMPLE.credential,
-  evidence: Record<string, unknown> = SAMPLE.evidence,
-): Promise<VerifyOutcome> {
-  try {
-    const receipt = await request<DemoReceipt>(ENDPOINTS.verify, {
-      method: 'POST',
-      json: { credential, evidence },
-    })
-    return { kind: 'valid', receipt, source: 'live' }
-  } catch (err) {
-    if (err instanceof PaymentRequiredError) return { kind: 'unpaid' }
-    // Network/offline — recompute deterministically from the sample.
-    return { kind: 'valid', receipt: recomputeDemo(credential, evidence), source: 'offline' }
-  }
-}
-
-/* ------------------------------------------------------------------ */
-/* Resource loaders (with offline fallback)                            */
+/* Resource loaders (live)                                             */
 /* ------------------------------------------------------------------ */
 
 /**
@@ -206,20 +135,52 @@ export async function fetchCredentialsByIssuer(address: string): Promise<Credent
   }
 }
 
+/**
+ * Fetch a verification receipt by id (live only — no demo fallback). Throws on a
+ * miss/unreachable API so the receipt page shows a real not-found/error state.
+ */
 export async function fetchReceipt(receiptId: string): Promise<Receipt> {
-  try {
-    return await getJson<Receipt>(ENDPOINTS.receipt(receiptId))
-  } catch {
-    return demoReceipt(receiptId)
-  }
+  return getJson<Receipt>(ENDPOINTS.receipt(receiptId))
 }
 
+/** Human labels for the health-check keys the API reports. */
+const HEALTH_LABELS: Record<string, string> = {
+  database: 'Database',
+  rpc: 'Base Sepolia RPC',
+}
+
+/** Adapt the health object into the flat Service[] the status page renders. */
+function healthToServices(health: HealthResponse): Service[] {
+  const services: Service[] = Object.entries(health.checks ?? {}).map(([key, check]) => ({
+    name: HEALTH_LABELS[key] ?? key,
+    status: check.status,
+    detail:
+      check.detail ??
+      (check.status === 'operational'
+        ? 'Responding normally.'
+        : 'This dependency is not responding.'),
+  }))
+
+  const depthOk = typeof health.queueDepth === 'number' && health.queueDepth >= 0
+  services.push({
+    name: 'Confirmation queue',
+    status: depthOk ? 'operational' : 'down',
+    detail: depthOk
+      ? `${health.queueDepth} job(s) awaiting on-chain confirmation.`
+      : 'Queue depth is currently unavailable.',
+  })
+
+  return services
+}
+
+/**
+ * Fetch live service health from GET /api/v1/health and adapt it to Service[].
+ * No demo fallback: on failure this throws so the status page can show a real
+ * error state instead of fabricated all-operational data.
+ */
 export async function fetchStatus(): Promise<Service[]> {
-  try {
-    return await getJson<Service[]>(ENDPOINTS.health)
-  } catch {
-    return DEMO_SERVICES
-  }
+  const health = await getJson<HealthResponse>(ENDPOINTS.health)
+  return healthToServices(health)
 }
 
 /**

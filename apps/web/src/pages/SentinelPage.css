@@ -25,4 +25,6 @@
 .sentinel__tx--demo { color: var(--text-muted-on-navy); text-decoration: none; font-style: italic; }
 .sentinel__step--action .sentinel__tx--demo { color: var(--text-muted); }
 .sentinel__payment-note { background: var(--accent-wash); border-left: 4px solid var(--accent); border-radius: var(--radius-notch); color: var(--text-strong); padding: 1rem; }
-@media (max-width: 480px) { .sentinel__toolbar .btn { width: 100%; } .sentinel__step { padding: 1rem; } }
+.sentinel__select { background: var(--surface-sunken); border: var(--border-w) solid var(--border); border-radius: var(--radius-notch); color: var(--text-on-navy); font-family: var(--font-display); font-size: .85rem; max-width: 60%; padding: .5rem .7rem; }
+.sentinel__toolbar label.sentinel__state { color: var(--text-on-navy); }
+@media (max-width: 480px) { .sentinel__toolbar .btn { width: 100%; } .sentinel__step { padding: 1rem; } .sentinel__select { max-width: 100%; width: 100%; } }

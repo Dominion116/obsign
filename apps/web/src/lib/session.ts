@@ -2,14 +2,27 @@
 // asks the connected wallet to personal_sign it, and exchanges the signature for
 // a session JWT. No key material leaves the wallet.
 
+import { useEffect, useState } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 import { SiweMessage } from 'siwe'
-import { backend, getSessionToken, setSessionToken } from './backend'
+import { backend, getSessionToken, setSessionToken, SESSION_EVENT } from './backend'
 import { CHAIN } from './wagmi'
 
 export function useSession() {
   const { address, isConnected } = useAccount()
   const { signMessageAsync } = useSignMessage()
+  const [hasSession, setHasSession] = useState<boolean>(() => getSessionToken() !== null)
+
+  // Keep hasSession reactive: sign-in/out anywhere (this tab or another) updates it.
+  useEffect(() => {
+    const sync = () => setHasSession(getSessionToken() !== null)
+    window.addEventListener(SESSION_EVENT, sync)
+    window.addEventListener('storage', sync)
+    return () => {
+      window.removeEventListener(SESSION_EVENT, sync)
+      window.removeEventListener('storage', sync)
+    }
+  }, [])
 
   async function login(): Promise<string> {
     if (!address) throw new Error('Connect a wallet before signing in')
@@ -34,5 +47,5 @@ export function useSession() {
     setSessionToken(null)
   }
 
-  return { address, isConnected, hasSession: getSessionToken() !== null, login, logout }
+  return { address, isConnected, hasSession, login, logout }
 }

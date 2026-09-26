@@ -6,7 +6,7 @@ import './ReceiptPage.css'
 const ROW_COUNT = 10
 
 export default function ReceiptPage({ receiptId }: { receiptId: string }) {
-  const { data, loading } = useAsyncData<Receipt>(() => fetchReceipt(receiptId), [receiptId])
+  const { data, loading, error } = useAsyncData<Receipt>(() => fetchReceipt(receiptId), [receiptId])
 
   const short = (h: string) => `${h.slice(0, 12)}…${h.slice(-8)}`
   const permalink = `${window.location.origin}/app/receipt/${encodeURIComponent(receiptId)}`
@@ -20,7 +20,19 @@ export default function ReceiptPage({ receiptId }: { receiptId: string }) {
             <p className="eyebrow">Verification receipt</p>
             <h1 className="receipt__title">Proof you can <span className="script-accent">recompute.</span></h1>
           </div>
-          {loading || !data ? (
+          {error ? (
+            <div className="receipt__card" role="alert">
+              <div className="receipt__head">
+                <span className="receipt__badge">NOT_FOUND</span>
+                <span className="receipt__result">Receipt unavailable</span>
+              </div>
+              <p className="receipt__result">
+                We couldn&apos;t load receipt <span className="receipt__mono">{short(receiptId)}</span>.
+                It may not exist yet, or the API is unreachable. This page only shows real,
+                server-issued receipts — no placeholder data is displayed.
+              </p>
+            </div>
+          ) : loading || !data ? (
             <div className="receipt__card receipt__card--valid" aria-busy="true" role="status" aria-label="Loading receipt">
               <div className="receipt__head">
                 <Skeleton variant="chip" />

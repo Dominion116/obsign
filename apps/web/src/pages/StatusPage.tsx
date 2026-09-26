@@ -12,9 +12,10 @@ const LABEL: Record<Service['status'], string> = {
 const SKELETON_ROWS = 4
 
 export default function StatusPage() {
-  const { data, loading } = useAsyncData<Service[]>(fetchStatus)
-  const services = data ?? []
-  const allOperational = !loading && services.every((s) => s.status === 'operational')
+  const { data, loading, error } = useAsyncData<Service[]>(fetchStatus)
+  const services = Array.isArray(data) ? data : []
+  const allOperational =
+    !loading && !error && services.length > 0 && services.every((s) => s.status === 'operational')
 
   return (
     <main className="status">
@@ -40,45 +41,63 @@ export default function StatusPage() {
               <h2 className="status__overview-title">
                 {loading
                   ? 'Checking the health of every service right now'
-                  : allOperational
-                    ? 'Every service is currently operating normally'
-                    : 'One or more services currently need attention'}
+                  : error
+                    ? 'We could not reach the status API'
+                    : allOperational
+                      ? 'Every service is currently operating normally'
+                      : 'One or more services currently need attention'}
               </h2>
               <p className="status__overview-time">
                 {loading
                   ? 'We are fetching the latest readings for you.'
-                  : 'These readings were refreshed a moment ago.'}
+                  : error
+                    ? 'The status service did not respond. Please try again in a moment.'
+                    : 'These readings were refreshed a moment ago.'}
               </p>
             </div>
           </div>
 
           <ul className="status__list" aria-busy={loading} aria-live="polite">
-            {loading
-              ? Array.from({ length: SKELETON_ROWS }).map((_, i) => (
-                  <li key={`sk-${i}`} className="status__service">
-                    <Skeleton variant="circle" width="0.9rem" height="0.9rem" />
-                    <div className="status__service-info">
-                      <Skeleton width="40%" height="1rem" />
-                      <Skeleton width="70%" height="0.8rem" />
-                    </div>
-                    <Skeleton variant="chip" />
-                  </li>
-                ))
-              : services.map((s) => (
-                  <li key={s.name} className="status__service">
-                    <span
-                      className={`status__dot status__dot--${s.status}`}
-                      aria-hidden="true"
-                    />
-                    <div className="status__service-info">
-                      <h3 className="status__service-name">{s.name}</h3>
-                      <p className="status__service-detail">{s.detail}</p>
-                    </div>
-                    <span className={`status__badge status__badge--${s.status}`}>
-                      {LABEL[s.status]}
-                    </span>
-                  </li>
-                ))}
+            {loading ? (
+              Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+                <li key={`sk-${i}`} className="status__service">
+                  <Skeleton variant="circle" width="0.9rem" height="0.9rem" />
+                  <div className="status__service-info">
+                    <Skeleton width="40%" height="1rem" />
+                    <Skeleton width="70%" height="0.8rem" />
+                  </div>
+                  <Skeleton variant="chip" />
+                </li>
+              ))
+            ) : error ? (
+              <li className="status__service">
+                <span className="status__dot status__dot--down" aria-hidden="true" />
+                <div className="status__service-info">
+                  <h3 className="status__service-name">Status unavailable</h3>
+                  <p className="status__service-detail">
+                    We couldn&apos;t load live service health from the API. This does not affect
+                    your credentials, which can always be recomputed offline.
+                  </p>
+                </div>
+                <span className="status__badge status__badge--down">{LABEL.down}</span>
+              </li>
+            ) : (
+              services.map((s) => (
+                <li key={s.name} className="status__service">
+                  <span
+                    className={`status__dot status__dot--${s.status}`}
+                    aria-hidden="true"
+                  />
+                  <div className="status__service-info">
+                    <h3 className="status__service-name">{s.name}</h3>
+                    <p className="status__service-detail">{s.detail}</p>
+                  </div>
+                  <span className={`status__badge status__badge--${s.status}`}>
+                    {LABEL[s.status]}
+                  </span>
+                </li>
+              ))
+            )}
           </ul>
 
           <div className="status__note">

@@ -5,6 +5,9 @@ const BASE = ((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '').r
 
 const SESSION_KEY = 'obsign.session'
 
+/** Dispatched on the window whenever the session token changes, so hooks re-render. */
+export const SESSION_EVENT = 'obsign:session'
+
 export function getSessionToken(): string | null {
   try {
     return window.localStorage.getItem(SESSION_KEY)
@@ -19,6 +22,11 @@ export function setSessionToken(token: string | null): void {
     else window.localStorage.removeItem(SESSION_KEY)
   } catch {
     // ignore storage errors (private mode, etc.)
+  }
+  try {
+    window.dispatchEvent(new Event(SESSION_EVENT))
+  } catch {
+    // no window (SSR) — nothing to notify
   }
 }
 
