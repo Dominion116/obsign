@@ -25,6 +25,7 @@
 .docs__step { align-items: flex-start; background: var(--surface-sunken); border: var(--border-w) solid var(--border); border-radius: var(--radius-notch); display: flex; gap: 1rem; padding: 1.1rem; }
 .docs__step span { color: var(--accent-strong); font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; }
 .docs__step h3, .docs__card h3, .docs__sub-title { color: var(--color-navy); font-size: 1.05rem; margin: 0 0 .35rem; }
+.docs__sub-title[id] { scroll-margin-top: calc(var(--nav-h) + 1.5rem); }
 .docs__step p, .docs__card p { color: var(--text-muted); line-height: 1.6; margin: 0; }
 .docs__code-block { background: var(--color-navy); border: var(--border-w-thick) solid var(--border); border-radius: var(--radius-card-alt); color: var(--text-on-navy); font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace; font-size: .82rem; line-height: 1.7; margin: .4rem 0; overflow-x: auto; padding: 1.35rem; white-space: pre; }
 .docs__cards { display: grid; gap: 1rem; }

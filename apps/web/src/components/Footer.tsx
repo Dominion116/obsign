@@ -14,8 +14,19 @@ const COLUMNS = [
     ],
   },
   {
+    title: 'Developers',
+    links: [
+      { label: 'GitHub', href: '#' },
+      { label: 'npm', href: 'https://www.npmjs.com/package/@dominionli/obsign-sdk' },
+      { label: 'MCP', href: '/app/docs#mcp' },
+    ],
+  },
+  {
     title: 'Legal',
-    links: [{ label: 'Privacy', href: '#' }],
+    links: [
+      { label: 'Privacy', href: '/app/privacy' },
+      { label: 'Terms', href: '/app/terms' },
+    ],
   },
 ]
 
@@ -52,6 +63,10 @@ export default function Footer() {
                       {l.href === '#' ? (
                         // Placeholder link that is not yet wired to a destination.
                         <a href={l.href} aria-disabled="true">
+                          {l.label}
+                        </a>
+                      ) : l.href.startsWith('http') ? (
+                        <a href={l.href} target="_blank" rel="noreferrer noopener">
                           {l.label}
                         </a>
                       ) : (

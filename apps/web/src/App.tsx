@@ -16,6 +16,8 @@ import CredentialsPage from './pages/CredentialsPage'
 import ReceiptPage from './pages/ReceiptPage'
 import NotFoundPage from './pages/NotFoundPage'
 import SentinelPage from './pages/SentinelPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
 import { useLocation } from './lib/router'
 
 const TITLES: Record<string, string> = {
@@ -26,6 +28,8 @@ const TITLES: Record<string, string> = {
   '/app/status': 'System status · Obsign',
   '/app/credentials': 'Issuer dashboard · Obsign',
   '/app/sentinel': 'Sentinel trace · Obsign',
+  '/app/privacy': 'Privacy policy · Obsign',
+  '/app/terms': 'Terms of service · Obsign',
 }
 
 interface Resolved {
@@ -46,6 +50,8 @@ export function resolvePage(path: string): Resolved {
     '/status': '/app/status',
     '/credentials': '/app/credentials',
     '/sentinel': '/app/sentinel',
+    '/privacy': '/app/privacy',
+    '/terms': '/app/terms',
   }
   if (aliases[path]) return resolvePage(aliases[path])
 
@@ -62,6 +68,10 @@ export function resolvePage(path: string): Resolved {
     return { page: <CredentialsPage />, title: TITLES['/app/credentials'], surface: 'app' }
   if (path === '/app/sentinel')
     return { page: <SentinelPage />, title: TITLES['/app/sentinel'], surface: 'app' }
+  if (path === '/app/privacy')
+    return { page: <PrivacyPage />, title: TITLES['/app/privacy'], surface: 'app' }
+  if (path === '/app/terms')
+    return { page: <TermsPage />, title: TITLES['/app/terms'], surface: 'app' }
 
   const receipt = path.match(/^\/app\/receipt\/(.+)$/)
   if (receipt) {
