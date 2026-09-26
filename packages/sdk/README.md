@@ -31,7 +31,7 @@ console.log(receipt.result, receipt.reasonCode, receipt.receiptId)
 ```ts
 import { ObsignClient, X402PaymentRequiredError } from '@dominionli/obsign-sdk'
 
-const client = new ObsignClient({ baseUrl: 'https://api.obsign.dev' })
+const client = new ObsignClient({ baseUrl: 'https://obsign.onrender.com' })
 
 try {
   const receipt = await client.verify(credential, evidence)
